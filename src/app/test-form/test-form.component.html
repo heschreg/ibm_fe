@@ -57,27 +57,14 @@
               id="kanal.id"  name="kanal.bezeichnung"
           -->
           <div class="row">
-            <div class="col-md-1">
-              <mat-checkbox class="kanal-checkbox"> check1 </mat-checkbox>
-            </div>
-            <div class="col-md-1">
-              <mat-checkbox class="kanal-checkbox"> check2 </mat-checkbox>
-            </div>
-          </div>
-
-          <div class="row">
             <h2>Kanal</h2>
-            <section class="example-section">
-            <div *ngFor="let kanal of sd_kanal_array; let i=index">
-              <div class="col-md-1">
-                <mat-checkbox
-                  [(ngModel)]="kanal.checked"
-                  (ngModelChange)="show_kanal(kanal)">
-                  {{kanal.bezeichnung}}
-                </mat-checkbox>
-              </div>
+            <div class="col-md-2" *ngFor="let kanal of sd_kanal_array">
+              <mat-checkbox
+                [(ngModel)]="kanal.checked"
+                (ngModelChange)="show_kanal(kanal)">
+                {{kanal.bezeichnung}}
+              </mat-checkbox>
             </div>
-            </section>
           </div>
 
           <p></p>

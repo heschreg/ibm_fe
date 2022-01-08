@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { Kanal, Status, Stellenangebot } from '../model.Stellenangebot';
@@ -7,7 +7,8 @@ import { FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-test-form',
   templateUrl: './test-form.component.html',
-  styleUrls: ['./test-form.component.scss']
+  styleUrls: ['./test-form.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TestFormComponent implements OnInit {
 
@@ -24,6 +25,8 @@ export class TestFormComponent implements OnInit {
   notizen: String = "";
 
   status_selected: string = "";
+
+  test_checked: boolean = false;
 
   form: FormGroup = new FormGroup({});
 
