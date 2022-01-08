@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { TestFormComponent } from './test-form/test-form.component';
 import { TestFormReactiveComponent } from './test-form-reactive/test-form-reactive.component';
+import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
 
 
 @NgModule({
@@ -30,7 +31,10 @@ import { TestFormReactiveComponent } from './test-form-reactive/test-form-reacti
 
 
   ],
-  providers: [],
+  providers: [{
+    provide: MAT_RADIO_DEFAULT_OPTIONS,
+    useValue: { color: 'accent' },
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

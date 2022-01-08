@@ -1,7 +1,116 @@
-<form class="form-container">
+
+<mat-card class="margin-left">
+  <mat-card-header>
+    <mat-card-title>Bewerber-Management - Firma Insirion GmbH</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+    <div class="row">
+      <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
+      <div class="col-md-3" >
+        <mat-selection-list #stang [multiple]="false">
+            <mat-list-option  (click)="stangShowDetails(stang)" *ngFor="let stang of sa_array" [value]="stang">
+              {{stang.bezeichnung}}
+            </mat-list-option>
+          </mat-selection-list>
+      </div>
+    </div>
+
+    <!-- unten stehen die Details der gewählten Stellenanzeige -->
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+    </form>
+
+      <div class="row">
+        <div class="col-md-9" >
+          <div class="row">
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input matInput="" [(ngModel)]="bez" placeholder="Bezeichnung"/>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input matInput="" [(ngModel)]="begDate" placeholder="Online seit"/>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input matInput="" [(ngModel)]="endDate" placeholder="Offline seit"/>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="full-width">
+                <input matInput="" [(ngModel)]="notizen" placeholder="Notizen"/>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Diese beiden Parameter dürfen keinesfalls in <mat_checkbox> eingebaut werden,
+              sonst wird beim Clicken einer beliebigen Checkbox immer nur der erste
+              verändert ==> KAtastrokphe, bis man das findet:
+              id="kanal.id"  name="kanal.bezeichnung"
+          -->
+          <div class="row">
+            <div class="col-md-1">
+              <mat-checkbox class="kanal-checkbox"> check1 </mat-checkbox>
+            </div>
+            <div class="col-md-1">
+              <mat-checkbox class="kanal-checkbox"> check2 </mat-checkbox>
+            </div>
+          </div>
+
+          <div class="row">
+            <h2>Kanal</h2>
+            <section class="example-section">
+            <div *ngFor="let kanal of sd_kanal_array; let i=index">
+              <div class="col-md-1">
+                <mat-checkbox
+                  [(ngModel)]="kanal.checked"
+                  (ngModelChange)="show_kanal(kanal)">
+                  {{kanal.bezeichnung}}
+                </mat-checkbox>
+              </div>
+            </div>
+            </section>
+          </div>
+
+          <p></p>
+          <p></p>
+
+          <div class="row">
+            <div class="col-md-12">
+              <section class="status-section">
+                <label id="radio-group-label-status" class="group-label">Aktueller Status</label>
+                <mat-radio-group
+                  aria-labelledby="example-radio-group-status"
+                  class="status-radio-group"
+                  fxLayout="row"
+                  [(ngModel)]="status_selected">
+
+                  <mat-radio-button
+                    class="status-radio-button"
+                    *ngFor="let sd_status of sd_status_array"
+                    [value]="sd_status.bezeichnung" (change)="showStatus()"> {{sd_status.bezeichnung}}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </section>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </mat-card-content>
+
+<!--
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Profile Information</mat-card-title>
+      <mat-card-title>Informationen zur Stellenanzeige</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="row">
@@ -16,35 +125,4 @@
           </mat-form-field>
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-6">
-          <mat-form-field class="full-width">
-            <textarea matInput="" placeholder="Address"></textarea>
-          </mat-form-field>
-        </div>
-        <div class="col-md-6 top-padding">
-          <mat-form-field class="full-width" appearance="fill">
-             <mat-label>Select DOB</mat-label>
-             <input matInput [matDatepicker]="picker"/>
-             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-             <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-          <div class="col-md-12">
-              <mat-radio-group class="margin-left">
-                  <mat-radio-button value="male"> Male </mat-radio-button>
-                  <mat-radio-button value="female"> Female </mat-radio-button>
-              </mat-radio-group>
-          </div>
-      </div>
-
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button="" color="primary">Save</button>
-    </mat-card-actions>
-  </mat-card>
-</form>
-
-
+-->

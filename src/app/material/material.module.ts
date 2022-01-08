@@ -11,8 +11,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import {MatMenuModule} from '@angular/material/menu';
+import { MatMenuModule} from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatListModule} from '@angular/material/list';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
    imports: [
@@ -29,7 +31,9 @@ import { MatRadioModule } from '@angular/material/radio';
       MatTableModule,
       MatPaginatorModule,
       MatMenuModule,
-      MatRadioModule
+      MatRadioModule,
+      MatListModule,
+      MatCheckboxModule
    ],
    exports: [
     MatButtonModule,
@@ -45,7 +49,9 @@ import { MatRadioModule } from '@angular/material/radio';
     MatTableModule,
     MatPaginatorModule,
     MatMenuModule,
-    MatRadioModule
+    MatRadioModule,
+    MatListModule,
+    MatCheckboxModule
    ],
 
    providers: [

@@ -13,3 +13,32 @@
 .form-container{
   margin: 100px;
 }
+
+// selectors by _HS
+.margin-left-h1{
+  margin-left:10px;
+}
+
+.kanal-checkbox {
+  // display: flex;
+  // flex-direction: row;
+  margin: 15px;
+  padding: 20px;
+  width: 150px;
+}
+
+.status-radio-group {
+  display: flex;
+  flex-direction: row;
+  margin: 15px 0;
+}
+
+.status-radio-button {
+  margin: 5px;
+}
+
+.group-label {
+  margin-top: 20px;
+  font-size: large;
+  font-weight: 500;
+}
