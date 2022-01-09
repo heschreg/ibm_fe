@@ -1,0 +1,175 @@
+
+<mat-card>
+
+  <mat-card-header>
+    <mat-card-title class="margin-left">Verwaltung der Stellenanzeigen</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
+
+    <div class="row">
+      <div class="col-md-2" >
+        <div class="minigap">Stellenanzeigen:</div>
+      </div>
+
+      <div class="col-md-3" >
+        <mat-selection-list #stang [multiple]="false"  [disabled]="!readonly">
+          <mat-list-option
+                (click)="stangShowDetails(stang)"
+                *ngFor="let stang of sa_array, let i=index"
+                [value]="stang.bezeichnung"
+                [selected]="stang && i == 0"
+          >
+            {{stang.bezeichnung}}
+          </mat-list-option>
+        </mat-selection-list>
+
+        <!-- Variante, die auch geht, aber ngModel komisch funktioniert -->
+        <!--
+        <mat-selection-list
+        #stang [multiple]="false"
+        [(ngModel)]="selectedSA"
+        (ngModelChange)="onNgModelChange($event)">
+          <mat-list-option *ngFor="let stang of sa_array" [value]="stang">
+              {{stang.bezeichnung}}
+          </mat-list-option>
+        </mat-selection-list>
+
+        ts-Datei:
+        ========
+        selectedSA!: Stellenangebot;
+        public onNgModelChange(sa: Stellenangebot[])  {
+
+          // In sa steht steht ein Arrax, der Länge 1, das tatsächlich ein komplettes Objekt vom  Typ "Stellenangebot",
+          // da ich beim Aufbau der Liste dieses auch so hinterlegt habe
+          console.log(sa);
+          this.stangShowDetails(sa[0]);
+
+      -->
+      </div>
+    </div>
+
+    <hr/>
+
+    <!-- unten stehen die Details der gewählten Stellenanzeige -->
+
+    <!--
+    <form [formGroup]="form" (ngSubmit)="submit()">
+    </form>
+    -->
+    <div class="row">
+      <div class="col-md-5" >
+        <h2>Details zur ausgewählten Stellenanzeige</h2>
+      </div>
+    </div>
+
+      <div class="row">
+        <div class="col-md-9" >
+          <div class="row">
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input [disabled]=readonly matInput="" [(ngModel)]="bez" placeholder="Bezeichnung"/>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input [disabled]=readonly matInput="" [(ngModel)]="begDate" placeholder="Online seit"/>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-4">
+              <mat-form-field class="full-width">
+                <input [disabled]=readonly matInput="" [(ngModel)]="endDate" placeholder="Offline seit"/>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="full-width">
+                <input [disabled]=readonly matInput="" [(ngModel)]="notizen" placeholder="Notizen"/>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <section class="status-section">
+                <label id="radio-group-label-status" class="group-label">Aktueller Status</label>
+                <mat-radio-group class="status-radio-group" [(ngModel)]="status_selected" [disabled]=readonly>
+                  <mat-radio-button
+                    class="status-radio-button"
+                    *ngFor="let status of sd_status_array, let i=index"
+                    [value]= "status"
+                    [checked] = "status.checked">
+                    {{status.bezeichnung}}
+                  </mat-radio-button>
+              </mat-radio-group>
+              </section>
+            </div>
+          </div>
+
+          <div class="trenner"></div>
+
+          <!-- Diese beiden Parameter dürfen keinesfalls in <mat_checkbox> eingebaut werden,
+              sonst wird beim Clicken einer beliebigen Checkbox immer nur der erste
+              verändert ==> Katastrophe, bis man das findet:
+              id="kanal.id"  name="kanal.bezeichnung"
+          -->
+          <div class="row">
+            <h2>geschaltete Kanäle</h2>
+            <div class="col-md-2" *ngFor="let kanal of sd_kanal_array">
+              <mat-checkbox
+                [disabled]=readonly
+                [(ngModel)]="kanal.selected"
+                (ngModelChange)="show_kanal(kanal)">
+                {{kanal.bezeichnung}}
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <div class="trenner"></div>
+
+          <!-- Auswählen des einen Kanals, der (ggf) erfolgreich war -->
+          <div class="row">
+            <div class="col-md-12">
+              <section class="kanal-section">
+                <label id="radio-group-label-status" class="group-label">erfolgreicher Kanal</label>
+                <mat-radio-group class="kanal-radio-group" [disabled]=readonly [(ngModel)]="kanal_selected">
+                  <mat-radio-button (click)="test()"
+                    class="kanal-radio-button"
+                    *ngFor="let kanal of sd_kanal_success_array"
+                    [value]="kanal"
+                    >
+                    {{kanal.bezeichnung}}
+                  </mat-radio-button>
+                </mat-radio-group>
+              </section>
+            </div>
+          </div>
+
+          <div class="trenner"></div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)">
+                Ich möchte die Daten der Stellenanzeige bearbeiten
+              </button>
+            </div>
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-2">
+              <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
+            </div>
+            <div class="col-md-2">
+              <button mat-raised-button [disabled]="updateMode" color="primary" (click)="updStellenangebot()">Speichern</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+  </mat-card-content>

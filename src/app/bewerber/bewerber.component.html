@@ -1,0 +1,33 @@
+
+<mat-card class="margin-left">
+
+  <mat-card-header>
+    <mat-card-title class="margin-left">Verwaltung der Bewerbungen</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote" -->
+
+    <div class="row">
+      <div class="col-md-2" >
+        <div class="minigap">Stellenanzeigen:</div>
+      </div>
+
+      <div class="col-md-3" >
+        <mat-selection-list #stang [multiple]="false"  [disabled]="!readonly">
+          <mat-list-option
+                (click)="showBewerber(stang)"
+                *ngFor="let stang of sa_array, let i=index"
+                [value]="stang.bezeichnung"
+                [selected]="stang && i == 0"
+          >
+            {{stang.bezeichnung}}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+    </div>
+
+    <hr/>
+  </mat-card-content>
+</mat-card>
