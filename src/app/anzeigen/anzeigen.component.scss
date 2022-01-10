@@ -1,6 +1,7 @@
 
 @import '~@angular/material/theming';
 
+
 //// zum farblichen unterlegen der gewählten Checkboxen
 
 mat-list-option {
@@ -99,6 +100,17 @@ mat-list-option[aria-selected="true"] {
 
 
 .trenner {
-  padding-top: 50px;
+  padding-top: 15px;
 }
 
+
+////////////////////////////////////////////////////////@at-root
+.minigap {
+  padding-top: 23px;
+  padding-left: 55px;
+}
+
+.margin-left {
+  padding-left: 5px;
+  font-size: large;
+}

@@ -1,13 +1,19 @@
 export interface Status {
   id: number;
   bezeichnung: string;
-  checked: boolean;
+  checked?: boolean;
 }
 
 export interface Kanal {
   id: number;
   bezeichnung: string;
-  checked: boolean;
+  selected?: boolean;
+}
+
+export interface Kanal_Success {
+  id: number;
+  bezeichnung: string;
+  selected?: boolean;
 }
 
 export interface Stellenangebot {
@@ -19,8 +25,8 @@ export interface Stellenangebot {
   sd_status: Status;
   sd_kanal: Kanal;
   kanaele: Kanal[];
-  beginnDate: Date;
-  endeDate: Date;
+  beginnDate?: Date;
+  endeDate?: Date;
 }
 
 export interface Stellenangebote {

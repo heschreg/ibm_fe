@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+  <!-- der folgende div wird verborgen, wenn die Festergröße  größer wie Medium ist -->
+  <!-- Durch den Click auf die 3 Streifen wird die Seitennavigation ein- oder ausgeblendet -->
+  <!--
+  <div fxHide.gt-md>
+    <button mat-icon-button (click)="OnTogglesSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  -->
+  <!-- <div><a routerLink="/">LOGO</a></div> -->
+  <!-- oder  <div fxFlex> ergänzen, dann kann malle anderen fx-Anweisungdn einsparen -->
+
+  <div fxFlex fxLayout  fxHide.xs>
+    <ul fxLayout fxLayoutGap="30px" class="navigations-itmes">
+      <li> <a routerLink="/bewerber">Bewerbungen</a> </li>
+      <li> <a routerLink="/anzeigen">Stellenanzeigen</a> </li>
+      <li> <a routerLink="/stammdaten">Stammdaten</a> </li>
+      <!--
+      <li> <a routerLink="/training">Sonstiges</a> </li>
+      <li> <a style="cursor: pointer" (click)="onLogout()">Logout</a> </li>
+      -->
+    </ul>
+  </div>
+  <div class="iLogo"> Insirion GmbH </div>
+</mat-toolbar>

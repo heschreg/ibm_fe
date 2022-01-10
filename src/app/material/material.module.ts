@@ -14,7 +14,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule} from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule} from '@angular/material/list';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
    imports: [
@@ -33,7 +34,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
       MatMenuModule,
       MatRadioModule,
       MatListModule,
-      MatCheckboxModule
+      MatCheckboxModule,
+      MatDialogModule
    ],
    exports: [
     MatButtonModule,
@@ -51,7 +53,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatMenuModule,
     MatRadioModule,
     MatListModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDialogModule
    ],
 
    providers: [

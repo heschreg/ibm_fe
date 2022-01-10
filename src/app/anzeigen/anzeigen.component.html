@@ -2,7 +2,7 @@
 <mat-card>
 
   <mat-card-header>
-    <mat-card-title class="margin-left">Verwaltung der Stellenanzeigen</mat-card-title>
+    <h3 class="margin-left">Verwaltung der Stellenanzeigen</h3>
   </mat-card-header>
 
   <mat-card-content>
@@ -61,7 +61,10 @@
     -->
     <div class="row">
       <div class="col-md-5" >
-        <h2>Details zur ausgewählten Stellenanzeige</h2>
+        <h3 class="margin-left">Details zur ausgewählten Stellenanzeige</h3>
+        <!--
+        <h2 matDialogTitle>Details zur ausgewählten Stellenanzeige</h2>
+        -->
       </div>
     </div>
 
@@ -120,7 +123,7 @@
               id="kanal.id"  name="kanal.bezeichnung"
           -->
           <div class="row">
-            <h2>geschaltete Kanäle</h2>
+            <h2 matDialogTitle>geschaltete Kanäle</h2>
             <div class="col-md-2" *ngFor="let kanal of sd_kanal_array">
               <mat-checkbox
                 [disabled]=readonly
@@ -153,18 +156,72 @@
 
           <div class="trenner"></div>
 
+          <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
           <div class="row">
-            <div class="col-md-4">
-              <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)">
-                Ich möchte die Daten der Stellenanzeige bearbeiten
+            <div class="col-md-3">
+              <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
+              <input
+                type="file"
+                style="display: none"
+                #fileInput
+                accept="application/pdf"
+                (change)="onFileChangeInput($event)"
+              >
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="file-select-button"
+                (click)="onClickFileInputButton()"
+                [disabled]="updateMode"
+              >
+                <mat-icon>attach_file</mat-icon>
+                Auswahl Stellenanzeige im pdf-Format
+              </button>
+              <p class="file-name" *ngIf="!this.selFilePdfStellenangebot; else fileName">
+                noch keine pdf-Datgei ausgewählt
+              </p>
+              <ng-template #fileName>
+              <p class="file-name">{{ this.selFilePdfStellenangebot?.name }}</p>
+            </ng-template>
+
+            </div>
+            <div class="col-md-2">
+              <button mat-raised-button color="primary" [disabled]="updateMode" (click)="onUploadPdf()">
+                PDF Hochladen
               </button>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-1">
+              <button mat-raised-button color="primary" (click)="fetchPdf()">
+                PDF anzeigen
+              </button>
+              <!-- Der Name der Datei steht in "this.selected.selFilePdfStellenangebot" -->
+              <!-- --
+              <input type="button" (click)="fetchPdf()" value="PDF anzeigen">
+              -->
+            </div>
+
+          </div>
+
+          <div class="trenner"></div>
+
+          <div class="row">
+            <div class="col-md-2">
+              <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)">
+                Stellenanzeige bearbeiten
+              </button>
             </div>
             <div class="col-md-2">
+              <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)">
+                neue Stellenanzeige anlegen
+              </button>
+            </div>
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-1">
               <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
               <button mat-raised-button [disabled]="updateMode" color="primary" (click)="updStellenangebot()">Speichern</button>
             </div>
           </div>

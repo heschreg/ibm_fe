@@ -1,36 +1,45 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from './material/material.module';
+import { AppRoutingModule } from './app-routing.module';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import {HttpClientModule} from '@angular/common/http';
-import {MaterialModule} from './material/material.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { AppComponent } from './app.component';
 import { TestFormComponent } from './test-form/test-form.component';
 import { TestFormReactiveComponent } from './test-form-reactive/test-form-reactive.component';
 import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
-
+import { HeaderComponent } from './header/header.component';
+import { AnzeigenComponent } from './anzeigen/anzeigen.component';
+import { BewerberComponent } from './bewerber/bewerber.component';
+import { MyAlertDialogComponent } from './my-alert-dialog/my-alert-dialog.component';
+import { StammdatenComponent } from './stammdaten/stammdaten.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TestFormComponent,
-    TestFormReactiveComponent
+    TestFormReactiveComponent,
+    HeaderComponent,
+    AnzeigenComponent,
+    BewerberComponent,
+    MyAlertDialogComponent,
+    StammdatenComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
     MaterialModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    FlexLayoutModule,
     FormsModule,
-    ReactiveFormsModule
-
-
+    HttpClientModule,
+    ReactiveFormsModule,
   ],
+
   providers: [{
     provide: MAT_RADIO_DEFAULT_OPTIONS,
     useValue: { color: 'accent' },
