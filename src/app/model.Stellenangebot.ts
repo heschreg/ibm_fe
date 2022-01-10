@@ -16,6 +16,13 @@ export interface Kanal_Success {
   selected?: boolean;
 }
 
+export interface Pdf_Attached {
+  id: number;
+  name?: string;
+  type?: string;
+  bin_data?: Blob;
+}
+
 export interface Stellenangebot {
   id: number;
   bezeichnung: string;
@@ -27,6 +34,7 @@ export interface Stellenangebot {
   kanaele: Kanal[];
   beginnDate?: Date;
   endeDate?: Date;
+  pdf_stellenangebot: Pdf_Attached;
 }
 
 export interface Stellenangebote {

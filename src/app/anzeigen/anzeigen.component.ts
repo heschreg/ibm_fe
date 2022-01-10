@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
-import { Kanal, Kanal_Success, Status, Stellenangebot } from '../model.Stellenangebot';
+import { Kanal, Kanal_Success, Status, Stellenangebot, Pdf_Attached } from '../model.Stellenangebot';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.component'
@@ -40,6 +40,7 @@ export class AnzeigenComponent implements OnInit {
 
   status_selected!: Status;
   kanal_selected!: Kanal;
+  pdf_attached!: Pdf_Attached;
 
 
   form: FormGroup = new FormGroup({});
@@ -230,6 +231,10 @@ export class AnzeigenComponent implements OnInit {
     this.notizen = stang.notizen;
     this.status_selected = stang.sd_status;
     this.kanal_selected  = stang.sd_kanal;
+    this.pdf_attached = stang.pdf_stellenangebot;
+
+    // Rücksetzen, dass man eine neue Pdf-Datei zum COhladen ausgewählt hat
+    this.selFilePdfStellenangebot = null;
 
     // Setzen des aktuellen Status in der Radiolist, die alle Status beinhaltet
     this.sync_status(this.sd_status_array, stang.sd_status);
@@ -249,7 +254,7 @@ export class AnzeigenComponent implements OnInit {
 
   public updStellenangebot() {
 
-    // In welchem Stellenangebot befinden wir uns eigentlich
+    // Ermitteln, in welchem Stellenangebot man sich aktuell befindet
 
     this.sa_array.forEach( (sa) => {
 
@@ -359,30 +364,50 @@ export class AnzeigenComponent implements OnInit {
     this.selFilePdfStellenangebot = event.target.files[0];
   }
 
+  /*
+  public onFileChangeInput(): void {
+    const files: { [key: string]: File } = this.fileInput.nativeElement.files;
+    this.selFilePdfStellenangebot = files[0];
+  }
+  */
 
-  public onUploadPdf() {
+  // Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
+  public updateStellenangebotPdf() {
 
     if (this.selFilePdfStellenangebot !== undefined) {
-      // Updaten einer pdf-Datei mit einem Stellenangebots in die Entität "ibm.pdf_stellenangebot"
-      this.serviceStellenangebote.postPdfStellenangebot(this.selFilePdfStellenangebot!).subscribe(data => {
-        console.log(data);
+      // Updaten der Property Stellenangebot.pdf_stellenangebot und updaten der pdf-Datei in die Entität "ibm.pdf_stellenangebot"
+      this.serviceStellenangebote.postPdfStellenangebot(this.id, this.selFilePdfStellenangebot!).subscribe(data => {
+
+       // In data müsste jetzt vom Typ <Stellenangebot> sein xxx
+       // console.log(data);
+
+
+        this.tmpSa = <Stellenangebot> data;
+        this.selFilePdfStellenangebot = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
+
+        // Jetzt muss man die Property this.pdf_attached noch richtig setzen
+        this.pdf_attached = this.tmpSa.pdf_stellenangebot;
+
       });
     } else {
-      // Hinweis ausgeben, dass kein Datei selektiert wurde
+      // Hinweis ausgeben, dass keine Datei selektiert wurde
       this.showHinweisMissingPdfDatei();
     }
   }
 
+  // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
+  // Die dokwzuloadende und anzuzeigende PDF-Datei steht in "pdf_attached.name"
   public fetchPdf() {
 
-    if (this.selFilePdfStellenangebot !== undefined) {
+    if (this.pdf_attached.name !== null) {
+
       // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
       /*
       this.serviceStellenangebote.getPdfStellenangebot(this.selFilePdfStellenangebot).subscribe(data => {
         console.log(data);
       });
       */
-      this.serviceStellenangebote.getPdfStellenangebot(this.selFilePdfStellenangebot!.name);
+      this.serviceStellenangebote.getPdfStellenangebot(this.pdf_attached.name!);
 
     } else {
       // Hinweis ausgeben, dass kein Datei selektiert wurde
@@ -405,12 +430,6 @@ export class AnzeigenComponent implements OnInit {
   onClickFileInputButton(): void {
     this.fileInput.nativeElement.click();
   }
-
-  onChangeFileInput(): void {
-    const files: { [key: string]: File } = this.fileInput.nativeElement.files;
-    this.selFilePdfStellenangebot = files[0];
-  }
-
 
 
 
