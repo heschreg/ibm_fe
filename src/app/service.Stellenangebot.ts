@@ -83,7 +83,21 @@ export class ServiceStellenangebote {
     return this.httpClient.post(`${this.baseURL}/uploadpdfsa/${id}`, uploadData);
   }
 
-  public getPdfStellenangebot( filename: String) {
+
+  public getPdfStellenangebotById( id: number) {
+
+    // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
+    // z.B.: "http://localhost:8080/ibm/byfilename/anzeige1.pdf";
+    const fileUrl = `${this.baseURL}/dnldpdfbyid/` + id;
+
+    // Es wird innerhalb der open-Methode ein REST-Aufruf mit der übergebenen Url gestartet
+    // Dieser muss einen Bytestream zurückliefern, damit dieser von der open()-Methode
+    // ausgewertet werden kann und das Pdf dannn downgeloaded wird
+    window.open(fileUrl);
+
+  }
+
+  public getPdfStellenangebotByName( filename: String) {
 
     // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
     const urlPdf = `${this.baseURL}/downloadpdf/` + filename;

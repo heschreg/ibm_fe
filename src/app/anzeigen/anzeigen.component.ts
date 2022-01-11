@@ -162,7 +162,7 @@ export class AnzeigenComponent implements OnInit {
 
       let index:number = 0;
       data.forEach((d) => {
-
+        console.log(d.pdf_stellenangebot.id);
         if (this.firstRun == false) {
           if (d.bezeichnung === this.aktSaBezeichnung) {
             // Jetzt weiss man, der wievielte Eintrag in der Listbox mit allen Stellenangeboten initial zu setzen ist
@@ -513,13 +513,14 @@ export class AnzeigenComponent implements OnInit {
 
     if (this.pdf_attached.name !== null) {
 
-      // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
+      // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
       /*
       this.serviceStellenangebote.getPdfStellenangebot(this.selFilePdfStellenangebot).subscribe(data => {
         console.log(data);
       });
       */
-      this.serviceStellenangebote.getPdfStellenangebot(this.pdf_attached.name!);
+      this.serviceStellenangebote.getPdfStellenangebotById(this.pdf_attached.id);
+      // this.serviceStellenangebote.getPdfStellenangebotByName(this.pdf_attached.name!);
 
     } else {
       // Hinweis ausgeben, dass kein Datei selektiert wurde
@@ -527,7 +528,7 @@ export class AnzeigenComponent implements OnInit {
     }
   }
 
-  showHinweisMissingPdfDatei() {
+  public showHinweisMissingPdfDatei() {
     let dialogRef = this.dialog.open(MyAlertDialogComponent);
     dialogRef.afterClosed().subscribe((result: string) => {
       if (result == 'ok') {
