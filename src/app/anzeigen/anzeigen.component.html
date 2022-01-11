@@ -148,7 +148,8 @@
     <div class="row">
       <div class="col-md-7">
         <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
-        <span class="abstand_right">  {{pdf_attached?.name}}</span>
+        <span class="abstand_right" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
+        <span class="abstand_right" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
 
         <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="fetchPdf()">PDF anzeigen</button>
 

@@ -1,6 +1,15 @@
 
 @import '~@angular/material/theming';
 
+.auffaellig {
+  background-color: yellow;
+  padding: 10px;
+}
+
+.pdfattached {
+  background-color: greenyellow;
+  padding: 10px;
+}
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{
   border-color:rgb(66, 134, 244);
