@@ -2,6 +2,19 @@
 @import '~@angular/material/theming';
 
 
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle{
+  border-color:rgb(66, 134, 244);
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle{
+  color:rgb(66, 134, 244);
+  background-color:rgb(66, 134, 244) ;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+    background-color:rgb(255, 37, 37,.26)
+}
+
 //// zum farblichen unterlegen der gewählten Checkboxen
 
 mat-list-option {
@@ -10,8 +23,13 @@ mat-list-option {
 
 $primaryPalette: mat-palette($mat-green);
 
+/*
 mat-list-option[aria-selected="true"] {
   background: mat-color($primaryPalette, 100);
+}
+*/
+mat-list-option[aria-selected="true"] {
+  background: rgba(0, 139, 139, 0.7);
 }
 
 /////////////////
@@ -76,7 +94,7 @@ mat-list-option[aria-selected="true"] {
 }
 
 .mat-checkbox-checked .mat-checkbox-background {
-  transform: scale(2);
+  transform: scale(1);
 }
 
 /*
@@ -107,8 +125,11 @@ mat-list-option[aria-selected="true"] {
 
 ////////////////////////////////////////////////////////@at-root
 .minigap {
-  padding-top: 23px;
-  padding-left: 55px;
+  padding-top: 2px;
+  margin-left: 18px;
+  font-size: 20px;
+  font-weight: 500;
+  background-color: yellow;
 }
 
 .margin-left {

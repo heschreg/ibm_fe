@@ -1,20 +1,29 @@
 
 <mat-card>
 
-  <mat-card-header>
-    <h3 class="margin-left">Verwaltung der Stellenanzeigen</h3>
-  </mat-card-header>
-
   <mat-card-content>
 
     <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
 
     <div class="row">
 
-      <div class="col-md-2">
-        <div class="minigap">Stellenanzeigen:</div>
+      <div class="col-md-3">
+        <div class="minigap">Verwaltung der Stellenanzeigen</div>
       </div>
 
+      <mat-list role="list">
+        <mat-list-item
+          role="listitem"
+          *ngFor="let stang of sa_array, let i=index"
+          (click)="stangShowDetails(stang)"
+        >
+        <mat-radio-button color="primary" [checked]="i == radioSaToSelect" [value]="i">
+            {{stang.bezeichnung}}
+          </mat-radio-button>
+        </mat-list-item>
+      </mat-list>
+
+      <!--
       <div class="col-md-3">
         <mat-selection-list #stang [multiple]="false"  [disabled]="!readonly">
           <mat-list-option
@@ -27,6 +36,8 @@
           </mat-list-option>
         </mat-selection-list>
       </div>
+      -->
+
     </div>
 
     <hr/>
@@ -100,13 +111,15 @@
     -->
     <div class="row">
       <h2 matDialogTitle>geschaltete Kanäle</h2>
-      <div class="col-md-2" *ngFor="let kanal of sd_kanal_array">
-        <mat-checkbox
-          [disabled]=readonly
-          [(ngModel)]="kanal.selected"
-          (ngModelChange)="show_kanal(kanal)">
-          {{kanal.bezeichnung}}
-        </mat-checkbox>
+      <div class="col-md-1" *ngFor="let kanal of sd_kanal_array">
+        <div >
+          <mat-checkbox
+            [disabled]=readonly
+            [(ngModel)]="kanal.selected"
+            (ngModelChange)="show_kanal(kanal)">
+            {{kanal.bezeichnung}}
+          </mat-checkbox>
+        </div>
       </div>
     </div>
 
@@ -135,8 +148,9 @@
     <div class="row">
       <div class="col-md-7">
         <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
-        <span class="abstand_right"> {{&nbsp;&nbsp;&nbsp; pdf_attached.name == null ? "noch kein pdf zugeordnet" : pdf_attached.name}}</span>
-        <button mat-raised-button color="primary"  (click)="fetchPdf()">PDF anzeigen</button>
+        <span class="abstand_right">  {{pdf_attached?.name}}</span>
+
+        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="fetchPdf()">PDF anzeigen</button>
 
 
         <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
@@ -152,7 +166,8 @@
           mat-raised-button
           color="warn"
           class="file-select-button"
-          (click)="onClickFileInputButton()">
+          (click)="onClickFileInputButton()"
+          [disabled]="!updateMode">
 
           <mat-icon>attach_file</mat-icon>
             Auswahl Stellenanzeige im pdf-Format
@@ -171,10 +186,10 @@
     <div class="row">
 
       <div class="col-md-3">
-        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)">
+        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(2)">
           Stellenanzeige bearbeiten
         </button>
-        <span class="abstand_left"><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setReadOnly(false)" class="abstand_left">
+        <span class="abstand_left"><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
           neue Stellenanzeige anlegen
         </button></span>
       </div>
@@ -182,7 +197,7 @@
       <div class="col-md-2">
         <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
         <span class="abstand_left">
-          <button mat-raised-button [disabled]="updateMode" color="primary" (click)="updStellenangebot()">Speichern</button>
+          <button mat-raised-button [disabled]="updateMode" color="primary" (click)="saveStellenangebot()">Speichern</button>
         </span>
       </div>
 

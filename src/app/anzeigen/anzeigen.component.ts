@@ -15,6 +15,10 @@ import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.compo
 })
 export class AnzeigenComponent implements OnInit {
 
+  public radioSaToSelect = 0;
+  public firstRun : boolean = true;
+  public aktSaBezeichnung = "";
+
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfStellenangebot: File | null = null;;
 
@@ -42,6 +46,9 @@ export class AnzeigenComponent implements OnInit {
   kanal_selected!: Kanal;
   pdf_attached!: Pdf_Attached;
 
+  // 1 = INSERT
+  // 2 = UPDATE
+  mode!: number;
 
   form: FormGroup = new FormGroup({});
 
@@ -64,13 +71,35 @@ export class AnzeigenComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
 
-    this.getStatus();
+    // Holen aller Daten über REST aus der Entität "SD_Status"
+    this.getStatus( );
+
+    // Holen aller Daten über REST aus der Entität "SD_Kanal"
     this.getKanaele();
+
+    // nochmaliges Holen aller Stellenangebote über REST aus der Entität "SD_Kanal" in annderes Array
     this.getKanaeleSuccess();
+
+    // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
+    // Setzen von this.radioSaToSelect
     this.getStellenangebote();
-    // this.getOneStellenangebot(1);
+
+  }
+
+  private doInit( radioToSelect: number) {
+
+    this.stangShowDetails(this.sa_array[radioToSelect]);
+
+    // Setzen des Status in der Radiolist, die alle Status enthält
+    this.sync_status(this.sd_status_array, this.sa_array[radioToSelect].sd_status);
+
+    // Setzen des Kanäle, die beim aktuell selektierten Stellenangebot geschalten wurden
+    this.sync_kanaele(this.sd_kanal_array, this.sa_array[radioToSelect].kanaele);
+
+    // Setzen des erfolgreichen Kanals in der Radiolist, die alle Kanäle beinhaltet
+    this.sync_kanal_success(this.sd_kanal_success_array, this.sa_array[radioToSelect].sd_kanal);
 
     this.readonly = true;
     this.updateMode = true;
@@ -117,9 +146,10 @@ export class AnzeigenComponent implements OnInit {
     });
   }
 
-
+  // Setzen von this.radioSaToSelect
   private getStellenangebote(){
 
+    // Holen aller Stellenangebote über REST aus der DB
     this.serviceStellenangebote.getListeStellenangebote().subscribe(data => {
 
       // Das Json, das über Netzwerk verschickt wurde, ist hier
@@ -127,31 +157,42 @@ export class AnzeigenComponent implements OnInit {
       // Durch die Zuweisung von "this.tmpSa= d" bekommt man Typsicherheit.
       // Wenn man weiss, welches Format über Json rein kommt, kann man die
       // entsprechenden model-Dateien zusammenbasteln.
+
       this.sa_array = [];
+
+      let tmpSa!: Stellenangebot;
+
+      let index:number = 0;
       data.forEach((d) => {
 
-        this.tmpSa= d;
+        if (this.firstRun == false) {
+          if (d.bezeichnung === this.aktSaBezeichnung) {
+            // Jetzt weiss man, der wievielte Eintrag in der Listbox mit allen Stellenangeboten initial zu setzen ist
+            this.radioSaToSelect = index;
+          }
+        } else {
+            // Beim erstmaligen Starten des Dialogs den ersten Eintrag der Lb mit allen Stellangeboten selektieren
+            this.radioSaToSelect = 0;
+        }
+        index++;
+
+        // Nur Zwichenspeichern
+        tmpSa= d;
 
         // In JSON gibt es keinen Typ "Date", kommt als String und muss in ein Datum konvertiert werden
-        this.tmpSa.beginnDate = new Date(this.tmpSa.beginn);
-        this.tmpSa.endeDate = new Date(this.tmpSa.ende);
+        tmpSa.beginnDate = new Date(tmpSa.beginn);
+        tmpSa.endeDate = new Date(tmpSa.ende);
 
-        this.sa_array.push(this.tmpSa);
+        this.sa_array.push(tmpSa);
 
       });
 
-      // Vorbelegen, dass der erste Eintrag in der Listbox selektiert ist
-      this.stangShowDetails(this.sa_array[0]);
+      this.doInit(this.radioSaToSelect);
 
-      // Setzen des Status in der Radiolist, die alle Status enthält
-      this.sync_status(this.sd_status_array, this.sa_array[0].sd_status);
+      this.firstRun = false;
 
-      // Setzen des Kanäle, die beim aktuell selektierten Stellenangebot geschalten wurden
-      this.sync_kanaele(this.sd_kanal_array, this.sa_array[0].kanaele);
-
-      // Setzen des erfolgreichen Kanals in der Radiolist, die alle Kanäle beinhaltet
-      this.sync_kanal_success(this.sd_kanal_success_array, this.sa_array[0].sd_kanal);
     });
+
   }
 
   private getOneStellenangebot(id: number) {
@@ -211,18 +252,36 @@ export class AnzeigenComponent implements OnInit {
   };
 
 
-  public setReadOnly(mode:boolean) {
+  public setMode(mode:number) {
+    // 1 = INSERT
+    // 2 = UPDATE
+    this.mode = mode;
+
+    if (mode > 0)  {
+      this.setReadOnly(false);
+    } else {
+      this.setReadOnly(true);
+    }
+  }
+
+  public setReadOnly(ro:boolean) {
 
     // Button, das man Daten bearbeiten möchte
     // 1. initialer Zustand: disabled = false, updateMode = false
-    this.readonly = mode;
-    this.updateMode = mode;
+    this.readonly = ro;
+    this.updateMode = ro;
   }
 
-  // Konkretes Stellenagebot aus der Liste ausgewählt
+  /*
+   * wird aufgerufen
+     1. aus Template:  (click)-funktion, falls konkretes Stellenagebot aus der Liste ausgewählt wird
+     2. intern: ^      doInit()
+  */
   public stangShowDetails(stang: Stellenangebot) {
 
     console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
+
+    this.aktSaBezeichnung = stang.bezeichnung;
 
     this.id = stang.id;
     this.bez = stang.bezeichnung;
@@ -247,64 +306,46 @@ export class AnzeigenComponent implements OnInit {
 
   }
 
+  //  wird aus dem Template aufgerufen
+  public saveStellenangebot() {
 
-  public resetStellenangebot() {
-    this.ngOnInit();
-  }
+    // 1 = INSERT
+    // 2 = UPDATE
 
-  public updStellenangebot() {
+    let tmpSa!: Stellenangebot;
 
-    // Ermitteln, in welchem Stellenangebot man sich aktuell befindet
+    if (this.mode == 1) {
+      tmpSa.id = -1;
 
-    this.sa_array.forEach( (sa) => {
+      //////////////////////////////////////////////
+      // Am Ende wird ein neuer Datensatz inserted
+      //////////////////////////////////////////////
 
-      if (sa.id === this.id) {
-        // Jetzt sind wir in dem Array-Eintrag der upzudaten ist
-        // sa.beginn = "";
-        // sa.beginnDate = new Date();
-        sa.bezeichnung = this.bez;
-        // sa.ende = "";
-        // sa.endeDate = new Date();
+      tmpSa.beginn = "";
+      tmpSa.beginnDate = new Date();
+      tmpSa.bezeichnung = this.bez;
+      tmpSa.ende = "";
+      tmpSa.endeDate = new Date();
 
-        // this.sd_kanal_array = {id, bezeichnung, selected}
-        let tmpArray:Kanal[] = [];
-        this.sd_kanal_array.forEach ( (k) => {
-          if (k.selected === true) {
-            delete k.selected;
-            tmpArray.push(k);
-          }
-        });
-
-        sa.kanaele = tmpArray;
-
-        /*
-        sa.kanaele.forEach ( k => {
+      // this.sd_kanal_array = {id, bezeichnung, selected}
+      let tmpArray:Kanal[] = [];
+      this.sd_kanal_array.forEach ( (k) => {
+        if (k.selected === true) {
           delete k.selected;
-        })
-        */
+          tmpArray.push(k);
+        }
+        tmpSa.kanaele = tmpArray;
 
-        sa.notizen = this.notizen;
+        tmpSa.notizen = this.notizen;
 
-        // sd_kanal_success_array: Kanal_Success[] = [];
-        // In "kanal_selected" steht der erfolgreiche Kanal, der in die Property stellenangebot.sd_kanal muss
-
-        sa.sd_kanal = this.kanal_selected;
-        if (sa.sd_kanal !== undefined) {
-          delete sa.sd_kanal.selected;
+        tmpSa.sd_kanal = this.kanal_selected;
+        if (tmpSa.sd_kanal !== undefined) {
+          delete tmpSa.sd_kanal.selected;
         }
 
-        // bei folgender Lösung wird jede  property innerhalb des Objektes auf null gesetzt
-        /*
-        if (this.kanal_selected !== undefined) {
-          sa.sd_kanal = this.kanal_selected;
-          delete sa.sd_kanal.selected;
-        } else {
-          this.setNull(sa.sd_kanal);
-        }*/
-
-        sa.sd_status = this.status_selected;
-        if (sa.sd_status !== undefined) {
-          delete sa.sd_status.checked;
+        tmpSa.sd_status = this.status_selected;
+        if (tmpSa.sd_status !== undefined) {
+          delete tmpSa.sd_status.checked;
         }
 
         // Datumshandling fehlt an dieser Stelle noch
@@ -312,39 +353,115 @@ export class AnzeigenComponent implements OnInit {
         // ....
 
         // anschließend können die Hilfsproperties gelöscht werden:
-        delete sa.beginnDate;
-        delete sa.endeDate;
+        delete tmpSa.beginnDate;
+        delete tmpSa.endeDate;
+      })
 
-        // jetzt mit einem Post updaten
-        this.updateStellenangebot(sa);
-      }
+      // jetzt mit einem Post inserten
+      this.insertStellenangebot(tmpSa);
 
-    })
+    } else {
+
+      //////////////////////////////////////////////
+      // Am Ende wird ein neuer Datensatz geupdated
+      //////////////////////////////////////////////
+
+      // Ermitteln, in welchem Stellenangebot man sich aktuell befindet
+      this.sa_array.forEach( (sa) => {
+
+        if (sa.id === this.id) {
+          // Jetzt sind wir in dem Array-Eintrag der upzudaten ist
+          // sa.beginn = "";
+          // sa.beginnDate = new Date();
+          sa.bezeichnung = this.bez;
+          // sa.ende = "";
+          // sa.endeDate = new Date();
+
+          // this.sd_kanal_array = {id, bezeichnung, selected}
+          let tmpArray:Kanal[] = [];
+          this.sd_kanal_array.forEach ( (k) => {
+            if (k.selected === true) {
+              delete k.selected;
+              tmpArray.push(k);
+            }
+          });
+          sa.kanaele = tmpArray;
+
+          sa.notizen = this.notizen;
+
+          sa.sd_kanal = this.kanal_selected;
+          if (sa.sd_kanal !== undefined) {
+            delete sa.sd_kanal.selected;
+          }
+
+          // bei folgender Lösung wird jede  property innerhalb des Objektes auf null gesetzt
+          /*
+          if (this.kanal_selected !== undefined) {
+            sa.sd_kanal = this.kanal_selected;
+            delete sa.sd_kanal.selected;
+          } else {
+            this.setNull(sa.sd_kanal);
+          }*/
+
+          sa.sd_status = this.status_selected;
+          if (sa.sd_status !== undefined) {
+            delete sa.sd_status.checked;
+          }
+
+          // Datumshandling fehlt an dieser Stelle noch
+
+          // ....
+
+          // anschließend können die Hilfsproperties gelöscht werden:
+          delete sa.beginnDate;
+          delete sa.endeDate;
+
+          // jetzt mit einem Post updaten
+          this.updateStellenangebot(sa);
+        }
+
+      })
+
+    };
 
     this.setReadOnly(true);
 
   }
 
-  private setAll(obj: any, val: any) {
-    /* Duplicated with @Maksim Kalmykov
-        for(index in obj) if(obj.hasOwnProperty(index))
-            obj[index] = val;
-    */
-    Object.keys(obj).forEach(function(index) {
-        obj[index] = val
-    });
+  public resetStellenangebot() {
+
+    // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
+    // Setzen von this.radioSaToSelect
+    this.getStellenangebote();
   }
 
-  private setNull(obj: any) {
-    this.setAll(obj, null);
+  private insertStellenangebot(sa: Stellenangebot) {
+
+    // Updaten einer Entität "stellenangebot"
+    this.serviceStellenangebote.insStellenangebot(sa).subscribe(data => {
+
+      // Merken der Bezeichnung des neuen Datensatze
+      this.aktSaBezeichnung = sa.bezeichnung;
+
+      // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
+      // Setzen von this.radioSaToSelect
+      this.getStellenangebote();
+
+    });
   }
 
   private updateStellenangebot(sa: Stellenangebot) {
 
     // Updaten einer Entität "stellenangebot"
     this.serviceStellenangebote.updStellenangebot(sa).subscribe(data => {
-      this.stangShowDetails(sa);
-      // console.log(data);
+
+      // Merken der Bezeichnung des geänderten Datensatze
+      this.aktSaBezeichnung = sa.bezeichnung;
+
+      // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
+      // Setzen von this.radioSaToSelect
+      this.getStellenangebote();
+
     });
   }
 
@@ -374,6 +491,8 @@ export class AnzeigenComponent implements OnInit {
   // Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
   public updateStellenangebotPdf() {
 
+    let tmpSa!: Stellenangebot;
+
     if (this.selFilePdfStellenangebot !== undefined) {
       // Updaten der Property Stellenangebot.pdf_stellenangebot und updaten der pdf-Datei in die Entität "ibm.pdf_stellenangebot"
       this.serviceStellenangebote.postPdfStellenangebot(this.id, this.selFilePdfStellenangebot!).subscribe(data => {
@@ -382,11 +501,11 @@ export class AnzeigenComponent implements OnInit {
        // console.log(data);
 
 
-        this.tmpSa = <Stellenangebot> data;
+        tmpSa = <Stellenangebot> data;
         this.selFilePdfStellenangebot = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
 
         // Jetzt muss man die Property this.pdf_attached noch richtig setzen
-        this.pdf_attached = this.tmpSa.pdf_stellenangebot;
+        this.pdf_attached = tmpSa.pdf_stellenangebot;
 
       });
     } else {
@@ -431,7 +550,19 @@ export class AnzeigenComponent implements OnInit {
     this.fileInput.nativeElement.click();
   }
 
+  private setAll(obj: any, val: any) {
+    /* Duplicated with @Maksim Kalmykov
+        for(index in obj) if(obj.hasOwnProperty(index))
+            obj[index] = val;
+    */
+    Object.keys(obj).forEach(function(index) {
+        obj[index] = val
+    });
+  }
 
+  private setNull(obj: any) {
+    this.setAll(obj, null);
+  }
 
 }
 
