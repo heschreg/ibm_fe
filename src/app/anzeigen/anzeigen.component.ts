@@ -160,8 +160,6 @@ export class AnzeigenComponent implements OnInit {
 
       this.sa_array = [];
 
-      let tmpSa!: Stellenangebot;
-
       let index:number = 0;
       data.forEach((d) => {
 
@@ -177,13 +175,13 @@ export class AnzeigenComponent implements OnInit {
         index++;
 
         // Nur Zwichenspeichern
-        tmpSa= d;
+        this.tmpSa= d;
 
         // In JSON gibt es keinen Typ "Date", kommt als String und muss in ein Datum konvertiert werden
-        tmpSa.beginnDate = new Date(tmpSa.beginn);
-        tmpSa.endeDate = new Date(tmpSa.ende);
+        this.tmpSa.beginnDate = new Date(this.tmpSa.beginn);
+        this.tmpSa.endeDate = new Date(this.tmpSa.ende);
 
-        this.sa_array.push(tmpSa);
+        this.sa_array.push(this.tmpSa);
 
       });
 
@@ -279,7 +277,7 @@ export class AnzeigenComponent implements OnInit {
   */
   public stangShowDetails(stang: Stellenangebot) {
 
-    console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
+    // console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
 
     this.aktSaBezeichnung = stang.bezeichnung;
 
@@ -311,21 +309,18 @@ export class AnzeigenComponent implements OnInit {
 
     // 1 = INSERT
     // 2 = UPDATE
-
-    let tmpSa!: Stellenangebot;
-
     if (this.mode == 1) {
-      tmpSa.id = -1;
+      this.tmpSa.id = -1;
 
       //////////////////////////////////////////////
       // Am Ende wird ein neuer Datensatz inserted
       //////////////////////////////////////////////
 
-      tmpSa.beginn = "";
-      tmpSa.beginnDate = new Date();
-      tmpSa.bezeichnung = this.bez;
-      tmpSa.ende = "";
-      tmpSa.endeDate = new Date();
+      this.tmpSa.beginn = "";
+      this.tmpSa.beginnDate = new Date();
+      this.tmpSa.bezeichnung = this.bez;
+      this.tmpSa.ende = "";
+      this.tmpSa.endeDate = new Date();
 
       // this.sd_kanal_array = {id, bezeichnung, selected}
       let tmpArray:Kanal[] = [];
@@ -334,18 +329,18 @@ export class AnzeigenComponent implements OnInit {
           delete k.selected;
           tmpArray.push(k);
         }
-        tmpSa.kanaele = tmpArray;
+        this.tmpSa.kanaele = tmpArray;
 
-        tmpSa.notizen = this.notizen;
+        this.tmpSa.notizen = this.notizen;
 
-        tmpSa.sd_kanal = this.kanal_selected;
-        if (tmpSa.sd_kanal !== undefined) {
-          delete tmpSa.sd_kanal.selected;
+        this.tmpSa.sd_kanal = this.kanal_selected;
+        if (this.tmpSa.sd_kanal !== undefined) {
+          delete this.tmpSa.sd_kanal.selected;
         }
 
-        tmpSa.sd_status = this.status_selected;
-        if (tmpSa.sd_status !== undefined) {
-          delete tmpSa.sd_status.checked;
+        this.tmpSa.sd_status = this.status_selected;
+        if (this.tmpSa.sd_status !== undefined) {
+          delete this.tmpSa.sd_status.checked;
         }
 
         // Datumshandling fehlt an dieser Stelle noch
@@ -353,12 +348,12 @@ export class AnzeigenComponent implements OnInit {
         // ....
 
         // anschließend können die Hilfsproperties gelöscht werden:
-        delete tmpSa.beginnDate;
-        delete tmpSa.endeDate;
+        delete this.tmpSa.beginnDate;
+        delete this.tmpSa.endeDate;
       })
 
       // jetzt mit einem Post inserten
-      this.insertStellenangebot(tmpSa);
+      this.insertStellenangebot(this.tmpSa);
 
     } else {
 
@@ -491,8 +486,6 @@ export class AnzeigenComponent implements OnInit {
   // Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
   public updateStellenangebotPdf() {
 
-    let tmpSa!: Stellenangebot;
-
     if (this.selFilePdfStellenangebot !== undefined) {
       // Updaten der Property Stellenangebot.pdf_stellenangebot und updaten der pdf-Datei in die Entität "ibm.pdf_stellenangebot"
       this.serviceStellenangebote.postPdfStellenangebot(this.id, this.selFilePdfStellenangebot!).subscribe(data => {
@@ -501,11 +494,11 @@ export class AnzeigenComponent implements OnInit {
        // console.log(data);
 
 
-        tmpSa = <Stellenangebot> data;
+       this.tmpSa = <Stellenangebot> data;
         this.selFilePdfStellenangebot = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
 
         // Jetzt muss man die Property this.pdf_attached noch richtig setzen
-        this.pdf_attached = tmpSa.pdf_stellenangebot;
+        this.pdf_attached = this.tmpSa.pdf_stellenangebot;
 
       });
     } else {
