@@ -37,11 +37,6 @@ export class BewerberComponent implements OnInit {
       data.forEach((d) => {
 
         this.tmpSa= d;
-
-        // In JSON gibt es keinen Typ "Date", kommt als String und muss in ein Datum konvertiert werden
-        this.tmpSa.beginnDate = new Date(this.tmpSa.beginn);
-        this.tmpSa.endeDate = new Date(this.tmpSa.ende);
-
         this.sa_array.push(this.tmpSa);
 
       });

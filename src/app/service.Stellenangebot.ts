@@ -64,7 +64,7 @@ export class ServiceStellenangebote {
     const body = JSON.stringify(sa);
     const headers = {'content-type': 'application/json'};
 
-    return this.httpClient.post<Stellenangebot>(urlPdf, body, {'headers':headers});
+    return this.httpClient.put<Stellenangebot>(urlPdf, body, {'headers':headers});
   }
 
   /*************************************

@@ -37,9 +37,9 @@ export class AnzeigenComponent implements OnInit {
   tmpSa!: Stellenangebot;
 
   id: number = 0;
-  bez: string = "";
-  begDate!: Date;
-  endDate!: Date;
+  bezeichnung: string = "";
+  beginn: string = "";
+  ende: string = "";
   notizen: string = "";
 
   status_selected!: Status;
@@ -162,7 +162,6 @@ export class AnzeigenComponent implements OnInit {
 
       let index:number = 0;
       data.forEach((d) => {
-        console.log(d.pdf_stellenangebot.id);
         if (this.firstRun == false) {
           if (d.bezeichnung === this.aktSaBezeichnung) {
             // Jetzt weiss man, der wievielte Eintrag in der Listbox mit allen Stellenangeboten initial zu setzen ist
@@ -176,10 +175,6 @@ export class AnzeigenComponent implements OnInit {
 
         // Nur Zwichenspeichern
         this.tmpSa= d;
-
-        // In JSON gibt es keinen Typ "Date", kommt als String und muss in ein Datum konvertiert werden
-        this.tmpSa.beginnDate = new Date(this.tmpSa.beginn);
-        this.tmpSa.endeDate = new Date(this.tmpSa.ende);
 
         this.sa_array.push(this.tmpSa);
 
@@ -282,9 +277,9 @@ export class AnzeigenComponent implements OnInit {
     this.aktSaBezeichnung = stang.bezeichnung;
 
     this.id = stang.id;
-    this.bez = stang.bezeichnung;
-    this.begDate = stang.beginnDate!;
-    this.endDate = stang.endeDate!;
+    this.bezeichnung = stang.bezeichnung;
+    this.beginn = stang.beginn;
+    this.ende = stang.ende;
     this.notizen = stang.notizen;
     this.status_selected = stang.sd_status;
     this.kanal_selected  = stang.sd_kanal;
@@ -316,11 +311,9 @@ export class AnzeigenComponent implements OnInit {
       // Am Ende wird ein neuer Datensatz inserted
       //////////////////////////////////////////////
 
-      this.tmpSa.beginn = "";
-      this.tmpSa.beginnDate = new Date();
-      this.tmpSa.bezeichnung = this.bez;
-      this.tmpSa.ende = "";
-      this.tmpSa.endeDate = new Date();
+      this.tmpSa.beginn = this.beginn;
+      this.tmpSa.bezeichnung = this.bezeichnung;
+      this.tmpSa.ende = this.ende;
 
       // this.sd_kanal_array = {id, bezeichnung, selected}
       let tmpArray:Kanal[] = [];
@@ -347,9 +340,6 @@ export class AnzeigenComponent implements OnInit {
 
         // ....
 
-        // anschließend können die Hilfsproperties gelöscht werden:
-        delete this.tmpSa.beginnDate;
-        delete this.tmpSa.endeDate;
       })
 
       // jetzt mit einem Post inserten
@@ -357,20 +347,20 @@ export class AnzeigenComponent implements OnInit {
 
     } else {
 
-      //////////////////////////////////////////////
-      // Am Ende wird ein neuer Datensatz geupdated
-      //////////////////////////////////////////////
+      ////////////////////////////////////////
+      // Am Ende wird der Datensatz geupdated
+      ////////////////////////////////////////
 
       // Ermitteln, in welchem Stellenangebot man sich aktuell befindet
       this.sa_array.forEach( (sa) => {
 
         if (sa.id === this.id) {
           // Jetzt sind wir in dem Array-Eintrag der upzudaten ist
-          // sa.beginn = "";
-          // sa.beginnDate = new Date();
-          sa.bezeichnung = this.bez;
-          // sa.ende = "";
-          // sa.endeDate = new Date();
+
+          sa.bezeichnung = this.bezeichnung;
+
+          sa.beginn= this.beginn;
+          sa.ende = this.ende;
 
           // this.sd_kanal_array = {id, bezeichnung, selected}
           let tmpArray:Kanal[] = [];
@@ -406,10 +396,6 @@ export class AnzeigenComponent implements OnInit {
           // Datumshandling fehlt an dieser Stelle noch
 
           // ....
-
-          // anschließend können die Hilfsproperties gelöscht werden:
-          delete sa.beginnDate;
-          delete sa.endeDate;
 
           // jetzt mit einem Post updaten
           this.updateStellenangebot(sa);

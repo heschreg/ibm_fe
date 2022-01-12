@@ -26,9 +26,9 @@ export class TestFormComponent implements OnInit {
   sa_array: Stellenangebot[] = [];
   tmpSa!: Stellenangebot;
   id: number = 0;
-  bez: string = "";
-  begDate!: Date;
-  endDate!: Date;
+  bezeichnung: string = "";
+  beginn: string = "";
+  ende: string = "";
   notizen: string = "";
 
   status_selected!: Status;
@@ -110,10 +110,6 @@ export class TestFormComponent implements OnInit {
 
         this.tmpSa= d;
 
-        // In JSON gibt es keinen Typ "Date", kommt als String und muss in ein Datum konvertiert werden
-        this.tmpSa.beginnDate = new Date(this.tmpSa.beginn);
-        this.tmpSa.endeDate = new Date(this.tmpSa.ende);
-
         this.sa_array.push(this.tmpSa);
 
       });
@@ -182,9 +178,9 @@ export class TestFormComponent implements OnInit {
   public stangShowDetails(stang: Stellenangebot) {
     console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
     this.id = stang.id;
-    this.bez = stang.bezeichnung;
-    this.begDate = stang.beginnDate!;
-    this.endDate = stang.endeDate!;
+    this.bezeichnung = stang.bezeichnung;
+    this.beginn = stang.beginn;
+    this.ende = stang.ende;
     this.notizen = stang.notizen;
 
     // Setzen des richtigen Status im aktuell gewählten Stellenangebot
@@ -215,9 +211,8 @@ export class TestFormComponent implements OnInit {
 
       if (sa.id === this.id) {
         // Jetzt sind wir in dem Array-Eintrag der upzudaten ist
-        // sa.beginn = "";
-        // sa.beginnDate = new Date();
-        sa.bezeichnung = this.bez;
+        sa.beginn = this.beginn;
+        sa.bezeichnung = this.bezeichnung;
         // sa.ende = "";
         // sa.endeDate = new Date();
 
@@ -250,12 +245,7 @@ export class TestFormComponent implements OnInit {
         delete sa.sd_status.checked;
 
         // Datumshandling fehlt an dieser Stelle noch
-
         // ....
-
-        // anschließend können die Hilfsproperties gelöscht werden:
-        delete sa.beginnDate;
-        delete sa.endeDate;
 
         // jetzt mit einem Post updaten
         this.updateStellenangebot(sa);

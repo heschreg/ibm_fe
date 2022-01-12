@@ -32,8 +32,6 @@ export interface Stellenangebot {
   sd_status: Status;
   sd_kanal: Kanal;
   kanaele: Kanal[];
-  beginnDate?: Date;
-  endeDate?: Date;
   pdf_stellenangebot: Pdf_Attached;
 }
 
