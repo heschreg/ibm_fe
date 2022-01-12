@@ -15,12 +15,15 @@ import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.compo
 })
 export class AnzeigenComponent implements OnInit {
 
+  @ViewChild('fileInput')  fileInput: any;
+  selFilePdfStellenangebot: File | null = null;;
+
   public radioSaToSelect = 0;
   public firstRun : boolean = true;
   public aktSaBezeichnung = "";
 
-  @ViewChild('fileInput')  fileInput: any;
-  selFilePdfStellenangebot: File | null = null;;
+  public mod_button_text = "Speichern";
+
 
   public readonly: boolean = true;
   public updateMode: boolean = false;
@@ -252,11 +255,20 @@ export class AnzeigenComponent implements OnInit {
     // 2 = UPDATE
     this.mode = mode;
 
+
     if (mode > 0)  {
+      if (mode == 1)  {
+        this.mod_button_text = "Angebot anlegen";
+      } else {
+        this.mod_button_text = "Änderungen abspeichern";
+
+      }
+
       this.setReadOnly(false);
     } else {
       this.setReadOnly(true);
     }
+
   }
 
   public setReadOnly(ro:boolean) {
@@ -307,6 +319,7 @@ export class AnzeigenComponent implements OnInit {
     // 1 = INSERT
     // 2 = UPDATE
     if (this.mode == 1) {
+
       this.tmpSa.id = -1;
 
       //////////////////////////////////////////////
@@ -337,11 +350,6 @@ export class AnzeigenComponent implements OnInit {
         if (this.tmpSa.sd_status !== undefined) {
           delete this.tmpSa.sd_status.checked;
         }
-
-        // Datumshandling fehlt an dieser Stelle noch
-
-        // ....
-
       })
 
       // jetzt mit einem Post inserten
@@ -413,6 +421,8 @@ export class AnzeigenComponent implements OnInit {
 
   public resetStellenangebot() {
 
+    this.mod_button_text = "Speichern";
+
     // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
     // Setzen von this.radioSaToSelect
     this.getStellenangebote();
@@ -423,7 +433,7 @@ export class AnzeigenComponent implements OnInit {
     // Updaten einer Entität "stellenangebot"
     this.serviceStellenangebote.insStellenangebot(sa).subscribe(data => {
 
-      // Merken der Bezeichnung des neuen Datensatze
+      // Merken der Bezeichnung des neuen Datensatzes, damit in der Listbox entsprechend positioniert werden kann
       this.aktSaBezeichnung = sa.bezeichnung;
 
       // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
@@ -526,7 +536,7 @@ export class AnzeigenComponent implements OnInit {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Tricky Dateiauswahldialog, da der schöne Material-Button den hässlichen ORiginal Button nur überlagert
+  // Tricky Dateiauswahldialog, da der schöne Material-Button den hässlichen Original Button nur überlagert
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   onClickFileInputButton(): void {
     this.fileInput.nativeElement.click();

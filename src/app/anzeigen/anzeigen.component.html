@@ -192,14 +192,14 @@
           Stellenanzeige bearbeiten
         </button>
         <span class="abstand_left"><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
-          neue Stellenanzeige anlegen
+          neue Stellenanzeige vorbereiten
         </button></span>
       </div>
 
-      <div class="col-md-2">
-        <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
+      <div class="col-md-4">
+        <button mat-raised-button [disabled]="updateMode" color="primary" (click)="saveStellenangebot()">{{mod_button_text}}</button>
         <span class="abstand_left">
-          <button mat-raised-button [disabled]="updateMode" color="primary" (click)="saveStellenangebot()">Speichern</button>
+          <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
         </span>
       </div>
 
