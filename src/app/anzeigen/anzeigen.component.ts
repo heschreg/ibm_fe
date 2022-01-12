@@ -125,7 +125,9 @@ export class AnzeigenComponent implements OnInit {
     this.serviceStellenangebote.getListeKanaele().subscribe(data => {
       data.forEach((d) => {
         // Dieses Array wird zur Erfassung aller geschalteten Kanäle verwendet
-        this.sd_kanal_array.push(d);
+        if (d.bezeichnung !== "unklar") {
+          this.sd_kanal_array.push(d);
+        }
       });
     });
   }
