@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { Kanal, Kanal_Success, Status, Stellenangebot, Pdf_Attached } from '../model.Stellenangebot';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.component'
+import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 
 
 @Component({
@@ -15,15 +16,18 @@ import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.compo
 })
 export class AnzeigenComponent implements OnInit {
 
+
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfStellenangebot: File | null = null;;
+
+  public dateBeginnDefault!:  any;
+  public dateEndeDefault!: any;
 
   public radioSaToSelect = 0;
   public firstRun : boolean = true;
   public aktSaBezeichnung = "";
 
   public mod_button_text = "Speichern";
-
 
   public readonly: boolean = true;
   public updateMode: boolean = false;
@@ -53,7 +57,8 @@ export class AnzeigenComponent implements OnInit {
   // 2 = UPDATE
   mode!: number;
 
-  form: FormGroup = new FormGroup({});
+
+  // form: FormGroup = new FormGroup({});
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
               private fb: FormBuilder,
@@ -67,11 +72,41 @@ export class AnzeigenComponent implements OnInit {
         dialogMsg: ['', [Validators.minLength(5), Validators.maxLength(1000)]],
         dialogType: ['alert'],
         okBtnColor: [''],
-        okBtnLabel: [''],
+        okBtnLabel: [''],evt
         cancelBtnColor: [''],
         cancelBtnLabel: ['']
         */
+  }
 
+  public beginnEvent(event: any){
+    var datum = new Date(event.value);
+    var dd = String(datum.getDate()).padStart(2, '0');
+    var mm = String(datum.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = datum.getFullYear();
+    const datumS = dd + '.' + mm + '.' + yyyy;
+
+    this.beginn = datumS;
+  }
+
+  public endeEvent(event: any){
+    var datum = new Date(event.value);
+    var dd = String(datum.getDate()).padStart(2, '0');
+    var mm = String(datum.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = datum.getFullYear();
+    const datumS = dd + '.' + mm + '.' + yyyy;
+
+    this.ende = datumS;
+  }
+
+  // wird beim Aufklappen dDAtePicker-Komponente für jedes Datum (cell) aufgerufen
+  // Zurückgegeben wird im Positivfall die  css-Anweisung "highlight-dates"
+  dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+
+    // Only highligh dates inside the month view.
+    const day = cellDate.getDay();
+
+    // Highlight the 1st and 20th day of each month.
+    return (day === 0 || day === 6) ? 'highlight-dates' : '' ;
   }
 
   public ngOnInit(): void {
@@ -298,6 +333,25 @@ export class AnzeigenComponent implements OnInit {
     this.status_selected = stang.sd_status;
     this.kanal_selected  = stang.sd_kanal;
     this.pdf_attached = stang.pdf_stellenangebot;
+
+    this.dateEndeDefault = null;
+
+    // 5 = Juni, die Monate werden ab 0 gezählt
+    if (this.beginn && this.beginn.length == 10) {
+      var day   = parseInt(this.beginn.substring(0,2));
+      var month = parseInt(this.beginn.substring(3,5));
+      var year  = parseInt(this.beginn.substring(6,10));
+      // this.dateBeginnDefault = new FormControl(new Date(year,month-1,day));
+      this.dateBeginnDefault = new Date(year,month-1,day);
+    }
+
+    if (this.ende && this.ende.length == 10) {
+      var day   = parseInt(this.ende.substring(0,2));
+      var month = parseInt(this.ende.substring(3,5));
+      var year  = parseInt(this.ende.substring(6,10));
+      this.dateEndeDefault = new Date(year,month-1,day);
+      // this.dateEndeDefault = new FormControl(new Date(year,month-1,day));
+    }
 
     // Rücksetzen, dass man eine neue Pdf-Datei zum COhladen ausgewählt hat
     this.selFilePdfStellenangebot = null;
