@@ -64,18 +64,6 @@
             </mat-form-field>
           </div>
 
-          <div class="col-md-1">
-            <mat-form-field class="full-width">
-              <input matInput="" [disabled]=readonly [(ngModel)]="beginn" placeholder="Online seit"/>
-            </mat-form-field>
-          </div>
-
-          <div class="col-md-1">
-            <mat-form-field class="full-width">
-              <input matInput="" [disabled]=readonly  [(ngModel)]="ende" placeholder="Offline seit"/>
-            </mat-form-field>
-          </div>
-          <p></p>
           <div class="col-md-3">
             <mat-form-field>
                 <mat-label>geschaltet am</mat-label>
@@ -97,9 +85,10 @@
         </div>
 
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-4">
             <mat-form-field class="full-width">
-              <input [disabled]=readonly matInput="" [(ngModel)]="notizen" placeholder="Notizen"/>
+              <mat-label>Textarea</mat-label>
+              <textarea [disabled]=readonly matInput="" [(ngModel)]="notizen" placeholder="Notizen"></textarea>
             </mat-form-field>
           </div>
         </div>

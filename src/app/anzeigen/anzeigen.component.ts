@@ -293,7 +293,7 @@ export class AnzeigenComponent implements OnInit {
 
     if (mode > 0)  {
       if (mode == 1)  {
-        this.mod_button_text = "Angebot anlegen";
+        this.mod_button_text = "Angebot neu anlegen";
       } else {
         this.mod_button_text = "Änderungen abspeichern";
 
