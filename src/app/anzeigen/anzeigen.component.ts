@@ -16,7 +16,6 @@ import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 })
 export class AnzeigenComponent implements OnInit {
 
-
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfStellenangebot: File | null = null;;
 
@@ -42,6 +41,9 @@ export class AnzeigenComponent implements OnInit {
 
   sa_array: Stellenangebot[] = [];
   tmpSa!: Stellenangebot;
+
+  // in der Dropdown-LB selektiertes Stellenangebot
+  selStangObject!: Stellenangebot;
 
   id: number = 0;
   bezeichnung: string = "";
@@ -142,6 +144,11 @@ export class AnzeigenComponent implements OnInit {
     this.readonly = true;
     this.updateMode = true;
 
+  }
+
+  public stangChangeAction(selStangObject: Stellenangebot) {
+    // daring steht ein WErt vom Typ "Stellenangebot"
+    console.log(selStangObject);
   }
 
   private getStatus() {
@@ -322,6 +329,9 @@ export class AnzeigenComponent implements OnInit {
   public stangShowDetails(stang: Stellenangebot) {
 
     // console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
+
+    // damit in der Dropdownlistbox ein Element vorausgewählt ist
+    this. selStangObject = stang;
 
     this.aktSaBezeichnung = stang.bezeichnung;
 
