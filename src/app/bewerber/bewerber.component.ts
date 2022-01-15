@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Stellenangebot } from '../model.Stellenangebot';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
+import { ServiceBewerber } from '../service.Bewerber';
+import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
 
 @Component({
   selector: 'app-bewerber',
@@ -10,22 +12,50 @@ import { ServiceStellenangebote } from '../service.Stellenangebot';
 })
 export class BewerberComponent implements OnInit {
 
-  public readonly: boolean = true;
   sa_array: Stellenangebot[] = [];
   tmpSa!: Stellenangebot;
 
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
 
+  bew_array: Bewerber[] = [];
+  tmpBew!: Bewerber;
 
-  constructor(private serviceStellenangebote: ServiceStellenangebote, private router: Router) { }
+  // in der Dropdown-LB selektierter Bewerber
+  selBewerber!: Bewerber;
+
+  public readonly: boolean = true;
+
+  // Felder im Dialog zur Pflege der Bewerber
+  id: number = 0;
+  nachname: string = "";
+  vorname: string = "";
+  anrede: string = "";
+  titel: string = "";
+  plz: number = 0;
+  ort: string = "";
+  strasse: string = "";
+  hausnummer: number = 0;
+  email: string = "";
+  notizen: string = "";
+  kommunikation: Kommunikation[] = [];
+  anlagen: Anlagen[] = [];
+
+
+  // 1 = INSERT
+  // 2 = UPDATE
+  mode!: number;
+
+
+  constructor(private serviceStellenangebote: ServiceStellenangebote,
+              private serviceBewerber: ServiceBewerber,
+              private router: Router) { }
 
   ngOnInit(): void {
 
     this.getStellenangebote();
 
   }
-
 
   private getStellenangebote(){
 
@@ -58,25 +88,54 @@ export class BewerberComponent implements OnInit {
 
       this.sync_kanal_success(this.sd_kanal_success_array, this.sa_array[0].sd_kanal);
       */
+
+      // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
+      this.getListBewerber(this.selStangObject.id);
+
     });
   }
 
-  public stangChangeAction(selStangObject: Stellenangebot) {
-    // daring steht ein WErt vom Typ "Stellenangebot"
-    console.log(selStangObject);
-  }
+
+    // Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "id_stellenangebot"
+    public getListBewerber(id_Stellenangebot: number ){
+
+      this.serviceBewerber.getListeBewerber().subscribe(data => {
+        this.bew_array = [];
+
+        data.forEach((d) => {
+
+          this.tmpBew= d;
+          this.bew_array.push(this.tmpBew);
+        });
+
+      });
+
+      // Falls mindestens ein Datensatz gefunden wird, Aufbau einer Listbox mit allen Bewerbern,
+      if (this.bew_array.length > 0) {
+        // Details des ersten gefunden Bewerbers anzeigen
+        this.bewerberShowDetails(this.bew_array[0]);
+      }  else {
+        this.tmpBew = undefined!;
+        this.bewerberShowDetails(this.tmpBew);
+      }
+
+      // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
+      return null;
+    }
 
 
-  public showBewerber(sa: Stellenangebot) {
-    console.log(sa);
-  }
+  public bewerberShowDetails(bewerber: Bewerber) {
 
-  public stangShowDetails(stang: Stellenangebot) {
+    if (bewerber === undefined) {
+      // alle Eingabefelder sind empty
+    } else {
+
+    }
 
     // console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
 
     // damit in der Dropdownlistbox ein Element vorausgewählt ist
-    this. selStangObject = stang;
+    this.selBewerber = bewerber;
 
     /*
     this.aktSaBezeichnung = stang.bezeichnung;
@@ -125,5 +184,16 @@ export class BewerberComponent implements OnInit {
 
   }
 
+
+
+  public stangChangeAction(selStangObject: Stellenangebot) {
+    // daring steht ein WErt vom Typ "Stellenangebot"
+    console.log(selStangObject);
+  }
+
+
+  public showBewerber(sa: Stellenangebot) {
+    console.log(sa);
+  }
 
 }

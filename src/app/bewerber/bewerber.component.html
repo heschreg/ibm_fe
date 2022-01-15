@@ -23,7 +23,7 @@
             <mat-option
               *ngFor="let stang of sa_array"
               [value]="stang"
-              (click)="stangShowDetails(stang)"
+              (click)="getListBewerber(stang.id)"
               >
               {{ stang.bezeichnung }}
             </mat-option>
@@ -32,27 +32,6 @@
         </mat-form-field>
       </div>
     </div>
-
-    <!--
-    <div class="row">
-      <div class="col-md-2" >
-        <div class="minigap">Stellenanzeigen:</div>
-      </div>
-
-      <div class="col-md-3" >
-        <mat-selection-list #stang [multiple]="false"  [disabled]="!readonly">
-          <mat-list-option
-                (click)="showBewerber(stang)"
-                *ngFor="let stang of sa_array, let i=index"
-                [value]="stang.bezeichnung"
-                [selected]="stang && i == 0"
-          >
-            {{stang.bezeichnung}}
-          </mat-list-option>
-        </mat-selection-list>
-      </div>
-    </div>
-    -->
 
   </mat-card-content>
 </mat-card>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
-import { AnzeigenComponent } from './anzeigen/anzeigen.component';
+import { AnzeigenComponent } from './stellenangebote/anzeigen.component';
 import { BewerberComponent } from './bewerber/bewerber.component';
 import { TestFormReactiveComponent } from './test-form-reactive/test-form-reactive.component';
 import { TestFormComponent } from './test-form/test-form.component';

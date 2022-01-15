@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
-import { Kanal, Kanal_Success, Status, Stellenangebot } from '../model.Stellenangebot';
+import { Kanal, Status, Stellenangebot } from '../model.Stellenangebot';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -21,7 +21,7 @@ export class TestFormComponent implements OnInit {
   public sd_kanal_array: Kanal[] = [];
 
   // für radio-buttons, um den einen erfolgreichen Kanals auszuwählen (single-select)
-  public sd_kanal_success_array: Kanal_Success[] = [];
+  public sd_kanal_success_array: Kanal[] = [];
 
   sa_array: Stellenangebot[] = [];
   tmpSa!: Stellenangebot;
@@ -163,7 +163,7 @@ export class TestFormComponent implements OnInit {
     });
   };
 
-  public sync_kanal_success(kanaele_alle: Kanal_Success[], kanal_success: Kanal_Success) {
+  public sync_kanal_success(kanaele_alle: Kanal[], kanal_success: Kanal) {
     kanaele_alle.forEach( (k_all) => {
       k_all.selected = false;
       if (k_all.bezeichnung === kanal_success.bezeichnung) {

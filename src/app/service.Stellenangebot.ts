@@ -11,9 +11,8 @@ export class ServiceStellenangebote {
   private baseURL = "http://localhost:8080/ibm";
 
   constructor(private httpClient: HttpClient) { }
-
   /*
-   *
+   * Holen von Stammmdaten - Tabelle SD_Status
    */
   getListeStatus(): Observable<Status[]>{
     return <Observable<Status[]>>this.httpClient.get<Status[]>(`${this.baseURL}/sd_status`);

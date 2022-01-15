@@ -12,7 +12,7 @@ import { AppComponent } from './app.component';
 import { TestFormComponent } from './test-form/test-form.component';
 import { TestFormReactiveComponent } from './test-form-reactive/test-form-reactive.component';
 import { HeaderComponent } from './header/header.component';
-import { AnzeigenComponent } from './anzeigen/anzeigen.component';
+import { AnzeigenComponent } from './stellenangebote/anzeigen.component';
 import { BewerberComponent } from './bewerber/bewerber.component';
 import { MyAlertDialogComponent } from './my-alert-dialog/my-alert-dialog.component';
 import { StammdatenComponent } from './stammdaten/stammdaten.component';

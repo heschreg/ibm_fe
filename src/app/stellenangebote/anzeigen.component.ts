@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
-import { Kanal, Kanal_Success, Status, Stellenangebot, Pdf_Attached } from '../model.Stellenangebot';
+import { Kanal, Status, Stellenangebot, Pdf_Attached } from '../model.Stellenangebot';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.component'
@@ -37,7 +37,7 @@ export class AnzeigenComponent implements OnInit {
   public sd_kanal_array: Kanal[] = [];
 
   // für radio-buttons, um den einen erfolgreichen Kanals auszuwählen (single-select)
-  public sd_kanal_success_array: Kanal_Success[] = [];
+  public sd_kanal_success_array: Kanal[] = [];
 
   sa_array: Stellenangebot[] = [];
   tmpSa!: Stellenangebot;
@@ -45,14 +45,15 @@ export class AnzeigenComponent implements OnInit {
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
 
+  // Felder im Dialog zur Pflege der Stellenangebote
   id: number = 0;
   bezeichnung: string = "";
   beginn: string = "";
   ende: string = "";
   notizen: string = "";
-
-  status_selected!: Status;
+  status_selected!: Status; // ???
   kanal_selected!: Kanal;
+  kanaele: Kanal[] = [];
   pdf_attached!: Pdf_Attached;
 
   // 1 = INSERT
@@ -275,7 +276,7 @@ export class AnzeigenComponent implements OnInit {
     });
   };
 
-  public sync_kanal_success(kanaele_alle: Kanal_Success[], kanal_success: Kanal_Success) {
+  public sync_kanal_success(kanaele_alle: Kanal[], kanal_success: Kanal) {
     kanaele_alle.forEach( (k_all) => {
       k_all.selected = false;
       if (k_all.bezeichnung === kanal_success.bezeichnung) {
@@ -335,6 +336,7 @@ export class AnzeigenComponent implements OnInit {
 
     this.aktSaBezeichnung = stang.bezeichnung;
 
+    // Felder im Dialog zur Pflege der Stellenangebote
     this.id = stang.id;
     this.bezeichnung = stang.bezeichnung;
     this.beginn = stang.beginn;
@@ -552,9 +554,8 @@ export class AnzeigenComponent implements OnInit {
       // Updaten der Property Stellenangebot.pdf_stellenangebot und updaten der pdf-Datei in die Entität "ibm.pdf_stellenangebot"
       this.serviceStellenangebote.postPdfStellenangebot(this.id, this.selFilePdfStellenangebot!).subscribe(data => {
 
-       // In data müsste jetzt vom Typ <Stellenangebot> sein xxx
+       // In data müsste jetzt vom Typ <Stellenangebot> sein
        // console.log(data);
-
 
        this.tmpSa = <Stellenangebot> data;
         this.selFilePdfStellenangebot = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
@@ -563,16 +564,17 @@ export class AnzeigenComponent implements OnInit {
         this.pdf_attached = this.tmpSa.pdf_stellenangebot;
 
       });
+
     } else {
-      // Hinweis ausgeben, dass keine Datei selektiert wurde
+      // Hinweis ausgeben, dass noch keine PDF-Datei zugeordnet ist
       this.showHinweisMissingPdfDatei();
     }
   }
 
-  // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
-  // Die dokwzuloadende und anzuzeigende PDF-Datei steht in "pdf_attached.name"
   public fetchPdf() {
 
+    // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
+    // Die dokwzuloadende und anzuzeigende PDF-Datei steht in "pdf_attached.name"
     if (this.pdf_attached.name !== null) {
 
       // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
@@ -599,12 +601,16 @@ export class AnzeigenComponent implements OnInit {
     })
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Tricky Dateiauswahldialog, da der schöne Material-Button den hässlichen Original Button nur überlagert
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Tricky FILE-Auswahldialog, da der schönere Material-Button den hässlichen Original FIE-Button nur überlagert
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   onClickFileInputButton(): void {
     this.fileInput.nativeElement.click();
   }
+
+  /////////////////
+  // Hilfsmethoden
+  /////////////////
 
   private setAll(obj: any, val: any) {
     /* Duplicated with @Maksim Kalmykov
