@@ -10,11 +10,12 @@ import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-anzeigen',
-  templateUrl: './anzeigen.component.html',
-  styleUrls: ['./anzeigen.component.scss'],
+  templateUrl: './stellenangebote.component.html',
+  styleUrls: ['./stellenangebote.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class AnzeigenComponent implements OnInit {
+export class StellenangeboteComponent implements OnInit {
+
 
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfStellenangebot: File | null = null;;
