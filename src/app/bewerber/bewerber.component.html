@@ -7,8 +7,6 @@
 
   <mat-card-content>
 
-    <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote" -->
-
     <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
     <div class="row">
       <div class="col-md-3">
@@ -30,6 +28,17 @@
 
           </mat-select>
         </mat-form-field>
+      </div>
+    </div>
+
+    <hr/>
+
+    <!-- unten stehen die Details der gewählten Stellenangebotes -->
+    <div class="row">
+      <div class="col-md-8" >
+        <span class="minigap">Stellenangebot: "{{selStangObject.bezeichnung}}";
+                             {{selBewerberObject !== undefined ? ("Bewerber: " + selBewerberObject.nachname) : ' noch kein Bewerber angelegt'}}</span>
+        <p></p>
       </div>
     </div>
 

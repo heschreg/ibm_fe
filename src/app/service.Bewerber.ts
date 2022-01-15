@@ -13,14 +13,12 @@ export class ServiceBewerber {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getListeBewerber (): Observable<Bewerber[]> {
+  public getListeBewerber (id_stellenangebot: number): Observable<Bewerber[]> {
 
     // var bewerber!: Bewerber[];
 
-    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber`);
+    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${id_stellenangebot}`);
   }
-
-
 
   /*
    * Holen von Stammmdaten - Tabelle SD_Kommunikation

@@ -20,6 +20,8 @@ export class BewerberComponent implements OnInit {
 
   bew_array: Bewerber[] = [];
   tmpBew!: Bewerber;
+  // in der Dropdown-LB selektierter Bewerber
+  selBewerberObject!: Bewerber;
 
   // in der Dropdown-LB selektierter Bewerber
   selBewerber!: Bewerber;
@@ -76,19 +78,6 @@ export class BewerberComponent implements OnInit {
 
       this.selStangObject = this.sa_array[0];
 
-      /*
-      // Vorbelegen, dass der erste Eintrag ind er Listbox selektiert ist
-      this.stangShowDetails(this.sa_array[0]);
-
-      // Setzen des Status, der zum selektierten Stellenangebot gehört
-      this.sync_status(this.sd_status_array, this.sa_array[0].sd_status);
-
-      // Setzen des Kanäle, die beim aktuell selektierten Stellenangebot geschlaten wurden
-      this.sync_kanaele(this.sd_kanal_array, this.sa_array[0].kanaele);
-
-      this.sync_kanal_success(this.sd_kanal_success_array, this.sa_array[0].sd_kanal);
-      */
-
       // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
       this.getListBewerber(this.selStangObject.id);
 
@@ -99,7 +88,7 @@ export class BewerberComponent implements OnInit {
     // Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "id_stellenangebot"
     public getListBewerber(id_Stellenangebot: number ){
 
-      this.serviceBewerber.getListeBewerber().subscribe(data => {
+      this.serviceBewerber.getListeBewerber(id_Stellenangebot).subscribe(data => {
         this.bew_array = [];
 
         data.forEach((d) => {
@@ -108,16 +97,29 @@ export class BewerberComponent implements OnInit {
           this.bew_array.push(this.tmpBew);
         });
 
-      });
-
       // Falls mindestens ein Datensatz gefunden wird, Aufbau einer Listbox mit allen Bewerbern,
       if (this.bew_array.length > 0) {
         // Details des ersten gefunden Bewerbers anzeigen
         this.bewerberShowDetails(this.bew_array[0]);
+
+        /*
+        // Holen der bisherigen Kokmmunikation bzgl. des selektierten Bewerbers
+        this.get_kkommunikation(this.bew_array[0].id);
+
+        // Holen der hinterlegten Anlagen bzgl. des selektierten Bewerbers
+        this.get_anlagen(this.bew_array[0].id);
+        */
+
       }  else {
         this.tmpBew = undefined!;
+        this.selBewerberObject  = undefined!;
         this.bewerberShowDetails(this.tmpBew);
       }
+
+
+      });
+
+
 
       // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
       return null;

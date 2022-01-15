@@ -18,6 +18,7 @@ export interface Anlagen {
 
 export interface Bewerber {
   id: number;
+  id_stellenangebot: number,
   nachname: string;
   vorname: string;
   anrede: string;

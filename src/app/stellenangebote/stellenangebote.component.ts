@@ -9,7 +9,7 @@ import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 
 
 @Component({
-  selector: 'app-anzeigen',
+  selector: 'app-stellenangebote',
   templateUrl: './stellenangebote.component.html',
   styleUrls: ['./stellenangebote.component.scss'],
   encapsulation: ViewEncapsulation.None
@@ -126,6 +126,7 @@ export class StellenangeboteComponent implements OnInit {
 
     // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
     // Setzen von this.radioSaToSelect
+    console.log("Aufruf getStellenangebote");
     this.getStellenangebote();
 
   }

@@ -2,56 +2,56 @@
 <mat-card>
   <mat-card-content>
 
-  <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
-  <div class="row">
-    <div class="col-md-3">
-      <div class="minigap">Verwaltung der Stellenanzeigen</div>
-      <mat-form-field>
-        <mat-select
-          placeholder="Wähle Stellenangebot"
-          name="selStellenangebot"
-          (selectionChange)="stangChangeAction(selStangObject)"
-          [(ngModel)]="selStangObject" >
+    <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
+    <div class="row">
+      <div class="col-md-3">
+        <div class="minigap">Verwaltung der Stellenanzeigen</div>
+        <mat-form-field>
+          <mat-select
+            placeholder="Wähle Stellenangebot"
+            name="selStellenangebot"
+            (selectionChange)="stangChangeAction(selStangObject)"
+            [(ngModel)]="selStangObject" >
 
 
-          <mat-option
-            *ngFor="let stang of sa_array"
-            [value]="stang"
+            <mat-option
+              *ngFor="let stang of sa_array"
+              [value]="stang"
+              (click)="stangShowDetails(stang)"
+              >
+              {{ stang.bezeichnung }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!--
+      <div class="col-md-3">
+        <div class="minigap">Verwaltung der Stellenanzeigen</div>
+
+        <mat-list role="list">
+          <mat-list-item
+            role="listitem"
+            *ngFor="let stang of sa_array, let i=index"
             (click)="stangShowDetails(stang)"
-            >
-            {{ stang.bezeichnung }}
-          </mat-option>
-
-        </mat-select>
-      </mat-form-field>
+          >
+          <mat-radio-button color="primary" [checked]="i == radioSaToSelect" [value]="i">
+              {{stang.bezeichnung}}
+            </mat-radio-button>
+          </mat-list-item>
+        </mat-list>
+      </div>
+      -->
     </div>
-
-    <!--
-    <div class="col-md-3">
-      <div class="minigap">Verwaltung der Stellenanzeigen</div>
-
-      <mat-list role="list">
-        <mat-list-item
-          role="listitem"
-          *ngFor="let stang of sa_array, let i=index"
-          (click)="stangShowDetails(stang)"
-        >
-        <mat-radio-button color="primary" [checked]="i == radioSaToSelect" [value]="i">
-            {{stang.bezeichnung}}
-          </mat-radio-button>
-        </mat-list-item>
-      </mat-list>
-    </div>
-    -->
-  </div>
 
     <hr/>
 
-    <!-- unten stehen die Details der gewählten Stellenanzeige -->
+    <!-- unten stehen die Details der gewählten Stellenangebotes -->
 
     <div class="row">
       <div class="col-md-5" >
-        <span class="minigap">Details zur Stellenanzeige "{{selStangObject.bezeichnung}}"</span>
+        <span class="minigap">Details zur Stellenanzeige "{{selStangObject?.bezeichnung}}"</span>
         <p></p>
         <!--
         <h2 matDialogTitle>Details zur ausgewählten Stellenanzeige</h2>
@@ -97,105 +97,110 @@
             </mat-form-field>
           </div>
         </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <section class="status-section">
-          <label id="radio-group-label-status" class="group-label">Aktueller Status</label>
-            <mat-radio-group class="status-radio-group" [(ngModel)]="status_selected" [disabled]=readonly>
-              <mat-radio-button
-                class="status-radio-button"
-                *ngFor="let status of sd_status_array, let i=index"
-                [value]= "status"
-                [checked] = "status.checked">
-                {{status.bezeichnung}}
-               </mat-radio-button>
-           </mat-radio-group>
-        </section>
       </div>
-    </div>
 
-    <div class="trenner"></div>
-
-    <!-- Diese beiden Parameter dürfen keinesfalls in <mat_checkbox> eingebaut werden,
-        sonst wird beim Clicken einer beliebigen Checkbox immer nur der erste
-        verändert ==> Katastrophe, bis man das findet:
-        id="kanal.id"  name="kanal.bezeichnung"
-    -->
-    <div class="row">
-      <h2 matDialogTitle>geschaltete Kanäle</h2>
-      <div class="col-md-1" *ngFor="let kanal of sd_kanal_array">
-        <div >
-          <mat-checkbox
-            [disabled]=readonly
-            [(ngModel)]="kanal.selected"
-            (ngModelChange)="show_kanal(kanal)">
-            {{kanal.bezeichnung}}
-          </mat-checkbox>
+      <div class="col-md-9" >
+        <div class="row">
+          <div class="col-md-12">
+            <section class="status-section">
+              <label id="radio-group-label-status" class="group-label">Aktueller Status</label>
+                <mat-radio-group class="status-radio-group" [(ngModel)]="status_selected" [disabled]=readonly>
+                  <mat-radio-button
+                    class="status-radio-button"
+                    *ngFor="let status of sd_status_array, let i=index"
+                    [value]= "status"
+                    [checked] = "status.checked">
+                    {{status.bezeichnung}}
+                  </mat-radio-button>
+              </mat-radio-group>
+            </section>
+          </div>
         </div>
+
+        <div class="trenner"></div>
+
+        <!-- Diese beiden Parameter dürfen keinesfalls in <mat_checkbox> eingebaut werden,
+            sonst wird beim Clicken einer beliebigen Checkbox immer nur der erste
+            verändert ==> Katastrophe, bis man das findet:
+            id="kanal.id"  name="kanal.bezeichnung"
+        -->
+        <div class="row">
+          <h2 matDialogTitle>geschaltete Kanäle</h2>
+          <div class="col-md-1" *ngFor="let kanal of sd_kanal_array">
+            <div >
+              <mat-checkbox
+                [disabled]=readonly
+                [(ngModel)]="kanal.selected"
+                (ngModelChange)="show_kanal(kanal)">
+                {{kanal.bezeichnung}}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="trenner"></div>
+
+        <!-- Auswählen des einen Kanals, der (ggf) erfolgreich war -->
+        <div class="row">
+          <div class="col-md-12">
+            <section class="kanal-section">
+              <label id="radio-group-label-status" class="group-label">erfolgreicher Kanal</label>
+              <mat-radio-group class="kanal-radio-group" [disabled]=readonly [(ngModel)]="kanal_selected">
+                <mat-radio-button (click)="test()"
+                  class="kanal-radio-button"
+                  *ngFor="let kanal of sd_kanal_success_array"
+                  [value]="kanal">
+                  {{kanal.bezeichnung}}
+                </mat-radio-button>
+              </mat-radio-group>
+            </section>
+          </div>
+        </div>
+
+        <div class="trenner"></div>
+
+        <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
+        <div class="row">
+          <div class="col-md-7">
+            <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
+            <span class="abstand_right" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
+            <span class="abstand_right" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
+
+            <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="fetchPdf()">PDF anzeigen</button>
+
+
+            <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
+            <span class="abstand_left">
+            <input
+              type="file"
+              style="display: none"
+              #fileInput
+              accept="application/pdf"
+              (change)="onFileChangeInput($event)">
+
+            <button
+              mat-raised-button
+              color="warn"
+              class="file-select-button"
+              (click)="onClickFileInputButton()"
+              [disabled]="!updateMode">
+
+              <mat-icon>attach_file</mat-icon>
+                Auswahl Stellenanzeige im pdf-Format
+            </button>
+
+            <button mat-raised-button color="primary" [hidden]="selFilePdfStellenangebot?.name == null" (click)="updateStellenangebotPdf()">
+              {{selFilePdfStellenangebot?.name}} hochladen
+            </button>
+            </span>
+          </div>
+
+        </div>
+        <div class="trenner"></div>
       </div>
     </div>
 
-    <div class="trenner"></div>
-
-    <!-- Auswählen des einen Kanals, der (ggf) erfolgreich war -->
-    <div class="row">
-      <div class="col-md-12">
-        <section class="kanal-section">
-          <label id="radio-group-label-status" class="group-label">erfolgreicher Kanal</label>
-          <mat-radio-group class="kanal-radio-group" [disabled]=readonly [(ngModel)]="kanal_selected">
-            <mat-radio-button (click)="test()"
-              class="kanal-radio-button"
-              *ngFor="let kanal of sd_kanal_success_array"
-              [value]="kanal">
-              {{kanal.bezeichnung}}
-            </mat-radio-button>
-          </mat-radio-group>
-        </section>
-      </div>
-    </div>
-
-    <div class="trenner"></div>
-
-    <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
-    <div class="row">
-      <div class="col-md-7">
-        <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
-        <span class="abstand_right" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
-        <span class="abstand_right" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
-
-        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="fetchPdf()">PDF anzeigen</button>
-
-
-        <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
-        <span class="abstand_left">
-        <input
-          type="file"
-          style="display: none"
-          #fileInput
-          accept="application/pdf"
-          (change)="onFileChangeInput($event)">
-
-        <button
-          mat-raised-button
-          color="warn"
-          class="file-select-button"
-          (click)="onClickFileInputButton()"
-          [disabled]="!updateMode">
-
-          <mat-icon>attach_file</mat-icon>
-            Auswahl Stellenanzeige im pdf-Format
-        </button>
-
-        <button mat-raised-button color="primary" [hidden]="selFilePdfStellenangebot?.name == null" (click)="updateStellenangebotPdf()">
-          {{selFilePdfStellenangebot?.name}} hochladen
-        </button>
-        </span>
-      </div>
-
-    </div>
-    <div class="trenner"></div>
     <hr/>
 
     <div class="row">
@@ -217,7 +222,6 @@
       </div>
 
     </div>
-  </div>
 
   </mat-card-content>
 </mat-card>

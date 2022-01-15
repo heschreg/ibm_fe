@@ -70,7 +70,7 @@ export class ServiceStellenangebote {
    * Handling der zugeordneten pdf-Datei
    *************************************/
 
-  // wird wie folgt aus anzeigen.component.ts augerufen:
+  // wird wie folgt aus stellenangebote.component.ts augerufen:
   // this.serviceStellenangebote.uploadPdfStellenangebot(this.selFilePdfStellenangebot).subscribe(data => {
 
   public postPdfStellenangebot(id: number, pdfFile: File)  {
