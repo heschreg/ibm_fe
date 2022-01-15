@@ -49,29 +49,35 @@
       <form [formGroup]="bewerberFormGroup" (submit)="submit()">
 
         <div class="row">
-          <div class="col-md-8">
+
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Nachname </mat-label>
               <input matInput formControlName="nachname">
               <mat-error *ngIf="checkError('nachname', 'required')">Nachname darf nicht leer sein</mat-error>
             </mat-form-field>
+          </div>
 
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Vorname </mat-label>
               <input matInput formControlName="vorname">
               <mat-error *ngIf="checkError('vorname', 'required')">Vorname darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
+
         </div>
 
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Anrede </mat-label>
               <input matInput formControlName="anrede">
               <mat-error *ngIf="checkError('anrede', 'required')">Vorname darf nicht leer sein</mat-error>
             </mat-form-field>
+          </div>
 
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Titel </mat-label>
               <input matInput formControlName="titel">
@@ -80,14 +86,16 @@
         </div>
 
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Plz </mat-label>
               <input matInput formControlName="plz">
               <mat-error *ngIf="checkError('plz', 'required')">Plz darf nicht leer sein</mat-error>
             </mat-form-field>
+          </div>
 
-            <mat-form-field class="form-field" appearance="outline">
+           <div class="col-md-2">
+             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Ort </mat-label>
               <input matInput formControlName="ort">
               <mat-error *ngIf="checkError('ort', 'required')">Ort darf nicht leer sein</mat-error>
@@ -96,13 +104,15 @@
         </div>
 
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Strasse </mat-label>
               <input matInput formControlName="strasse">
               <mat-error *ngIf="checkError('strasse', 'required')">Strasse darf nicht leer sein</mat-error>
             </mat-form-field>
+          </div>
 
+          <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Hausnumer </mat-label>
               <input matInput formControlName="hausnummer">
@@ -113,7 +123,7 @@
 
         <div class="row">
           <div class="col-md-8">
-            <mat-form-field class="form-field" appearance="outline">
+            <mat-form-field class="form-field" appearance="outline" class="breit">
               <mat-label> eMail </mat-label>
               <input matInput formControlName="email">
               <mat-error *ngIf="checkError('email', 'required')">eMail darf nicht leer sein</mat-error>
@@ -125,114 +135,29 @@
 
         <div class="row">
           <div class="col-md-8">
-            <mat-form-field class="form-field" appearance="outline">
+            <mat-form-field class="form-field" appearance="outline" class="breit">
               <mat-label> Notizen </mat-label>
-              <input matInput formControlName="notizen">
+              <textarea matInput formControlName="notizen"></textarea>
             </mat-form-field>
            </div>
         </div>
 
-            <div class="row">
-              <div class="col-md-8">
-                <mat-form-field class="form-field" appearance="outline">
-                  <mat-label> Skills </mat-label>
-                  <input matInput formControlName="skills">
-                </mat-form-field>
-              </div>
-            </div>
+        <div class="row">
+          <div class="col-md-8">
+            <mat-form-field class="form-field" appearance="outline" class="breit">
+              <mat-label> Skills </mat-label>
+              <textarea matInput formControlName="skills"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
 
-            <div class="row">
-              <div class="col-md-8">
-                <button mat-raised-button color="primary" type="submit">Speichern</button>
-              </div>
-           </div>
-          </form>
+        <div class="row">
+          <div class="col-md-8">
+            <button mat-raised-button color="primary" type="submit">Speichern</button>
+          </div>
+        </div>
+      </form>
     </div>
-
-    <!--
-    <div class="row">
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="anrede" placeholder="Anrede"/>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="titel" placeholder="Titel"/>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input  [required]=true [disabled]=readonly matInput="" [(ngModel)]="nachname" placeholder="Nachname"/>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="vorname" placeholder="Vorname"/>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="plz" placeholder="Plz"/>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="ort" placeholder="Ort"/>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="strasse" placeholder="Strasse"/>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-2">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="hausnummer" placeholder="Hausnummer"/>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4">
-        <mat-form-field class="full-width">
-          <input [disabled]=readonly matInput="" [(ngModel)]="email" placeholder="eMail"/>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4">
-        <mat-form-field class="full-width">
-          <mat-label>Skills</mat-label>
-            <textarea [disabled]=readonly matInput="" [(ngModel)]="notizen" placeholder="Skills"></textarea>
-        </mat-form-field>
-      </div>
-    </div>
-
-
-    <div class="row">
-      <div class="col-md-4">
-        <mat-form-field class="full-width">
-          <mat-label>Notizen</mat-label>
-            <textarea [disabled]=readonly matInput="" [(ngModel)]="notizen" placeholder="Notizen"></textarea>
-        </mat-form-field>
-      </div>
-    </div>
-    -->
 
   </mat-card-content>
 </mat-card>

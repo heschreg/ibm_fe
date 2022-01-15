@@ -60,6 +60,7 @@ export class BewerberComponent implements OnInit {
 
   ngOnInit(): void {
 
+    // Der Dialog wird sofort ohne Werte erstmal dargestellt
     this.addFormGroup();
 
     this.getStellenangebote();
@@ -85,14 +86,6 @@ export class BewerberComponent implements OnInit {
 
   public checkError = (controlName: string, errorName: string) => {
     return this.bewerberFormGroup.controls[controlName].hasError(errorName);
-  }
-
-  submit() {
-    if (!this.bewerberFormGroup.valid) {
-      return;
-    }
-    console.log(this.bewerberFormGroup.value);
-    console.log(this.bewerberFormGroup.value.email);
   }
 
   private getStellenangebote(){
@@ -224,16 +217,22 @@ export class BewerberComponent implements OnInit {
 
   }
 
-
-
   public stangChangeAction(selStangObject: Stellenangebot) {
-    // daring steht ein WErt vom Typ "Stellenangebot"
+    // darin steht ein Objekt vom Typ "Stellenangebot"
+
     console.log(selStangObject);
+
+    this.bewerberFormGroup.reset();
+
   }
 
-
-  public showBewerber(sa: Stellenangebot) {
-    console.log(sa);
+  submit() {
+    if (!this.bewerberFormGroup.valid) {
+      return;
+    }
+    console.log(this.bewerberFormGroup.value);
+    console.log(this.bewerberFormGroup.value.email);
   }
+
 
 }
