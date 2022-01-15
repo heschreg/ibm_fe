@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -43,6 +43,7 @@ display: {
 }
 };
 
+@Injectable()
 export class PickDateAdapter extends NativeDateAdapter {
 
   override format(date: Date, displayFormat: Object): string {

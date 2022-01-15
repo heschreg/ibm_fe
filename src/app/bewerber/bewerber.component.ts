@@ -4,6 +4,7 @@ import { Stellenangebot } from '../model.Stellenangebot';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { ServiceBewerber } from '../service.Bewerber';
 import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-bewerber',
@@ -13,10 +14,10 @@ import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
 export class BewerberComponent implements OnInit {
 
   sa_array: Stellenangebot[] = [];
-  tmpSa!: Stellenangebot;
 
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
+  tmpSa!: Stellenangebot;
 
   bew_array: Bewerber[] = [];
   tmpBew!: Bewerber;
@@ -28,6 +29,9 @@ export class BewerberComponent implements OnInit {
 
   public readonly: boolean = true;
 
+  public bewerberFormGroup!: FormGroup;
+  emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
+
   // Felder im Dialog zur Pflege der Bewerber
   id: number = 0;
   nachname: string = "";
@@ -38,7 +42,7 @@ export class BewerberComponent implements OnInit {
   ort: string = "";
   strasse: string = "";
   hausnummer: number = 0;
-  email: string = "";
+  // email: string = "";
   notizen: string = "";
   kommunikation: Kommunikation[] = [];
   anlagen: Anlagen[] = [];
@@ -51,12 +55,44 @@ export class BewerberComponent implements OnInit {
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
               private serviceBewerber: ServiceBewerber,
+              private formBuilder: FormBuilder,
               private router: Router) { }
 
   ngOnInit(): void {
 
+    this.addFormGroup();
+
     this.getStellenangebote();
 
+  }
+
+  private addFormGroup() {
+    this.bewerberFormGroup = new FormGroup({
+      nachname : new FormControl('', [Validators.required]),
+      vorname : new FormControl('', [Validators.required]),
+      anrede : new FormControl('', ),
+      titel : new FormControl('', ),
+      plz : new FormControl('', [Validators.required]),
+      ort : new FormControl('', [Validators.required]),
+      strasse : new FormControl('', [Validators.required]),
+      hausnummer : new FormControl('', [Validators.required]),
+      email : new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(40)]),
+      notizen : new FormControl('', ),
+      skills : new FormControl('', ),
+    });
+
+  }
+
+  public checkError = (controlName: string, errorName: string) => {
+    return this.bewerberFormGroup.controls[controlName].hasError(errorName);
+  }
+
+  submit() {
+    if (!this.bewerberFormGroup.valid) {
+      return;
+    }
+    console.log(this.bewerberFormGroup.value);
+    console.log(this.bewerberFormGroup.value.email);
   }
 
   private getStellenangebote(){
@@ -114,6 +150,8 @@ export class BewerberComponent implements OnInit {
         this.tmpBew = undefined!;
         this.selBewerberObject  = undefined!;
         this.bewerberShowDetails(this.tmpBew);
+
+        this.readonly = false;
       }
 
 
