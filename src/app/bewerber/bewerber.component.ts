@@ -6,6 +6,11 @@ import { ServiceBewerber } from '../service.Bewerber';
 import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 
+const FIRST: number = 1;
+const INSERTED: number = 2;
+const UPDATED: number = 3;
+const CLICKED: number = 4;
+
 @Component({
   selector: 'app-bewerber',
   templateUrl: './bewerber.component.html',
@@ -13,16 +18,18 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 })
 export class BewerberComponent implements OnInit {
 
-  sa_array: Stellenangebot[] = [];
 
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
   tmpSa!: Stellenangebot;
+  sa_array: Stellenangebot[] = [];
 
-  bew_array: Bewerber[] = [];
-  tmpBew!: Bewerber;
   // in der Dropdown-LB selektierter Bewerber
   selBewerberObject!: Bewerber;
+  tmpBew!: Bewerber;
+  bew_array: Bewerber[] = [];
+
+  aktBewNachname: string = "";
 
   // in der Dropdown-LB selektierter Bewerber
   selBewerber!: Bewerber;
@@ -31,22 +38,6 @@ export class BewerberComponent implements OnInit {
 
   public bewerberFormGroup!: FormGroup;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
-
-  // Felder im Dialog zur Pflege der Bewerber
-  id: number = 0;
-  nachname: string = "";
-  vorname: string = "";
-  anrede: string = "";
-  titel: string = "";
-  plz: number = 0;
-  ort: string = "";
-  strasse: string = "";
-  hausnummer: number = 0;
-  // email: string = "";
-  notizen: string = "";
-  kommunikation: Kommunikation[] = [];
-  anlagen: Anlagen[] = [];
-
 
   // 1 = INSERT
   // 2 = UPDATE
@@ -63,7 +54,9 @@ export class BewerberComponent implements OnInit {
     // Der Dialog wird sofort ohne Werte erstmal dargestellt
     this.addFormGroup();
 
-    this.getStellenangebote();
+    // Beim ersten Aufruf müssen einmalig alle Stellenangebote und zum ersten Stellenangebot die
+    // zugehörigen Bewerber über REST gewholt werden und ie beiden Listboxen aufgebaut werden
+    this.initStellenangeboteBewerber();
 
   }
 
@@ -88,7 +81,8 @@ export class BewerberComponent implements OnInit {
     return this.bewerberFormGroup.controls[controlName].hasError(errorName);
   }
 
-  private getStellenangebote(){
+  // Holen der Stellenangbote und der Bewerber
+  private initStellenangeboteBewerber(){
 
     this.serviceStellenangebote.getListeStellenangebote().subscribe(data => {
 
@@ -108,75 +102,67 @@ export class BewerberComponent implements OnInit {
       this.selStangObject = this.sa_array[0];
 
       // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
-      this.getListBewerber(this.selStangObject.id);
+      /// evtl. die Id des initialen Bewerbers einstellen
+      this.getListBewerber(this.selStangObject.id, FIRST);
 
     });
   }
 
 
-    // Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "id_stellenangebot"
-    public getListBewerber(id_Stellenangebot: number ){
-
-      this.serviceBewerber.getListeBewerber(id_Stellenangebot).subscribe(data => {
-        this.bew_array = [];
-
-        data.forEach((d) => {
-
-          this.tmpBew= d;
-          this.bew_array.push(this.tmpBew);
-        });
-
-      // Falls mindestens ein Datensatz gefunden wird, Aufbau einer Listbox mit allen Bewerbern,
-      if (this.bew_array.length > 0) {
-        // Details des ersten gefunden Bewerbers anzeigen
-        this.bewerberShowDetails(this.bew_array[0]);
-
-        /*
-        // Holen der bisherigen Kokmmunikation bzgl. des selektierten Bewerbers
-        this.get_kkommunikation(this.bew_array[0].id);
-
-        // Holen der hinterlegten Anlagen bzgl. des selektierten Bewerbers
-        this.get_anlagen(this.bew_array[0].id);
-        */
-
-      }  else {
-        this.tmpBew = undefined!;
-        this.selBewerberObject  = undefined!;
-        this.bewerberShowDetails(this.tmpBew);
-
-        this.readonly = false;
-      }
-
-
-      });
-
-
-
-      // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
-      return null;
-    }
-
+  public get nachname() {  return this.bewerberFormGroup.get('nachname') };
+  public get vorname()  {  return this.bewerberFormGroup.get('vorname') };
+  public get anrede()   {  return this.bewerberFormGroup.get('anrede') };
+  public get titel()    {  return this.bewerberFormGroup.get('titel') };
+  public get plz()      {  return this.bewerberFormGroup.get('plz') };
+  public get ort()      {  return this.bewerberFormGroup.get('ort') };
+  public get strasse()  {  return this.bewerberFormGroup.get('strasse') };
+  public get hausnummer() {return this.bewerberFormGroup.get('hausnummer') };
+  public get email()    {  return this.bewerberFormGroup.get('email') };
+  public get notizen()  {  return this.bewerberFormGroup.get('notizen') };
+  public get skills()   {  return this.bewerberFormGroup.get('skills') };
 
   public bewerberShowDetails(bewerber: Bewerber) {
 
-    if (bewerber === undefined) {
-      // alle Eingabefelder sind empty
+    if (bewerber.id == 0) {
+
+      // alle Eingabefelder leer machen, um eine neuen Datensatz in die geleerten Felder eingeben zukönnen
+      this.bewerberFormGroup.reset();
+
     } else {
+
+      // Anzeige des selektierten und in der Tabelle "bewerber" gefundenen Datensatzes
+      this.nachname!.setValue(bewerber.nachname);
+      this.vorname!.setValue(bewerber.vorname);
+      this.anrede!.setValue(bewerber.anrede);
+      this.titel!.setValue(bewerber.titel);
+      this.plz!.setValue(bewerber.plz);
+      this.ort!.setValue(bewerber.ort);
+      this.strasse!.setValue(bewerber.strasse);
+      this.hausnummer!.setValue(bewerber.hausnummer);
+      this.email!.setValue(bewerber.email);
+      this.notizen!.setValue(bewerber.notizen);
+      this.skills!.setValue(bewerber.skills);
+
+      let tmpArrayKommunikation:Kommunikation[] = [];
+      this.bewerberFormGroup.value.kommunikation = tmpArrayKommunikation;
+
+      // Dia Anlagen stehen ohne eingerichtete Relation in der Entität "ibm.anlagen"
+      // Diese werden gesondert behandelt, da teilweise große Datenmengen bei mehren Pdf's zu transferieren wären
+      let tmpArrayAnlagen:Anlagen[] = [];
+      this.bewerberFormGroup.value.anlagen = tmpArrayAnlagen;
+
+      // damit in der Dropdownlistbox ein Element vorausgewählt ist
+      this.selBewerber = bewerber;
 
     }
 
     // console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
 
-    // damit in der Dropdownlistbox ein Element vorausgewählt ist
-    this.selBewerber = bewerber;
 
     /*
     this.aktSaBezeichnung = stang.bezeichnung;
 
     this.id = stang.id;
-    this.bezeichnung = stang.bezeichnung;
-    this.beginn = stang.beginn;
-    this.ende = stang.ende;
     this.notizen = stang.notizen;
     this.status_selected = stang.sd_status;
     this.kanal_selected  = stang.sd_kanal;
@@ -193,46 +179,165 @@ export class BewerberComponent implements OnInit {
       this.dateBeginnDefault = new Date(year,month-1,day);
     }
 
-    if (this.ende && this.ende.length == 10) {
-      var day   = parseInt(this.ende.substring(0,2));
-      var month = parseInt(this.ende.substring(3,5));
-      var year  = parseInt(this.ende.substring(6,10));
-      this.dateEndeDefault = new Date(year,month-1,day);
-      // this.dateEndeDefault = new FormControl(new Date(year,month-1,day));
-    }
-
     // Rücksetzen, dass man eine neue Pdf-Datei zum COhladen ausgewählt hat
     this.selFilePdfStellenangebot = null;
-
-    // Setzen des aktuellen Status in der Radiolist, die alle Status beinhaltet
-    this.sync_status(this.sd_status_array, stang.sd_status);
-
-    // Setzen der geschalteten Kanäle im Array mit allen möglichen Kanälen
-    this.sync_kanaele(this.sd_kanal_array, stang.kanaele);
-
-    // Setzen des erfolgreichen Kanals in der Radiolist, die alle Kanäle beinhaltet
-    this.sync_kanal_success(this.sd_kanal_success_array, stang.sd_kanal);
-
     */
 
   }
 
-  public stangChangeAction(selStangObject: Stellenangebot) {
-    // darin steht ein Objekt vom Typ "Stellenangebot"
+  public saveFormGroupBewerber() {
 
+    // 1 = INSERT
+    // 2 = UPDATE
+    if (this.mode == 1) {
+
+      this.tmpBew.id = -1;
+      this.tmpBew.idstellenangebot = this.selStangObject.id;
+      this.tmpBew.nachname = this.bewerberFormGroup.value.nachname;
+      this.tmpBew.vorname  = this.bewerberFormGroup.value.vorname;
+      this.tmpBew.anrede   = this.bewerberFormGroup.value.anrede;
+      this.tmpBew.titel    = this.bewerberFormGroup.value.titel;
+      this.tmpBew.plz      = this.bewerberFormGroup.value.plz;
+      this.tmpBew.ort      = this.bewerberFormGroup.value.ort;
+      this.tmpBew.strasse  = this.bewerberFormGroup.value.strasse;
+      this.tmpBew.hausnummer  = this.bewerberFormGroup.value.hausnummer;
+      this.tmpBew.email    = this.bewerberFormGroup.value.email;
+      this.tmpBew.notizen  = this.bewerberFormGroup.value.notizen;
+      this.tmpBew.skills   = this.bewerberFormGroup.value.skills;
+
+      let tmpArrayKommunikation:Kommunikation[] = [];
+      this.tmpBew.kommunikation = tmpArrayKommunikation;
+
+      let tmpArrayAnlagen:Anlagen[] = [];
+      this.tmpBew.anlagen = tmpArrayAnlagen;
+
+      // jetzt mit einem Post in der Entität "ibm.bewerber" inserten
+      this.insertBewerber(this.tmpBew);
+
+    } else {
+
+      // Bewerberdaten mit einem PUT updaten
+    }
+
+  }
+
+
+  private insertBewerber(bewerber: Bewerber) {
+
+    // Updaten einer Entität "stellenangebot"
+    this.serviceBewerber.insBewerber(bewerber).subscribe(data => {
+
+      // Merken des Nachnamens des neuen Datensatzes, damit in der Listbox mit allen Bewerbern entsprechend positioniert werden kann
+      this.aktBewNachname = bewerber.nachname;
+
+      // Holen aller Bewerber zum selektierten Stellenangebot über REST aus der Entität "bewerber" nach this.bew_array[]
+      this.getListBewerber(this.selStangObject.id, INSERTED);
+
+    });
+  }
+
+  /*
+   * Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "idstellenangebot"
+   *
+   * Anhand welcher ID gefetched wird, häng auch vom Modus ab, der gerade gültig ist:
+   * FIRST steht für den ersten Bewerber in der Liste (beim erstmaligen Initialisieren des Dialogs)
+   * INSERTED steht für den ersten Bewerber in der Liste
+   * UPDATET  steht für den ersten Bewerber in der Liste
+   * CLICKED, ween der Benutzer einen Bewerber in der UI angeclicked hat
+   */
+  public getListBewerber(idstellenangebot: number, mode: number ){
+
+    this.serviceBewerber.getListeBewerber(idstellenangebot).subscribe(data => {
+      this.bew_array = [];
+
+      data.forEach((d) => {
+        this.tmpBew= d;
+        this.bew_array.push(this.tmpBew);
+      });
+
+      // Falls mindestens ein Datensatz gefunden wird, Aufbau einer Listbox mit allen Bewerbern,
+      if (this.bew_array.length > 0) {
+
+        // Details des ersten gefunden Bewerbers anzeigen
+        // (bzw. des eben neu angelegt Bewerbers bzw. des ben veränderten Bewerbers)
+        this.bewerberShowDetails(this.bew_array[0]);
+
+        /*
+        // Holen der bisherigen Kokmmunikation bzgl. des selektierten Bewerbers
+        this.get_kommunikation(this.bew_array[0].id);
+
+        // Holen der hinterlegten Anlagen bzgl. des selektierten Bewerbers
+        this.get_anlagen(this.bew_array[0].id);
+        */
+
+      }  else {
+
+        this.tmpBew  = {id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
+                        plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikation: [],
+                        anlagen: [], skills: ''};
+
+        this.readonly = false;
+
+        this.mode = 1; // INSERT-Modus
+        this.readonly = false;
+
+        // leeres Formual anbieten, um den ersten eingegeangene Bewerber anlegen zu können
+        this.bewerberFormGroup.reset();
+
+        //  checken, ob das wirklich raus kann
+        // this.bewerberShowDetails(this.tmpBew);
+      }
+    });
+
+    // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
+    return null;
+  }
+
+  /* ========================= Methoden, die aus der UI getriggered werden =================== */
+
+  ///////////////////////////////////////////////////
+  // Listbox mit allen Stellenangeboten
+  ///////////////////////////////////////////////////
+
+
+  public stangChangeAction(selStangObject: Stellenangebot) {
+
+    // darin steht ein Objekt vom Typ "Stellenangebot"
     console.log(selStangObject);
 
-    this.bewerberFormGroup.reset();
+    // Aufbau der Listbox mit allen zugehörigen Bewerbern
+    this.getListBewerber(selStangObject.id, FIRST);
 
   }
 
-  submit() {
+  public buildListBewerber(id_stellenangebot: number) {
+
+    this.getListBewerber(id_stellenangebot, FIRST);
+  }
+
+  ///////////////////////////////////////////////////
+  // Listbox mit den Bewerbern eines Stellenangebots
+  ///////////////////////////////////////////////////
+  public bewerberChangeAction(bewerber: Bewerber) {
+
+    // momentan keine weitere Funktionalität hinterlegt
+    console.log(bewerber);
+
+  }
+
+  public showSelectedBewerber (idbewerber: number) {
+  }
+
+
+  public submit() {
     if (!this.bewerberFormGroup.valid) {
       return;
-    }
-    console.log(this.bewerberFormGroup.value);
-    console.log(this.bewerberFormGroup.value.email);
-  }
+    } else {
+      this.saveFormGroupBewerber();
 
+    }
+    // console.log(this.bewerberFormGroup.value);
+    // console.log(this.bewerberFormGroup.value.email);
+  }
 
 }

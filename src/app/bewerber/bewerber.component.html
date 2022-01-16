@@ -7,7 +7,7 @@
 
   <mat-card-content>
 
-    <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
+    <!-- oben stehen die Listbox mit allen Stellenanzeigen und daneben den Bewerbern zum selektierten Stellenangebot -->
     <div class="row">
       <div class="col-md-3">
         <mat-form-field>
@@ -20,7 +20,7 @@
             <mat-option
               *ngFor="let stang of sa_array"
               [value]="stang"
-              (click)="getListBewerber(stang.id)"
+              (click)="buildListBewerber(stang.id)"
               >
               {{ stang.bezeichnung }}
             </mat-option>
@@ -28,6 +28,27 @@
           </mat-select>
         </mat-form-field>
       </div>
+
+      <div class="col-md-3">
+        <mat-form-field>
+          <mat-select
+            placeholder="Wähle Bewerber"
+            name="selBewerber"
+            (selectionChange)="bewerberChangeAction(selBewerberObject)"
+            [(ngModel)]="selBewerberObject">
+
+            <mat-option
+              *ngFor="let bew of bew_array"
+              [value]="bew"
+              (click)="showSelectedBewerber(bew.id)"
+              >
+              {{ bew.nachname }}, {{ bew.vorname }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
     </div>
 
     <hr/>

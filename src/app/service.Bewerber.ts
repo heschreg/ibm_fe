@@ -13,11 +13,11 @@ export class ServiceBewerber {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getListeBewerber (id_stellenangebot: number): Observable<Bewerber[]> {
+  public getListeBewerber (idstellenangebot: number): Observable<Bewerber[]> {
 
     // var bewerber!: Bewerber[];
 
-    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${id_stellenangebot}`);
+    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${idstellenangebot}`);
   }
 
   /*
@@ -25,6 +25,19 @@ export class ServiceBewerber {
    */
   getListeKommunikation(): Observable<Status[]>{
     return <Observable<Status[]>>this.httpClient.get<Status[]>(`${this.baseURL}/sd_kommunikation`);
+  }
+
+  /*
+   * INSERTen eines neuen Bewerbers
+   */
+  public insBewerber(bew:Bewerber): Observable<Bewerber>{
+
+    const urlPdf  = `${this.baseURL}/bewerber`;
+    const body    = JSON.stringify(bew);
+    const headers = {'content-type': 'application/json'};
+
+    return this.httpClient.post<Bewerber>(urlPdf, body, {'headers':headers});
+
   }
 
 }

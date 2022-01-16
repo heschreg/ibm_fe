@@ -399,13 +399,13 @@ export class StellenangeboteComponent implements OnInit {
       this.tmpSa.ende = this.ende;
 
       // this.sd_kanal_array = {id, bezeichnung, selected}
-      let tmpArray:Kanal[] = [];
+      let tmpArrayKanal:Kanal[] = [];
       this.sd_kanal_array.forEach ( (k) => {
         if (k.selected === true) {
           delete k.selected;
-          tmpArray.push(k);
+          tmpArrayKanal.push(k);
         }
-        this.tmpSa.kanaele = tmpArray;
+        this.tmpSa.kanaele = tmpArrayKanal;
 
         this.tmpSa.notizen = this.notizen;
 

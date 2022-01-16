@@ -18,7 +18,7 @@ export interface Anlagen {
 
 export interface Bewerber {
   id: number;
-  id_stellenangebot: number,
+  idstellenangebot: number,
   nachname: string;
   vorname: string;
   anrede: string;
@@ -31,4 +31,5 @@ export interface Bewerber {
   notizen: string;
   kommunikation: Kommunikation[];
   anlagen: Anlagen[];
+  skills: string;
 }
