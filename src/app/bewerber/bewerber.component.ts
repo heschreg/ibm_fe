@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Stellenangebot } from '../model.Stellenangebot';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { ServiceBewerber } from '../service.Bewerber';
-import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
+import { Bewerber, Anlagen, Kommunikation, SD_Kommunikation } from '.././model.Bewerber';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 // Konstanten zur Unterstützung der richtigen AKtivierung der Listboxen
@@ -24,6 +24,16 @@ const READ:   number = 3;
 })
 export class BewerberComponent implements OnInit {
 
+  public sd_kommunikation_array: SD_Kommunikation[] = [];
+
+  list1 = [
+    { text: 'item 1', selected: false },
+    { text: 'item 2', selected: false },
+    { text: 'item 3', selected: false },
+    { text: 'item 4', selected: false },
+    { text: 'item 5', selected: false }
+  ];
+  list2 = [];
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
   tmpSa!: Stellenangebot;
@@ -53,8 +63,11 @@ export class BewerberComponent implements OnInit {
     // Der Dialog wird sofort ohne Werte erstmal aufgebaut
     this.addFormGroup();
 
-    // Beim ersten Aufruf müssen einmalig alle Stellenangebote und zum ersten Stellenangebot die
-    // zugehörigen Bewerber über REST geholt und entsprechend die beiden Listboxen aufgebaut werden
+    // Beim ersten Aufruf müssen einmalig
+    // - die Stammdaten
+    // - alle Stellenangebote und
+    // - zum ersten Stellenangebot die zugehörigen Bewerber über REST geholt
+    //   und entsprechend die beiden Listboxen aufgebaut werden
     this.initStellenangeboteBewerber();
 
   }
@@ -83,30 +96,45 @@ export class BewerberComponent implements OnInit {
   // Holen der Stellenangbote und der Bewerber
   private initStellenangeboteBewerber(){
 
-    this.serviceStellenangebote.getListeStellenangebote().subscribe(data => {
+    // Holen aller Status aus der Tabelle "sd_kommunikation"
+    this.serviceBewerber.getListeKommunikation().subscribe(data => {
 
-      // Das Json, das über Netzwerk verschickt wurde, ist hier
-      // bereits in  ein TypeScript-Objekt konvertiert
-      // Durch die Zuweisung von "this.tmpSa= d" bekommt man Typsicherheit.
-      // Wenn man weiss, welches Format über Json rein kommt, kann man die
-      // entsprechenden model-Dateien zusammenbasteln.
-      this.sa_array = [];
+      this.sd_kommunikation_array = [];
       data.forEach((d) => {
-
-        this.tmpSa= d;
-        this.sa_array.push(this.tmpSa);
-
+        this.sd_kommunikation_array.push(d);
       });
 
-      this.selStangObject = this.sa_array[0];
+      this.serviceStellenangebote.getListeStellenangebote().subscribe(data => {
 
-      // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
-      /// evtl. die Id des initialen Bewerbers einstellen
-      this.getListBewerber(this.selStangObject.id, INIT);
+        // Das Json, das über Netzwerk verschickt wurde, ist hier
+        // bereits in  ein TypeScript-Objekt konvertiert
+        // Durch die Zuweisung von "this.tmpSa= d" bekommt man Typsicherheit.
+        // Wenn man weiss, welches Format über Json rein kommt, kann man die
+        // entsprechenden model-Dateien zusammenbasteln.
+        this.sa_array = [];
+        data.forEach((d) => {
+          this.sa_array.push(d);
+        });
 
+        this.selStangObject = this.sa_array[0];
+
+        // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
+        /// evtl. die Id des initialen Bewerbers einstellen
+        this.getListBewerber(this.selStangObject.id, INIT);
+      });
     });
   }
 
+  private getSdKommunikation() {
+
+    // Holen aller Status aus der Tabelle "sd_status"
+    this.sd_kommunikation_array = [];
+    this.serviceBewerber.getListeKommunikation().subscribe(data => {
+      data.forEach((d) => {
+        this.sd_kommunikation_array.push(d);
+      });
+    });
+  }
 
   public get nachname() {  return this.bewerberFormGroup.get('nachname') };
   public get vorname()  {  return this.bewerberFormGroup.get('vorname') };
@@ -382,5 +410,44 @@ export class BewerberComponent implements OnInit {
     this.selBewerberObject = selectedBewerber;
   }
 
+  public toggleSelection(item: any, list: any) {
+    item.selected = !item.selected;
+  }
+
+  public moveSelected(direction: any) {
+    /*
+    if (direction === 'left') {
+      this.list2.forEach(item => {
+        if (item.selected) {
+          this.list1.push(item);
+        }
+      });
+      this.list2 = this.list2.filter(i => !i.selected);
+    } else {
+      this.list1.forEach(item => {
+        if (item.selected) {
+          this.list2.push(item);
+        }
+      });
+      this.list1 = this.list1.filter(i => !i.selected);
+    }
+    */
+  }
+
+  public moveAll(direction: any) {
+    /*
+    if (direction === 'left') {
+      this.list1 = [...this.list1, ...this.list2];
+      this.list2 = [];
+    } else {
+      this.list2 = [...this.list2, ...this.list1];
+      this.list1 = [];
+    }
+    */
+  }
+
+  public selAktion(event:any) {
+    console.log(event);
+  }
 
 }

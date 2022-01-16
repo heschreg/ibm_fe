@@ -116,10 +116,10 @@ export class StellenangeboteComponent implements OnInit {
   public ngOnInit(): void {
 
     // Holen aller Daten über REST aus der Entität "SD_Status"
-    this.getStatus( );
+    this.getSdStatus();
 
     // Holen aller Daten über REST aus der Entität "SD_Kanal"
-    this.getKanaele();
+    this.getSdKanaele();
 
     // nochmaliges Holen aller Stellenangebote über REST aus der Entität "SD_Kanal" in annderes Array
     this.getKanaeleSuccess();
@@ -154,7 +154,7 @@ export class StellenangeboteComponent implements OnInit {
     console.log(selStangObject);
   }
 
-  private getStatus() {
+  private getSdStatus() {
 
     // Holen aller Status aus der Tabelle "sd_status"
     this.sd_status_array = [];
@@ -165,7 +165,7 @@ export class StellenangeboteComponent implements OnInit {
     });
   }
 
-  private getKanaele() {
+  private getSdKanaele() {
 
     // Holen aller Kanäle aus der Tabelle "sd_kanal"
     this.sd_kanal_array = [];

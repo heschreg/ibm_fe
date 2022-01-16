@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs';
 import { Kanal, Status, Stellenangebot } from './model.Stellenangebot';
-import { Bewerber } from './model.Bewerber';
+import { Bewerber, Kommunikation, SD_Kommunikation } from './model.Bewerber';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +13,18 @@ export class ServiceBewerber {
 
   constructor(private httpClient: HttpClient) { }
 
-  public getListeBewerber (idstellenangebot: number): Observable<Bewerber[]> {
 
-    // var bewerber!: Bewerber[];
-
-    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${idstellenangebot}`);
-  }
 
   /*
    * Holen von Stammmdaten - Tabelle SD_Kommunikation
    */
-  getListeKommunikation(): Observable<Status[]>{
-    return <Observable<Status[]>>this.httpClient.get<Status[]>(`${this.baseURL}/sd_kommunikation`);
+  getListeKommunikation(): Observable<SD_Kommunikation[]>{
+    return <Observable<SD_Kommunikation[]>>this.httpClient.get<SD_Kommunikation[]>(`${this.baseURL}/sd_kommunikation`);
+  }
+
+
+  public getListeBewerber (idstellenangebot: number): Observable<Bewerber[]> {
+    return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${idstellenangebot}`);
   }
 
   /*

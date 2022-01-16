@@ -5,7 +5,7 @@ export interface SD_Kommunikation {
 
 export interface Kommunikation {
   id: number;
-  Zeitpunkt: string;
+  Zeitpunkt: Date;
   sd_Kommunikation: SD_Kommunikation;
 }
 
