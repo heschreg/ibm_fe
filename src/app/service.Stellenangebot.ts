@@ -47,11 +47,11 @@ export class ServiceStellenangebote {
 
      // Neuanlage ==> Insert
 
-    const urlPdf  = `${this.baseURL}/stellenangebot`;
+    const url  = `${this.baseURL}/stellenangebot`;
     const body    = JSON.stringify(sa);
     const headers = {'content-type': 'application/json'};
 
-    return this.httpClient.post<Stellenangebot>(urlPdf, body, {'headers':headers});
+    return this.httpClient.post<Stellenangebot>(url, body, {'headers':headers});
 
   }
 
@@ -59,11 +59,11 @@ export class ServiceStellenangebote {
 
     // Änderungen ==> Update
 
-    const urlPdf = `${this.baseURL}/stellenangebot/${sa.id}`;
+    const url = `${this.baseURL}/stellenangebot/${sa.id}`;
     const body = JSON.stringify(sa);
     const headers = {'content-type': 'application/json'};
 
-    return this.httpClient.put<Stellenangebot>(urlPdf, body, {'headers':headers});
+    return this.httpClient.put<Stellenangebot>(url, body, {'headers':headers});
   }
 
   /*************************************

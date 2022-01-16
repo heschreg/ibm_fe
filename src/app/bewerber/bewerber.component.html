@@ -1,7 +1,7 @@
 
 <mat-card class="margin-left">
 
-  <mat-card-header>
+  <mat-card-header class="gapheader">
     <mat-card-title class="mytitle">Verwaltung der Bewerbungen</mat-card-title>
   </mat-card-header>
 
@@ -17,11 +17,7 @@
             (selectionChange)="stangChangeAction(selStangObject)"
             [(ngModel)]="selStangObject">
 
-            <mat-option
-              *ngFor="let stang of sa_array"
-              [value]="stang"
-              (click)="buildListBewerber(stang.id)"
-              >
+            <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang.id)">
               {{ stang.bezeichnung }}
             </mat-option>
 
@@ -32,16 +28,13 @@
       <div class="col-md-3">
         <mat-form-field>
           <mat-select
+            [(value)]="selBewerberObject"
             placeholder="Wähle Bewerber"
             name="selBewerber"
             (selectionChange)="bewerberChangeAction(selBewerberObject)"
             [(ngModel)]="selBewerberObject">
 
-            <mat-option
-              *ngFor="let bew of bew_array"
-              [value]="bew"
-              (click)="showSelectedBewerber(bew.id)"
-              >
+            <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="showSelectedBewerber(bew)">
               {{ bew.nachname }}, {{ bew.vorname }}
             </mat-option>
 
@@ -59,22 +52,21 @@
     <div class="row">
       <div class="col-md-8" >
         <span class="hinweis1">
-          Stellenangebot: "{{selStangObject?.bezeichnung}}";
-          {{selBewerberObject !== undefined ? ("Bewerber: " + selBewerberObject.nachname) : ' noch kein Bewerber angelegt'}}
+          Stellenangebot: {{selStangObject?.bezeichnung}};
+          {{selBewerberObject !== undefined ? ("Bewerber: " + selBewerberObject.nachname + ", " +  selBewerberObject.vorname): ' noch kein Bewerber angelegt'}}
         </span>
-        <p></p>
       </div>
     </div>
 
-    <div class="form-container">
-      <form [formGroup]="bewerberFormGroup" (submit)="submit()">
+    <div class="form-container" class="gapheader">
+      <form [formGroup]="bewerberFormGroup" (submit)="submit()"  >
 
         <div class="row">
 
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Nachname </mat-label>
-              <input matInput formControlName="nachname">
+              <input [readonly]=readonly matInput formControlName="nachname">
               <mat-error *ngIf="checkError('nachname', 'required')">Nachname darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -82,7 +74,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Vorname </mat-label>
-              <input matInput formControlName="vorname">
+              <input [readonly]=readonly matInput formControlName="vorname">
               <mat-error *ngIf="checkError('vorname', 'required')">Vorname darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -93,7 +85,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Anrede </mat-label>
-              <input matInput formControlName="anrede">
+              <input [readonly]=readonly matInput formControlName="anrede">
               <mat-error *ngIf="checkError('anrede', 'required')">Vorname darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -101,7 +93,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Titel </mat-label>
-              <input matInput formControlName="titel">
+              <input [readonly]=readonly matInput formControlName="titel">
             </mat-form-field>
           </div>
         </div>
@@ -110,7 +102,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Plz </mat-label>
-              <input matInput formControlName="plz">
+              <input [readonly]=readonly matInput formControlName="plz">
               <mat-error *ngIf="checkError('plz', 'required')">Plz darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -118,7 +110,7 @@
            <div class="col-md-2">
              <mat-form-field class="form-field" appearance="outline">
               <mat-label> Ort </mat-label>
-              <input matInput formControlName="ort">
+              <input [readonly]=readonly  matInput formControlName="ort">
               <mat-error *ngIf="checkError('ort', 'required')">Ort darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -128,7 +120,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Strasse </mat-label>
-              <input matInput formControlName="strasse">
+              <input [readonly]=readonly  matInput formControlName="strasse">
               <mat-error *ngIf="checkError('strasse', 'required')">Strasse darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -136,7 +128,7 @@
           <div class="col-md-2">
             <mat-form-field class="form-field" appearance="outline">
               <mat-label> Hausnumer </mat-label>
-              <input matInput formControlName="hausnummer">
+              <input [readonly]=readonly matInput formControlName="hausnummer">
               <mat-error *ngIf="checkError('hausnummer', 'required')">Hausnummer darf nicht leer sein</mat-error>
             </mat-form-field>
           </div>
@@ -146,7 +138,7 @@
           <div class="col-md-8">
             <mat-form-field class="form-field" appearance="outline" class="breit">
               <mat-label> eMail </mat-label>
-              <input matInput formControlName="email">
+              <input [readonly]=readonly matInput formControlName="email">
               <mat-error *ngIf="checkError('email', 'required')">eMail darf nicht leer sein</mat-error>
               <mat-error *ngIf="checkError('email', 'minlength')">eMail muss mindestens 10 Zeichen lang sein</mat-error>
               <mat-error *ngIf="checkError('email', 'maxlength')">eMail darf maximal 40 Zeicvhen lang sein</mat-error>
@@ -158,7 +150,7 @@
           <div class="col-md-8">
             <mat-form-field class="form-field" appearance="outline" class="breit">
               <mat-label> Notizen </mat-label>
-              <textarea matInput formControlName="notizen"></textarea>
+              <textarea [readonly]=readonly  matInput formControlName="notizen"></textarea>
             </mat-form-field>
            </div>
         </div>
@@ -167,14 +159,23 @@
           <div class="col-md-8">
             <mat-form-field class="form-field" appearance="outline" class="breit">
               <mat-label> Skills </mat-label>
-              <textarea matInput formControlName="skills"></textarea>
+              <textarea [readonly]=readonly  matInput formControlName="skills"></textarea>
             </mat-form-field>
           </div>
         </div>
 
         <div class="row">
-          <div class="col-md-8">
-            <button mat-raised-button color="primary" type="submit">Speichern</button>
+          <div class="col-md-2">
+            <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startNewBewerber()">neuen Bewerber erfassen</button>
+          </div>
+          <div class="col-md-2">
+            <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startUpdateBewerber()">Bewerberdaten ändern</button>
+          </div>
+          <div class="col-md-1">
+            <button [disabled]=readonlyCancel  mat-raised-button color="primary" (click)="cancelBewerber()">Abbrechen</button>
+          </div>
+          <div class="col-md-2">
+            <button [disabled]=readonly  mat-raised-button color="primary" type="submit">Speichern</button>
           </div>
         </div>
       </form>

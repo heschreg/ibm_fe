@@ -1,15 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Stellenangebot } from '../model.Stellenangebot';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { ServiceBewerber } from '../service.Bewerber';
 import { Bewerber, Anlagen, Kommunikation } from '.././model.Bewerber';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
-const FIRST: number = 1;
+// Konstanten zur Unterstützung der richtigen AKtivierung der Listboxen
+const INIT: number = 1;
 const INSERTED: number = 2;
 const UPDATED: number = 3;
 const CLICKED: number = 4;
+
+// Konstanten bzgl. des Status der Form
+const INSERT: number = 1;
+const UPDATE: number = 2;
+const READ:   number = 3;
+
 
 @Component({
   selector: 'app-bewerber',
@@ -18,7 +24,6 @@ const CLICKED: number = 4;
 })
 export class BewerberComponent implements OnInit {
 
-
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
   tmpSa!: Stellenangebot;
@@ -26,36 +31,30 @@ export class BewerberComponent implements OnInit {
 
   // in der Dropdown-LB selektierter Bewerber
   selBewerberObject!: Bewerber;
-  tmpBew!: Bewerber;
   bew_array: Bewerber[] = [];
 
-  aktBewNachname: string = "";
-
-  // in der Dropdown-LB selektierter Bewerber
-  selBewerber!: Bewerber;
-
   public readonly: boolean = true;
+  public readonlyCancel: boolean = true;
 
   public bewerberFormGroup!: FormGroup;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
 
   // 1 = INSERT
   // 2 = UPDATE
-  mode!: number;
+  // 3 = READ
+  formmode!: number;
 
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
-              private serviceBewerber: ServiceBewerber,
-              private formBuilder: FormBuilder,
-              private router: Router) { }
+              private serviceBewerber: ServiceBewerber) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
 
-    // Der Dialog wird sofort ohne Werte erstmal dargestellt
+    // Der Dialog wird sofort ohne Werte erstmal aufgebaut
     this.addFormGroup();
 
     // Beim ersten Aufruf müssen einmalig alle Stellenangebote und zum ersten Stellenangebot die
-    // zugehörigen Bewerber über REST gewholt werden und ie beiden Listboxen aufgebaut werden
+    // zugehörigen Bewerber über REST geholt und entsprechend die beiden Listboxen aufgebaut werden
     this.initStellenangeboteBewerber();
 
   }
@@ -103,7 +102,7 @@ export class BewerberComponent implements OnInit {
 
       // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
       /// evtl. die Id des initialen Bewerbers einstellen
-      this.getListBewerber(this.selStangObject.id, FIRST);
+      this.getListBewerber(this.selStangObject.id, INIT);
 
     });
   }
@@ -130,105 +129,73 @@ export class BewerberComponent implements OnInit {
 
     } else {
 
-      // Anzeige des selektierten und in der Tabelle "bewerber" gefundenen Datensatzes
-      this.nachname!.setValue(bewerber.nachname);
-      this.vorname!.setValue(bewerber.vorname);
-      this.anrede!.setValue(bewerber.anrede);
-      this.titel!.setValue(bewerber.titel);
-      this.plz!.setValue(bewerber.plz);
-      this.ort!.setValue(bewerber.ort);
-      this.strasse!.setValue(bewerber.strasse);
-      this.hausnummer!.setValue(bewerber.hausnummer);
-      this.email!.setValue(bewerber.email);
-      this.notizen!.setValue(bewerber.notizen);
-      this.skills!.setValue(bewerber.skills);
+      this.fillBewerbeControls(bewerber);
 
-      let tmpArrayKommunikation:Kommunikation[] = [];
-      this.bewerberFormGroup.value.kommunikation = tmpArrayKommunikation;
-
-      // Dia Anlagen stehen ohne eingerichtete Relation in der Entität "ibm.anlagen"
-      // Diese werden gesondert behandelt, da teilweise große Datenmengen bei mehren Pdf's zu transferieren wären
-      let tmpArrayAnlagen:Anlagen[] = [];
-      this.bewerberFormGroup.value.anlagen = tmpArrayAnlagen;
-
-      // damit in der Dropdownlistbox ein Element vorausgewählt ist
-      this.selBewerber = bewerber;
-
+      // Setzen des aktuellen Bewerberobjekts
+      this.selBewerberObject = bewerber;
     }
-
-    // console.log("geclicktes Stellenangebot: " + stang.bezeichnung);
-
-
-    /*
-    this.aktSaBezeichnung = stang.bezeichnung;
-
-    this.id = stang.id;
-    this.notizen = stang.notizen;
-    this.status_selected = stang.sd_status;
-    this.kanal_selected  = stang.sd_kanal;
-    this.pdf_attached = stang.pdf_stellenangebot;
-
-    this.dateEndeDefault = null;
-
-    // 5 = Juni, die Monate werden ab 0 gezählt
-    if (this.beginn && this.beginn.length == 10) {
-      var day   = parseInt(this.beginn.substring(0,2));
-      var month = parseInt(this.beginn.substring(3,5));
-      var year  = parseInt(this.beginn.substring(6,10));
-      // this.dateBeginnDefault = new FormControl(new Date(year,month-1,day));
-      this.dateBeginnDefault = new Date(year,month-1,day);
-    }
-
-    // Rücksetzen, dass man eine neue Pdf-Datei zum COhladen ausgewählt hat
-    this.selFilePdfStellenangebot = null;
-    */
-
   }
+
+  public fillBewerbeControls(bew : Bewerber) {
+    // Anzeige des selektierten und in der Tabelle "bewerber" gefundenen Datensatzes
+    this.nachname!.setValue(bew.nachname);
+    this.vorname!.setValue(bew.vorname);
+    this.anrede!.setValue(bew.anrede);
+    this.titel!.setValue(bew.titel);
+    this.plz!.setValue(bew.plz);
+    this.ort!.setValue(bew.ort);
+    this.strasse!.setValue(bew.strasse);
+    this.hausnummer!.setValue(bew.hausnummer);
+    this.email!.setValue(bew.email);
+    this.notizen!.setValue(bew.notizen);
+    this.skills!.setValue(bew.skills);
+
+    let tmpArrayKommunikation:Kommunikation[] = [];
+    this.bewerberFormGroup.value.kommunikation = tmpArrayKommunikation;
+
+    // Dia Anlagen stehen ohne eingerichtete Relation in der Entität "ibm.anlagen"
+    // Diese werden gesondert behandelt, da teilweise große Datenmengen bei mehren Pdf's zu transferieren wären
+    let tmpArrayAnlagen:Anlagen[] = [];
+    this.bewerberFormGroup.value.anlagen = tmpArrayAnlagen;
+  }
+
 
   public saveFormGroupBewerber() {
 
-    // 1 = INSERT
-    // 2 = UPDATE
-    if (this.mode == 1) {
+    let localBew: Bewerber  = {id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
+      plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikation: [],
+      anlagen: [], skills: ''};
 
-      this.tmpBew.id = -1;
-      this.tmpBew.idstellenangebot = this.selStangObject.id;
-      this.tmpBew.nachname = this.bewerberFormGroup.value.nachname;
-      this.tmpBew.vorname  = this.bewerberFormGroup.value.vorname;
-      this.tmpBew.anrede   = this.bewerberFormGroup.value.anrede;
-      this.tmpBew.titel    = this.bewerberFormGroup.value.titel;
-      this.tmpBew.plz      = this.bewerberFormGroup.value.plz;
-      this.tmpBew.ort      = this.bewerberFormGroup.value.ort;
-      this.tmpBew.strasse  = this.bewerberFormGroup.value.strasse;
-      this.tmpBew.hausnummer  = this.bewerberFormGroup.value.hausnummer;
-      this.tmpBew.email    = this.bewerberFormGroup.value.email;
-      this.tmpBew.notizen  = this.bewerberFormGroup.value.notizen;
-      this.tmpBew.skills   = this.bewerberFormGroup.value.skills;
+    if (this.formmode == INSERT) {
 
-      let tmpArrayKommunikation:Kommunikation[] = [];
-      this.tmpBew.kommunikation = tmpArrayKommunikation;
+      localBew.id = -1;
 
-      let tmpArrayAnlagen:Anlagen[] = [];
-      this.tmpBew.anlagen = tmpArrayAnlagen;
+      this.getFormContralValues(localBew);
 
       // jetzt mit einem Post in der Entität "ibm.bewerber" inserten
-      this.insertBewerber(this.tmpBew);
+      this.insertBewerber(localBew);
 
     } else {
+      // Updaten der geänderten Bewreberdaten
 
-      // Bewerberdaten mit einem PUT updaten
+      localBew.id = this.selBewerberObject.id;
+
+      this.getFormContralValues(localBew);
+
+      // jetzt mit einem Put in der Entität "ibm.bewerber" updaten
+      this.updateBewerber(localBew);
+
     }
 
   }
-
 
   private insertBewerber(bewerber: Bewerber) {
 
     // Updaten einer Entität "stellenangebot"
-    this.serviceBewerber.insBewerber(bewerber).subscribe(data => {
+    this.serviceBewerber.insBewerber(bewerber).subscribe(insertedBewerber => {
 
-      // Merken des Nachnamens des neuen Datensatzes, damit in der Listbox mit allen Bewerbern entsprechend positioniert werden kann
-      this.aktBewNachname = bewerber.nachname;
+      // Merken des eignefügten Datensatzes, damit in der Listbox mit allen Bewerbern entsprechend positioniert werden kann
+      this.selBewerberObject = insertedBewerber;
 
       // Holen aller Bewerber zum selektierten Stellenangebot über REST aus der Entität "bewerber" nach this.bew_array[]
       this.getListBewerber(this.selStangObject.id, INSERTED);
@@ -236,11 +203,27 @@ export class BewerberComponent implements OnInit {
     });
   }
 
+  private updateBewerber(bewerber: Bewerber) {
+
+    // Updaten einer Entität "stellenangebot"
+    this.serviceBewerber.updBewerber(bewerber).subscribe(updatedBewerber => {
+
+      // Merken des eignefügten Datensatzes, damit in der Listbox mit allen Bewerbern entsprechend positioniert werden kann
+      this.selBewerberObject = updatedBewerber;
+
+      // Holen aller Bewerber zum selektierten Stellenangebot über REST aus der Entität "bewerber" nach this.bew_array[]
+      this.getListBewerber(this.selStangObject.id, UPDATED);
+
+    });
+  }
+
+
+
   /*
    * Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "idstellenangebot"
    *
    * Anhand welcher ID gefetched wird, häng auch vom Modus ab, der gerade gültig ist:
-   * FIRST steht für den ersten Bewerber in der Liste (beim erstmaligen Initialisieren des Dialogs)
+   * INIT steht für den ersten Bewerber in der Liste (beim erstmaligen Initialisieren des Dialogs)
    * INSERTED steht für den ersten Bewerber in der Liste
    * UPDATET  steht für den ersten Bewerber in der Liste
    * CLICKED, ween der Benutzer einen Bewerber in der UI angeclicked hat
@@ -251,16 +234,11 @@ export class BewerberComponent implements OnInit {
       this.bew_array = [];
 
       data.forEach((d) => {
-        this.tmpBew= d;
-        this.bew_array.push(this.tmpBew);
+        this.bew_array.push(d);
       });
 
       // Falls mindestens ein Datensatz gefunden wird, Aufbau einer Listbox mit allen Bewerbern,
       if (this.bew_array.length > 0) {
-
-        // Details des ersten gefunden Bewerbers anzeigen
-        // (bzw. des eben neu angelegt Bewerbers bzw. des ben veränderten Bewerbers)
-        this.bewerberShowDetails(this.bew_array[0]);
 
         /*
         // Holen der bisherigen Kokmmunikation bzgl. des selektierten Bewerbers
@@ -270,27 +248,69 @@ export class BewerberComponent implements OnInit {
         this.get_anlagen(this.bew_array[0].id);
         */
 
+        if (mode == INIT) {
+          this.selBewerberObject = this.bew_array[0];
+        }
+
+        if (mode == INSERTED) {
+          this.selBewerberObject = this.bew_array[this.bew_array.length -1];
+        }
+
+        let foundBewerber!: Bewerber;
+        if (mode == UPDATED) {
+          // der zu markierende LB-Eintrag muss ermittelt werden
+          this.bew_array.forEach( (bew) => {
+            if (bew.id == this.selBewerberObject.id) {
+              this.selBewerberObject = bew;
+            }
+          })
+        }
+
+        this.formmode = READ; // Die Formulardaten können nicht verändert werden
+        this.readonly = true; // alle Formcontrols werden disabled
+        this.readonlyCancel = true;
+
+        this.bewerberShowDetails(this.selBewerberObject);
+
       }  else {
 
-        this.tmpBew  = {id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
-                        plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikation: [],
-                        anlagen: [], skills: ''};
+        this.formmode = INSERT;
+        this.readonly = false; // Falls noch kein Bewerber vorhanden ist, so kann man sofort mit den Eingaben loslegen
 
-        this.readonly = false;
+        // Falls noch kein Bewerber vorhanden ist, so darf man nur den "Speichern Button" aktiviert sein
+        this.readonlyCancel = true;
 
-        this.mode = 1; // INSERT-Modus
-        this.readonly = false;
 
         // leeres Formual anbieten, um den ersten eingegeangene Bewerber anlegen zu können
         this.bewerberFormGroup.reset();
-
-        //  checken, ob das wirklich raus kann
-        // this.bewerberShowDetails(this.tmpBew);
       }
     });
 
     // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
     return null;
+  }
+
+  // Dten aus den FormControls übernehmen
+  public getFormContralValues(localBew: Bewerber) {
+
+    localBew.idstellenangebot = this.selStangObject.id;
+    localBew.nachname = this.bewerberFormGroup.value.nachname;
+    localBew.vorname  = this.bewerberFormGroup.value.vorname;
+    localBew.anrede   = this.bewerberFormGroup.value.anrede;
+    localBew.titel    = this.bewerberFormGroup.value.titel;
+    localBew.plz      = this.bewerberFormGroup.value.plz;
+    localBew.ort      = this.bewerberFormGroup.value.ort;
+    localBew.strasse  = this.bewerberFormGroup.value.strasse;
+    localBew.hausnummer  = this.bewerberFormGroup.value.hausnummer;
+    localBew.email    = this.bewerberFormGroup.value.email;
+    localBew.notizen  = this.bewerberFormGroup.value.notizen;
+    localBew.skills   = this.bewerberFormGroup.value.skills;
+
+    let tmpArrayKommunikation:Kommunikation[] = [];
+    localBew.kommunikation = tmpArrayKommunikation;
+
+    let tmpArrayAnlagen:Anlagen[] = [];
+    localBew.anlagen = tmpArrayAnlagen;
   }
 
   /* ========================= Methoden, die aus der UI getriggered werden =================== */
@@ -299,45 +319,68 @@ export class BewerberComponent implements OnInit {
   // Listbox mit allen Stellenangeboten
   ///////////////////////////////////////////////////
 
-
   public stangChangeAction(selStangObject: Stellenangebot) {
 
     // darin steht ein Objekt vom Typ "Stellenangebot"
     console.log(selStangObject);
 
     // Aufbau der Listbox mit allen zugehörigen Bewerbern
-    this.getListBewerber(selStangObject.id, FIRST);
+    this.getListBewerber(selStangObject.id, INIT);
 
   }
 
   public buildListBewerber(id_stellenangebot: number) {
 
-    this.getListBewerber(id_stellenangebot, FIRST);
+    this.getListBewerber(id_stellenangebot, INIT);
   }
 
   ///////////////////////////////////////////////////
   // Listbox mit den Bewerbern eines Stellenangebots
   ///////////////////////////////////////////////////
-  public bewerberChangeAction(bewerber: Bewerber) {
+  public startNewBewerber() {
+    this.formmode = INSERT;
+    this.readonly =false;  // Die FormControls können editiert werden
+    this.readonlyCancel = false;
 
-    // momentan keine weitere Funktionalität hinterlegt
-    console.log(bewerber);
-
+    // Rücksetzen aller form-Werte
+    this.bewerberFormGroup.reset();
   }
 
-  public showSelectedBewerber (idbewerber: number) {
+  public startUpdateBewerber() {
+    this.formmode = UPDATE;
+    this.readonly = false;  // Die FormControls können editiert werden
+    this.readonlyCancel = false;
   }
 
+  public cancelBewerber() {
+    this.formmode = READ;
+    this.readonly = true;  // Die FormControls können editiert werden
+    this.readonlyCancel = true;
+
+  }
 
   public submit() {
     if (!this.bewerberFormGroup.valid) {
       return;
     } else {
       this.saveFormGroupBewerber();
-
     }
     // console.log(this.bewerberFormGroup.value);
     // console.log(this.bewerberFormGroup.value.email);
   }
+
+  public bewerberChangeAction(bewerber: Bewerber) {
+    // momentan keine weitere Funktionalität hinterlegt
+    console.log(bewerber);
+  }
+
+  public showSelectedBewerber (selectedBewerber: Bewerber) {
+
+    // Füllen der Formcontrols mit dem selektierten Bewerber
+    this.fillBewerbeControls(selectedBewerber);
+
+    this.selBewerberObject = selectedBewerber;
+  }
+
 
 }

@@ -28,16 +28,30 @@ export class ServiceBewerber {
   }
 
   /*
-   * INSERTen eines neuen Bewerbers
+   * INSERTen eines neuen Bewerbers mit POST
    */
   public insBewerber(bew:Bewerber): Observable<Bewerber>{
 
-    const urlPdf  = `${this.baseURL}/bewerber`;
+    const url  = `${this.baseURL}/bewerber`;
     const body    = JSON.stringify(bew);
     const headers = {'content-type': 'application/json'};
 
-    return this.httpClient.post<Bewerber>(urlPdf, body, {'headers':headers});
+    return this.httpClient.post<Bewerber>(url, body, {'headers':headers});
 
   }
+
+  /*
+   * UPDATen eines bestehenden Bewerbers mit PUT
+   */
+  public updBewerber(bew:Bewerber): Observable<Bewerber>{
+
+    const url  = `${this.baseURL}/bewerber/${bew.id}`;
+    const body    = JSON.stringify(bew);
+    const headers = {'content-type': 'application/json'};
+
+    return this.httpClient.put<Bewerber>(url, body, {'headers':headers});
+
+  }
+
 
 }
