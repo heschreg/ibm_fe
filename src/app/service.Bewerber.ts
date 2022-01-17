@@ -13,12 +13,19 @@ export class ServiceBewerber {
 
   constructor(private httpClient: HttpClient) { }
 
+  /*
+   * Holen der Kommunikationshistorie zum selektierten Bewerber
+   */
+  public getListeKommunikation (idbewerber: number): Observable<Kommunikation[]> {
+    return <Observable<Kommunikation[]>>this.httpClient.get<Kommunikation[]>(`${this.baseURL}/kommunikation/${idbewerber}`);
+  }
+
 
 
   /*
    * Holen von Stammmdaten - Tabelle SD_Kommunikation
    */
-  getListeKommunikation(): Observable<SD_Kommunikation[]>{
+  getListeSdKommunikation(): Observable<SD_Kommunikation[]>{
     return <Observable<SD_Kommunikation[]>>this.httpClient.get<SD_Kommunikation[]>(`${this.baseURL}/sd_kommunikation`);
   }
 

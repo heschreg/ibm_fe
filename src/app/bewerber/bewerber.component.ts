@@ -29,10 +29,10 @@ export class BewerberComponent implements OnInit {
   public aktion!: SD_Kommunikation;
   public kommunikation_array: Kommunikation[] = [];
 
-  public aktion_hinweistext : string = "";
   public aktionstext : string = "";
   public aktionsdatumS : string = "";
   public dateAktionDefault!:  any;
+  public textHistorie : string = "";
 
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
@@ -108,7 +108,7 @@ export class BewerberComponent implements OnInit {
   private initStellenangeboteBewerber(){
 
     // Holen aller Status aus der Tabelle "sd_kommunikation"
-    this.serviceBewerber.getListeKommunikation().subscribe(data => {
+    this.serviceBewerber.getListeSdKommunikation().subscribe(data => {
 
       this.sd_kommunikation_array = [];
       data.forEach((d) => {
@@ -140,7 +140,7 @@ export class BewerberComponent implements OnInit {
 
     // Holen aller Status aus der Tabelle "sd_status"
     this.sd_kommunikation_array = [];
-    this.serviceBewerber.getListeKommunikation().subscribe(data => {
+    this.serviceBewerber.getListeSdKommunikation().subscribe(data => {
       data.forEach((d) => {
         this.sd_kommunikation_array.push(d);
       });
@@ -189,13 +189,14 @@ export class BewerberComponent implements OnInit {
     this.notizen!.setValue(bew.notizen);
     this.skills!.setValue(bew.skills);
 
-    let tmpArrayKommunikation:Kommunikation[] = [];
-    this.bewerberFormGroup.value.kommunikation = tmpArrayKommunikation;
+    // Diese Daten wurden wie folgt gefetched:  this.serviceBewerber.getListeKommunikation(this.selBewerberObject.id)
+    // Schmarrn: es wird in der UI-Liste direkt der Inhalt von  this.kommunikation_array angezigt
+    // this.bewerberFormGroup.value.kommunikation = this.kommunikation_array;
 
     // Dia Anlagen stehen ohne eingerichtete Relation in der Entität "ibm.anlagen"
     // Diese werden gesondert behandelt, da teilweise große Datenmengen bei mehren Pdf's zu transferieren wären
-    let tmpArrayAnlagen:Anlagen[] = [];
-    this.bewerberFormGroup.value.anlagen = tmpArrayAnlagen;
+    // let tmpArrayAnlagen:Anlagen[] = [];
+    // this.bewerberFormGroup.value.anlagen = tmpArrayAnlagen;
   }
 
 
@@ -306,11 +307,20 @@ export class BewerberComponent implements OnInit {
           })
         }
 
-        this.formmode = READ; // Die Formulardaten können nicht verändert werden
-        this.readonly = true; // alle Formcontrols werden disabled
-        this.readonlyCancel = true;
+        // Jetzt noch die Kommunikationshistorie holen
+        this.serviceBewerber.getListeKommunikation(this.selBewerberObject.id).subscribe(data => {
 
-        this.bewerberShowDetails(this.selBewerberObject);
+          data.forEach((k) => {
+            this.kommunikation_array.push(k);
+          });
+
+          this.formmode = READ; // Die Formulardaten können nicht verändert werden
+          this.readonly = true; // alle Formcontrols werden disabled
+          this.readonlyCancel = true;
+
+          this.bewerberShowDetails(this.selBewerberObject);
+
+        });
 
       }  else {
 
@@ -425,10 +435,8 @@ export class BewerberComponent implements OnInit {
   }
 
   public selAktion(event:any) {
-
-    console.log(event);
+    // console.log(event);
     this.aktion = event;
-    this.aktion_hinweistext = "gewählte Aktion: " + this.aktion.bezeichnung;
   }
 
   public aktionsdatumEvent(event: any){
@@ -440,8 +448,15 @@ export class BewerberComponent implements OnInit {
     this.aktionsdatumS = dd + '.' + mm + '.' + yyyy;
   }
 
-  public showAktion() {
-    console.log(this.aktion);
+  // aus der Historie
+  public showAktion(komm: Kommunikation) {
+    this.textHistorie = komm.anmerkungen;
+    // console.log(komm);
+  }
+
+  // aus der LB mit allen Kommunikationselementen (SD_Kommunikation)
+  public showAktionAnmerkung() {
+    // console.log(this.aktion.bezeichnung);
   }
 
   // Button um die Aktion  in das kommunikationsarray zu übernehmen
@@ -449,10 +464,10 @@ export class BewerberComponent implements OnInit {
   /*
   export interface Kommunikation {
   id: number;
-  Zeitpunkt: Date;
-  Anmerkungen: string;
-  Bewerber: Bewerber;
-  sd_Kommunikation: SD_Kommunikation;
+  zeitpunkt: Date;
+  anmerkungen: string;
+  bewerber: Bewerber;
+  sd_kommunikation: SD_Kommunikation;
   */
 
 
@@ -469,17 +484,17 @@ export class BewerberComponent implements OnInit {
 
     let localAktion: Kommunikation = {
       id: 0,
-      Zeitpunkt: '',
-      Anmerkungen: '',
-      Bewerber: localBewerber,
-      sd_Kommunikation: localSD_Kommunikation
+      zeitpunkt: '',
+      anmerkungen: '',
+      bewerber: localBewerber,
+      sd_kommunikation: localSD_Kommunikation
     };
 
     localAktion.id = -1;
-    localAktion.Anmerkungen = this.aktionstext;
-    localAktion.Zeitpunkt = this.aktionsdatumS;
-    localAktion.Bewerber = this.selBewerberObject;
-    localAktion.sd_Kommunikation = this.aktion;
+    localAktion.anmerkungen = this.aktionstext;
+    localAktion.zeitpunkt = this.aktionsdatumS;
+    localAktion.bewerber = this.selBewerberObject;
+    localAktion.sd_kommunikation = this.aktion;
 
     // das Array um die neue Aktionshistorie erweitern
     this.kommunikation_array.push (localAktion);

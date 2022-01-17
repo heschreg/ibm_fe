@@ -187,39 +187,51 @@
 
     </div>
 
-    <!-- Kommunikation -->
+    <!-- ------------------------------- -->
+    <!-- Beginn Kommunikationsbearbeitung -->
+    <!-- ------------------------------- -->
 
     <!-- mittlere Seite -->
-    <!-- Anzeige einer Liste mit der hinterlegeten Aktioinshistorie bzgl. des selektierten Bewerbers -->
-    <div class="col-3">
+    <div class="col-2">
 
-      <mat-form-field>
-        <mat-label>Wähle Aktion</mat-label>
-        <mat-select  [multiple]="false">
-          <mat-option  value="{{komm.Anmerkungen}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
-            {{komm.Anmerkungen}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <!-- Anzeige einer Liste mit der hinterlegeten Aktionshistorie bzgl. des selektierten Bewerbers -->
+    <div class="row">
+      <div class="col-4">
+        <mat-form-field>
+          <mat-label>Zeige Kommunikation</mat-label>
+          <mat-select  [multiple]="false">
+            <mat-option  value="{{komm.anmerkungen}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
+              {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
 
+    <div class="row">
+      <div class="col-6">
+        <textarea [readonly]=readonly [value]="textHistorie" (click)="showAktionAnmerkung()"> </textarea>
+      </div>
+    </div>
+
+  </div>
 
     <!-- rechte  Seite -->
-    <!-- Anzeige einer Liste mit allen möglichen Aktionsarten -->
     <div class="col-3">
 
-      <mat-form-field>
-        <mat-label>Wähle Aktion</mat-label>
-        <mat-select  [multiple]="false">
-          <mat-option  value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
-            {{komm.bezeichnung}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <p>
-        {{ aktion_hinweistext }}
-      </p>
+      <!-- Anzeige einer Liste mit allen möglichen Aktionsarten -->
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field>
+            <mat-label>Wähle Aktion</mat-label>
+            <mat-select  [multiple]="false">
+              <mat-option  value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
+                {{komm.bezeichnung}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-6">
@@ -228,19 +240,19 @@
               <input  matInput [matDatepicker]="pickerClass"
                       (dateInput)="aktionsdatumEvent($event)" [value]="dateAktionDefault"/>
               <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
-              <mat-datepicker [disabled]=!readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
+              <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
             </mat-form-field>
         </div>
       </div>
 
       <div class="row">
         <div class="col-8">
-          <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktion()" [(ngModel)]="aktionstext"> </textarea>
+          <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktionAnmerkung()" [(ngModel)]="aktionstext"> </textarea>
         </div>
       </div>
 
       <div class="col-1">
-        <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Aktionshistorie übernehmen</button>
+        <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Aktion übernehmen</button>
       </div>
       <!-- Ende Kommunikation -->
 

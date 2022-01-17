@@ -12,10 +12,10 @@ SD_Kommunikation sd_Kommunikation = kommunikationen.get(0).getSd_kommunikation()
 */
 export interface Kommunikation {
   id: number;
-  Zeitpunkt: string;
-  Anmerkungen: string;
-  Bewerber: Bewerber;
-  sd_Kommunikation: SD_Kommunikation;
+  zeitpunkt: string;
+  anmerkungen: string;
+  bewerber: Bewerber;
+  sd_kommunikation: SD_Kommunikation;
 }
 
 export interface Anlagen {
