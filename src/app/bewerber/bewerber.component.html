@@ -5,94 +5,32 @@
     <mat-card-title class="mytitle">Verwaltung der Bewerbungen</mat-card-title>
   </mat-card-header>
 
-  <mat-card-content>
-
-    <!-- oben stehen die Listbox mit allen Stellenanzeigen und daneben den Bewerbern zum selektierten Stellenangebot -->
-    <div class="row">
-      <div class="col-md-3">
-        <mat-form-field>
-          <mat-select
-            placeholder="Wähle Stellenangebot"
-            name="selStellenangebot"
-            (selectionChange)="stangChangeAction(selStangObject)"
-            [(ngModel)]="selStangObject">
-
-            <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang.id)">
-              {{ stang.bezeichnung }}
-            </mat-option>
-
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3">
-        <mat-form-field>
-          <mat-select
-            [(value)]="selBewerberObject"
-            placeholder="Wähle Bewerber"
-            name="selBewerber"
-            (selectionChange)="bewerberChangeAction(selBewerberObject)"
-            [(ngModel)]="selBewerberObject">
-
-            <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="showSelectedBewerber(bew)">
-              {{ bew.nachname }}, {{ bew.vorname }}
-            </mat-option>
-
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-    </div>
-
-    <hr/>
-
-    <!-- unten stehen die Details eines Bewerbers zum gewählten Stellenangebot -->
-
-    <div class="row">
-      <div class="col-md-8" >
-        <span class="hinweis1">
-          Stellenangebot: {{selStangObject?.bezeichnung}};
-          {{selBewerberObject !== undefined ? ("Bewerber: " + selBewerberObject.nachname + ", " +  selBewerberObject.vorname): ' noch kein Bewerber angelegt'}}
-        </span>
-      </div>
-    </div>
-
-
-    <div class="form-container" class="gapheader">
-      <form [formGroup]="bewerberFormGroup" (submit)="submit()">
-
+  <!-- oben -->
+  <div class="row">
+    <div class="col-6">
+        <!-- oben stehen die Listbox mit allen Stellenanzeigen und daneben den Bewerbern zum selektierten Stellenangebot -->
         <div class="row">
-          <div class="col-md-2">
-            <mat-form-field class="form-field" appearance="outline">
-              <mat-label> Nachname </mat-label>
-              <input [readonly]=readonly matInput formControlName="nachname">
-              <mat-error *ngIf="checkError('nachname', 'required')">Nachname darf nicht leer sein</mat-error>
+          <div class="col-3">
+            <mat-form-field>
+              <mat-select
+                placeholder="Wähle Stellenangebot"
+                name="selStellenangebot"
+                (selectionChange)="stangChangeAction(selStangObject)"
+                [(ngModel)]="selStangObject">
+
+                <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang.id)">
+                  {{ stang.bezeichnung }}
+                </mat-option>
+
+              </mat-select>
             </mat-form-field>
           </div>
 
-          <div class="col-md-2">
-            <mat-form-field class="form-field" appearance="outline">
-              <mat-label> Vorname </mat-label>
-              <input [readonly]=readonly matInput formControlName="vorname">
-              <mat-error *ngIf="checkError('vorname', 'required')">Vorname darf nicht leer sein</mat-error>
-            </mat-form-field>
-          </div>
-
-          <!-- Kommunikation -->
-          <div class="col-md-3">
-            <mat-label>Auswahl Aktion</mat-label>
-            <mat-selection-list  [multiple]="false">
-              <mat-option  value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
-              {{komm.bezeichnung}}
-            </mat-option>
-            </mat-selection-list>
-         </div>
-            <!-- Liste über alle Items aus der Tabelle SD_Kommunikation -->
-            <!--
-            <div class="col-md-3">
+          <div class="col-3">
+            <mat-form-field>
               <mat-select
                 [(value)]="selBewerberObject"
-                placeholder="Kommunikationstyp wählen"
+                placeholder="Wähle Bewerber"
                 name="selBewerber"
                 (selectionChange)="bewerberChangeAction(selBewerberObject)"
                 [(ngModel)]="selBewerberObject">
@@ -100,160 +38,213 @@
                 <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="showSelectedBewerber(bew)">
                   {{ bew.nachname }}, {{ bew.vorname }}
                 </mat-option>
+
               </mat-select>
-            </div>
-            -->
-
-
-          <!--
-          <div class="col-md-4 container">
-            <mat-selection-list #shoes [multiple]="false">
-              <mat-list-option value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array">
-                {{komm.bezeichnung}}
-              </mat-list-option>
-            </mat-selection-list>
-          </div>
-          -->
-
-
-          <!-- Kommunikation  Demo -->
-          <!--
-          <div class="col-md-4 container">
-            <ul>
-              auswählbare items
-                <li
-                *ngFor="let item of list1"
-                [class.item-selected]="item.selected"
-                (click)="toggleSelection(item, 1)">{{item.text}}
-              </li>
-            </ul>
-            <div class="buttons-container">
-              <button kendoButton (click)="moveSelected('right')">></button>
-              <button kendoButton (click)="moveSelected('left')"><</button>
-            </div>
-
-          </div>
-          -->
-
-          <!--
-          <div class="col-md-4">
-            <mat-form-field>
-            <mat-select
-              placeholder="Wähle Stellenangebot"
-              name="selStellenangebot"
-              (selectionChange)="stangChangeAction(selStangObject)"
-              [(ngModel)]="selStangObject">
-
-              <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang.id)">
-                {{ stang.bezeichnung }}
-              </mat-option>
-
-            </mat-select>
             </mat-form-field>
           </div>
-          -->
-          <!-- Ende Kommunikation -->
+        </div>
+        <hr/>
+    </div>
+  </div>
 
-          <div class="row">
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Anrede </mat-label>
-                <input [readonly]=readonly matInput formControlName="anrede">
-                <mat-error *ngIf="checkError('anrede', 'required')">Vorname darf nicht leer sein</mat-error>
-              </mat-form-field>
-            </div>
+  <!-- unten stehen die Details eines Bewerbers zum gewählten Stellenangebot -->
+  <div class="row">
 
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Titel </mat-label>
-                <input [readonly]=readonly matInput formControlName="titel">
-              </mat-form-field>
-            </div>
-          </div>
+    <!-- linke Seite -->
+    <div class="col-5" >
 
-          <div class="row">
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Plz </mat-label>
-                <input [readonly]=readonly matInput formControlName="plz">
-                <mat-error *ngIf="checkError('plz', 'required')">Plz darf nicht leer sein</mat-error>
-              </mat-form-field>
-            </div>
-
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Ort </mat-label>
-                <input [readonly]=readonly  matInput formControlName="ort">
-                <mat-error *ngIf="checkError('ort', 'required')">Ort darf nicht leer sein</mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Strasse </mat-label>
-                <input [readonly]=readonly  matInput formControlName="strasse">
-                <mat-error *ngIf="checkError('strasse', 'required')">Strasse darf nicht leer sein</mat-error>
-              </mat-form-field>
-            </div>
-
-            <div class="col-md-2">
-              <mat-form-field class="form-field" appearance="outline">
-                <mat-label> Hausnumer </mat-label>
-                <input [readonly]=readonly matInput formControlName="hausnummer">
-                <mat-error *ngIf="checkError('hausnummer', 'required')">Hausnummer darf nicht leer sein</mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-8">
-              <mat-form-field class="form-field" appearance="outline" class="breit">
-                <mat-label> eMail </mat-label>
-                <input [readonly]=readonly matInput formControlName="email">
-                <mat-error *ngIf="checkError('email', 'required')">eMail darf nicht leer sein</mat-error>
-                <mat-error *ngIf="checkError('email', 'minlength')">eMail muss mindestens 10 Zeichen lang sein</mat-error>
-                <mat-error *ngIf="checkError('email', 'maxlength')">eMail darf maximal 40 Zeicvhen lang sein</mat-error>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-8">
-              <mat-form-field class="form-field" appearance="outline" class="breit">
-                <mat-label> Notizen </mat-label>
-                <textarea [readonly]=readonly  matInput formControlName="notizen"></textarea>
-              </mat-form-field>
-             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-8">
-              <mat-form-field class="form-field" appearance="outline" class="breit">
-                <mat-label> Skills </mat-label>
-                <textarea [readonly]=readonly  matInput formControlName="skills"></textarea>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-2">
-              <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startNewBewerber()">neuen Bewerber erfassen</button>
-            </div>
-            <div class="col-md-2">
-              <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startUpdateBewerber()">Bewerberdaten ändern</button>
-            </div>
-            <div class="col-md-1">
-              <button [disabled]=readonlyCancel  mat-raised-button color="primary" (click)="cancelBewerber()">Abbrechen</button>
-            </div>
-            <div class="col-md-2">
-              <button [disabled]=readonly  mat-raised-button color="primary" type="submit">Speichern</button>
-            </div>
+        <div class="row">
+          <div class="col-8">
+            <span class="hinweis1">
+              Stellenangebot: {{selStangObject?.bezeichnung}};
+              {{selBewerberObject !== undefined ? ("Bewerber: " + selBewerberObject.nachname + ", " +  selBewerberObject.vorname): ' noch kein Bewerber angelegt'}}
+            </span>
           </div>
         </div>
-      </form>
+
+
+        <div class="form-container" class="gapheader">
+          <form [formGroup]="bewerberFormGroup" (submit)="submit()">
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Nachname </mat-label>
+                  <input [readonly]=readonly matInput formControlName="nachname"/>
+                  <mat-error *ngIf="checkError('nachname', 'required')">Nachname darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Vorname </mat-label>
+                  <input [readonly]=readonly matInput formControlName="vorname"/>
+                  <mat-error *ngIf="checkError('vorname', 'required')">Vorname darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Anrede </mat-label>
+                  <input [readonly]=readonly matInput formControlName="anrede"/>
+                  <mat-error *ngIf="checkError('anrede', 'required')">Vorname darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Titel </mat-label>
+                  <input [readonly]=readonly matInput formControlName="titel"/>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Plz </mat-label>
+                  <input [readonly]=readonly matInput formControlName="plz"/>
+                  <mat-error *ngIf="checkError('plz', 'required')">Plz darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Ort </mat-label>
+                  <input [readonly]=readonly  matInput formControlName="ort"/>
+                  <mat-error *ngIf="checkError('ort', 'required')">Ort darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label> Strasse </mat-label>
+                  <input [readonly]=readonly  matInput formControlName="strasse"/>
+                  <mat-error *ngIf="checkError('strasse', 'required')">Strasse darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="col-4">
+                <mat-form-field matInput="" class="form-field" appearance="outline">
+                  <mat-label> Hausnumer </mat-label>
+                  <input [readonly]=readonly matInput formControlName="hausnummer"/>
+                  <mat-error *ngIf="checkError('hausnummer', 'required')">Hausnummer darf nicht leer sein</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field matInput="" class="form-field" appearance="outline" class="breit">
+                  <mat-label> eMail </mat-label>
+                  <input [readonly]=readonly matInput="" formControlName="email"/>
+                  <mat-error *ngIf="checkError('email', 'required')">eMail darf nicht leer sein</mat-error>
+                  <mat-error *ngIf="checkError('email', 'minlength')">eMail muss mindestens 10 Zeichen lang sein</mat-error>
+                  <mat-error *ngIf="checkError('email', 'maxlength')">eMail darf maximal 40 Zeicvhen lang sein</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field matInput="" class="form-field" appearance="outline" class="breit">
+                  <mat-label> Notizen </mat-label>
+                  <textarea [readonly]=readonly  matInput formControlName="notizen"></textarea>
+                </mat-form-field>
+               </div>
+            </div>
+
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field matInput="" class="form-field" appearance="outline" class="breit">
+                  <mat-label> Skills </mat-label>
+                  <textarea [readonly]=readonly  matInput formControlName="skills"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-3">
+                <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startNewBewerber()">Bewerber erfassen</button>
+              </div>
+              <div class="col-3">
+                <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startUpdateBewerber()">Bewerberdaten ändern</button>
+              </div>
+              <div class="col-2">
+                <button [disabled]=readonlyCancel  mat-raised-button color="primary" (click)="cancelBewerber()">Abbrechen</button>
+              </div>
+              <div class="col-2">
+                <button [disabled]=readonly  mat-raised-button color="primary" type="submit">Speichern</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
     </div>
 
-  </mat-card-content>
+    <!-- Kommunikation -->
+
+    <!-- mittlere Seite -->
+    <!-- Anzeige einer Liste mit der hinterlegeten Aktioinshistorie bzgl. des selektierten Bewerbers -->
+    <div class="col-3">
+
+      <mat-form-field>
+        <mat-label>Wähle Aktion</mat-label>
+        <mat-select  [multiple]="false">
+          <mat-option  value="{{komm.Anmerkungen}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
+            {{komm.Anmerkungen}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <!-- rechte  Seite -->
+    <!-- Anzeige einer Liste mit allen möglichen Aktionsarten -->
+    <div class="col-3">
+
+      <mat-form-field>
+        <mat-label>Wähle Aktion</mat-label>
+        <mat-select  [multiple]="false">
+          <mat-option  value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
+            {{komm.bezeichnung}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <p>
+        {{ aktion_hinweistext }}
+      </p>
+
+      <div class="row">
+        <div class="col-6">
+          <mat-form-field matInput="">
+              <mat-label>Aktionsdatum</mat-label>
+              <input  matInput [matDatepicker]="pickerClass"
+                      (dateInput)="aktionsdatumEvent($event)" [value]="dateAktionDefault"/>
+              <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
+              <mat-datepicker [disabled]=!readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
+            </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktion()" [(ngModel)]="aktionstext"> </textarea>
+        </div>
+      </div>
+
+      <div class="col-1">
+        <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Aktionshistorie übernehmen</button>
+      </div>
+      <!-- Ende Kommunikation -->
+
+    </div>
+  </div>
+
 </mat-card>

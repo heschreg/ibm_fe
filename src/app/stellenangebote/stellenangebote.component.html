@@ -65,11 +65,11 @@
         <div class="row">
           <div class="col-md-3">
             <mat-form-field class="full-width">
-              <input [disabled]=readonly matInput="" [(ngModel)]="bezeichnung" placeholder="Bezeichnung"/>
+              <input [disabled]=readonly matInput="" placeholder="Bezeichnung"/>
             </mat-form-field>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-2">
             <mat-form-field>
                 <mat-label>geschaltet am</mat-label>
                 <input  [disabled]=true matInput [matDatepicker]="pickerClass"
@@ -78,7 +78,7 @@
                 <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
               </mat-form-field>
           </div>
-          <div class="col-md-3">
+          <div class="col-2">
             <mat-form-field>
                 <mat-label>Ablaufdatum</mat-label>
                 <input  [disabled]=readonly matInput [matDatepicker]="pickerEndeClass"
@@ -206,12 +206,12 @@
     <div class="row">
 
       <div class="col-md-3">
-        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(2)">
+        <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
+          neue Stellenanzeige erfassen
+        </button>
+        <span class="abstand_left"></span><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(2)">
           Stellenanzeige bearbeiten
         </button>
-        <span class="abstand_left"><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
-          neue Stellenanzeige vorbereiten
-        </button></span>
       </div>
 
       <div class="col-md-4">

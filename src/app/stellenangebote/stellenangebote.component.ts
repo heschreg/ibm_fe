@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { Kanal, Status, Stellenangebot, Pdf_Attached } from '../model.Stellenangebot';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.component'
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
@@ -65,22 +63,9 @@ export class StellenangeboteComponent implements OnInit {
   // form: FormGroup = new FormGroup({});
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
-              private fb: FormBuilder,
-              private router: Router,
               private dialog: MatDialog
               // private customDialog: MyCustomDialogService,
-   ) {
-    /* In stackblitz.com danach suchen
-      this.customDialogForm = fb.group({
-        dialogTitle: ['Title', [Validators.required]],
-        dialogMsg: ['', [Validators.minLength(5), Validators.maxLength(1000)]],
-        dialogType: ['alert'],
-        okBtnColor: [''],
-        okBtnLabel: [''],evt
-        cancelBtnColor: [''],
-        cancelBtnLabel: ['']
-        */
-  }
+   ) {  }
 
   public beginnEvent(event: any){
     var datum = new Date(event.value);
@@ -402,7 +387,7 @@ export class StellenangeboteComponent implements OnInit {
       let tmpArrayKanal:Kanal[] = [];
       this.sd_kanal_array.forEach ( (k) => {
         if (k.selected === true) {
-          delete k.selected;
+          delete k.selected; // Property wegnehmen
           tmpArrayKanal.push(k);
         }
         this.tmpSa.kanaele = tmpArrayKanal;

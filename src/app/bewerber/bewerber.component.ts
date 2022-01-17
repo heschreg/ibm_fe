@@ -4,6 +4,7 @@ import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { ServiceBewerber } from '../service.Bewerber';
 import { Bewerber, Anlagen, Kommunikation, SD_Kommunikation } from '.././model.Bewerber';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 
 // Konstanten zur Unterstützung der richtigen AKtivierung der Listboxen
 const INIT: number = 1;
@@ -25,15 +26,14 @@ const READ:   number = 3;
 export class BewerberComponent implements OnInit {
 
   public sd_kommunikation_array: SD_Kommunikation[] = [];
+  public aktion!: SD_Kommunikation;
+  public kommunikation_array: Kommunikation[] = [];
 
-  list1 = [
-    { text: 'item 1', selected: false },
-    { text: 'item 2', selected: false },
-    { text: 'item 3', selected: false },
-    { text: 'item 4', selected: false },
-    { text: 'item 5', selected: false }
-  ];
-  list2 = [];
+  public aktion_hinweistext : string = "";
+  public aktionstext : string = "";
+  public aktionsdatumS : string = "";
+  public dateAktionDefault!:  any;
+
   // in der Dropdown-LB selektiertes Stellenangebot
   selStangObject!: Stellenangebot;
   tmpSa!: Stellenangebot;
@@ -57,6 +57,17 @@ export class BewerberComponent implements OnInit {
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
               private serviceBewerber: ServiceBewerber) { }
+
+  dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+
+    // Only highligh dates inside the month view.
+    const day = cellDate.getDay();
+
+    // Highlight the 1st and 20th day of each month.
+    return (day === 0 || day === 6) ? 'highlight-dates' : '' ;
+   }
+
+
 
   public ngOnInit(): void {
 
@@ -190,25 +201,26 @@ export class BewerberComponent implements OnInit {
 
   public saveFormGroupBewerber() {
 
-    let localBew: Bewerber  = {id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
+    let localBew: Bewerber  = {
+      id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
       plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikation: [],
       anlagen: [], skills: ''};
 
+    // Holen der im Formular erfassten Daten inklusive der Kommunikationshistorie
+    this.getFormContralValues(localBew);
+
+
     if (this.formmode == INSERT) {
+      // Neuen Bewerber inserten
 
       localBew.id = -1;
-
-      this.getFormContralValues(localBew);
 
       // jetzt mit einem Post in der Entität "ibm.bewerber" inserten
       this.insertBewerber(localBew);
 
     } else {
-      // Updaten der geänderten Bewreberdaten
-
+      // Updaten der geänderten Bewerberdaten
       localBew.id = this.selBewerberObject.id;
-
-      this.getFormContralValues(localBew);
 
       // jetzt mit einem Put in der Entität "ibm.bewerber" updaten
       this.updateBewerber(localBew);
@@ -334,12 +346,13 @@ export class BewerberComponent implements OnInit {
     localBew.notizen  = this.bewerberFormGroup.value.notizen;
     localBew.skills   = this.bewerberFormGroup.value.skills;
 
-    let tmpArrayKommunikation:Kommunikation[] = [];
-    localBew.kommunikation = tmpArrayKommunikation;
+    localBew.kommunikation = this.kommunikation_array;
 
     let tmpArrayAnlagen:Anlagen[] = [];
     localBew.anlagen = tmpArrayAnlagen;
   }
+
+
 
   /* ========================= Methoden, die aus der UI getriggered werden =================== */
 
@@ -388,6 +401,7 @@ export class BewerberComponent implements OnInit {
   }
 
   public submit() {
+    console.log("submit");
     if (!this.bewerberFormGroup.valid) {
       return;
     } else {
@@ -410,44 +424,66 @@ export class BewerberComponent implements OnInit {
     this.selBewerberObject = selectedBewerber;
   }
 
-  public toggleSelection(item: any, list: any) {
-    item.selected = !item.selected;
-  }
-
-  public moveSelected(direction: any) {
-    /*
-    if (direction === 'left') {
-      this.list2.forEach(item => {
-        if (item.selected) {
-          this.list1.push(item);
-        }
-      });
-      this.list2 = this.list2.filter(i => !i.selected);
-    } else {
-      this.list1.forEach(item => {
-        if (item.selected) {
-          this.list2.push(item);
-        }
-      });
-      this.list1 = this.list1.filter(i => !i.selected);
-    }
-    */
-  }
-
-  public moveAll(direction: any) {
-    /*
-    if (direction === 'left') {
-      this.list1 = [...this.list1, ...this.list2];
-      this.list2 = [];
-    } else {
-      this.list2 = [...this.list2, ...this.list1];
-      this.list1 = [];
-    }
-    */
-  }
-
   public selAktion(event:any) {
+
     console.log(event);
+    this.aktion = event;
+    this.aktion_hinweistext = "gewählte Aktion: " + this.aktion.bezeichnung;
+  }
+
+  public aktionsdatumEvent(event: any){
+    var datum = new Date(event.value);
+    var dd = String(datum.getDate()).padStart(2, '0');
+    var mm = String(datum.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = datum.getFullYear();
+
+    this.aktionsdatumS = dd + '.' + mm + '.' + yyyy;
+  }
+
+  public showAktion() {
+    console.log(this.aktion);
+  }
+
+  // Button um die Aktion  in das kommunikationsarray zu übernehmen
+  // sd_kommunikation_array
+  /*
+  export interface Kommunikation {
+  id: number;
+  Zeitpunkt: Date;
+  Anmerkungen: string;
+  Bewerber: Bewerber;
+  sd_Kommunikation: SD_Kommunikation;
+  */
+
+
+  public addAktion() {
+
+    let localBewerber: Bewerber = {
+      id: 0, idstellenangebot: 0, nachname: '', vorname: '',
+      anrede: '', titel: '', plz: 0, ort: '', strasse: '',
+      hausnummer: 0, email: '', notizen: '', kommunikation: [],
+      anlagen: [], skills: ''
+    };
+
+    let localSD_Kommunikation: SD_Kommunikation = { id: 0, bezeichnung: ''};
+
+    let localAktion: Kommunikation = {
+      id: 0,
+      Zeitpunkt: '',
+      Anmerkungen: '',
+      Bewerber: localBewerber,
+      sd_Kommunikation: localSD_Kommunikation
+    };
+
+    localAktion.id = -1;
+    localAktion.Anmerkungen = this.aktionstext;
+    localAktion.Zeitpunkt = this.aktionsdatumS;
+    localAktion.Bewerber = this.selBewerberObject;
+    localAktion.sd_Kommunikation = this.aktion;
+
+    // das Array um die neue Aktionshistorie erweitern
+    this.kommunikation_array.push (localAktion);
+
   }
 
 }

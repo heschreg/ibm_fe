@@ -1,7 +1,7 @@
 export interface Stellenangebot {
   id: number;
   bezeichnung: string;
-  beginn: string;
+  beginn: string; // ist eigentlich der Datentyp "Date", wird aber von De-Serializern nach String gewandelt
   ende: string;
   notizen: string;
   sd_status: Status;

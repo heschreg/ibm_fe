@@ -3,9 +3,18 @@ export interface SD_Kommunikation {
   bezeichnung: string;
 }
 
+/*
+long id = kommunikationen.get(0).getId();
+String anmerkungen                = kommunikationen.get(0).getAnmerkungen(); // Achtung: ist immer nur eine Anmerkung
+Date zeitpunkt                    = kommunikationen.get(0).getZeitpunkt();
+Bewerber bewerber                 = kommunikationen.get(0).getBewerber();
+SD_Kommunikation sd_Kommunikation = kommunikationen.get(0).getSd_kommunikation();
+*/
 export interface Kommunikation {
   id: number;
-  Zeitpunkt: Date;
+  Zeitpunkt: string;
+  Anmerkungen: string;
+  Bewerber: Bewerber;
   sd_Kommunikation: SD_Kommunikation;
 }
 
