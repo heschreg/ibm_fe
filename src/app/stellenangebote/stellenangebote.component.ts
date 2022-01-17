@@ -16,7 +16,7 @@ export class StellenangeboteComponent implements OnInit {
 
 
   @ViewChild('fileInput')  fileInput: any;
-  selFilePdfStellenangebot: File | null = null;;
+  selFilePdfStellenangebot: File | null = null;
 
   public dateBeginnDefault!:  any;
   public dateEndeDefault!: any;

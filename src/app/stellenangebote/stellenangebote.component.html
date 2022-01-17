@@ -5,7 +5,7 @@
     <!-- oben steht die Listbox mit allen Stellenanzeigen aus der Tabelle "stellenangebote"-->
     <div class="row">
       <div class="col-md-3">
-        <div class="minigap">Verwaltung der Stellenanzeigen</div>
+        <div class="minigap">Verwaltung der Stellenangebote</div>
         <mat-form-field>
           <mat-select
             placeholder="Wähle Stellenangebot"
@@ -25,24 +25,6 @@
           </mat-select>
         </mat-form-field>
       </div>
-
-      <!--
-      <div class="col-md-3">
-        <div class="minigap">Verwaltung der Stellenanzeigen</div>
-
-        <mat-list role="list">
-          <mat-list-item
-            role="listitem"
-            *ngFor="let stang of sa_array, let i=index"
-            (click)="stangShowDetails(stang)"
-          >
-          <mat-radio-button color="primary" [checked]="i == radioSaToSelect" [value]="i">
-              {{stang.bezeichnung}}
-            </mat-radio-button>
-          </mat-list-item>
-        </mat-list>
-      </div>
-      -->
     </div>
 
     <hr/>
@@ -51,7 +33,7 @@
 
     <div class="row">
       <div class="col-md-5" >
-        <span class="minigap">Details zur Stellenanzeige "{{selStangObject?.bezeichnung}}"</span>
+        <span class="minigap">Details zum Stellenangebot "{{selStangObject?.bezeichnung}}"</span>
         <p></p>
         <!--
         <h2 matDialogTitle>Details zur ausgewählten Stellenanzeige</h2>
@@ -60,7 +42,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-9" >
+      <div class="col-md-12" >
 
         <div class="row">
           <div class="col-md-3">
@@ -126,7 +108,7 @@
             id="kanal.id"  name="kanal.bezeichnung"
         -->
         <div class="row">
-          <h2 matDialogTitle>geschaltete Kanäle</h2>
+          <label id="radio-group-label-status" class="group-label, gap">geschaltete Kanäle</label>
           <div class="col-md-1" *ngFor="let kanal of sd_kanal_array">
             <div >
               <mat-checkbox
@@ -162,12 +144,12 @@
 
         <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
         <div class="row">
-          <div class="col-md-7">
+          <div class="col-md-10">
             <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
-            <span class="abstand_right" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
-            <span class="abstand_right" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
+            <span class="abstand_left" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
+            <span class="abstand_left" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
 
-            <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="fetchPdf()">PDF anzeigen</button>
+            <button mat-raised-button color="primary" [disabled]="!updateMode" class="abstand-left" (click)="fetchPdf()">PDF anzeigen</button>
 
 
             <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
@@ -186,8 +168,7 @@
               (click)="onClickFileInputButton()"
               [disabled]="!updateMode">
 
-              <mat-icon>attach_file</mat-icon>
-                Auswahl Stellenanzeige im pdf-Format
+              <mat-icon>attach_file</mat-icon>Auswahl Pdf-Stellenangbot
             </button>
 
             <button mat-raised-button color="primary" [hidden]="selFilePdfStellenangebot?.name == null" (click)="updateStellenangebotPdf()">

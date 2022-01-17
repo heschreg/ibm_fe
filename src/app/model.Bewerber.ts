@@ -20,8 +20,8 @@ export interface Kommunikation {
 
 export interface Anlagen {
   id: number;
-  name?: string;
-  type?: string;
+  name: string;
+  type: string;
   bin_data?: Blob;
 }
 
@@ -41,4 +41,10 @@ export interface Bewerber {
   kommunikation: Kommunikation[];
   anlagen: Anlagen[];
   skills: string;
+}
+export interface Pdf_Attached {
+  id: number;
+  name?: string;
+  type?: string;
+  bin_data?: Blob;
 }

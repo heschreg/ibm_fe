@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Stellenangebot } from '../model.Stellenangebot';
 import { ServiceStellenangebote } from '../service.Stellenangebot';
 import { ServiceBewerber } from '../service.Bewerber';
 import { Bewerber, Anlagen, Kommunikation, SD_Kommunikation } from '.././model.Bewerber';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MyAlertDialogComponent } from '../my-alert-dialog/my-alert-dialog.component'
 
 // Konstanten zur Unterstützung der richtigen AKtivierung der Listboxen
 const INIT: number = 1;
@@ -25,23 +27,33 @@ const READ:   number = 3;
 })
 export class BewerberComponent implements OnInit {
 
+  @ViewChild('fileInput')  fileInput: any;
+  selFilePdfAnlage: File | null = null;
+
+  public kommunikation_array: Kommunikation[] = [];
   public sd_kommunikation_array: SD_Kommunikation[] = [];
   public aktion!: SD_Kommunikation;
-  public kommunikation_array: Kommunikation[] = [];
 
+  public selIdKommunikation : number = -1;
   public aktionstext : string = "";
   public aktionsdatumS : string = "";
   public dateAktionDefault!:  any;
   public textHistorie : string = "";
 
   // in der Dropdown-LB selektiertes Stellenangebot
-  selStangObject!: Stellenangebot;
-  tmpSa!: Stellenangebot;
-  sa_array: Stellenangebot[] = [];
+  public selStangObject!: Stellenangebot;
+  public tmpSa!: Stellenangebot;
+  public sa_array: Stellenangebot[] = [];
 
   // in der Dropdown-LB selektierter Bewerber
-  selBewerberObject!: Bewerber;
-  bew_array: Bewerber[] = [];
+  public selBewerberObject!: Bewerber;
+  public bew_array: Bewerber[] = [];
+
+  public anlage_array: Anlagen[] = [];
+  public anlage!: Anlagen;
+  public selIdAnlage : number = -1;
+  public nameAnlage : string = "";
+  public anlagetext : string = "";
 
   public readonly: boolean = true;
   public readonlyCancel: boolean = true;
@@ -56,7 +68,8 @@ export class BewerberComponent implements OnInit {
 
 
   constructor(private serviceStellenangebote: ServiceStellenangebote,
-              private serviceBewerber: ServiceBewerber) { }
+              private serviceBewerber: ServiceBewerber,
+              private dialog: MatDialog) { }
 
   dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
 
@@ -80,6 +93,28 @@ export class BewerberComponent implements OnInit {
     // - zum ersten Stellenangebot die zugehörigen Bewerber über REST geholt
     //   und entsprechend die beiden Listboxen aufgebaut werden
     this.initStellenangeboteBewerber();
+
+    let oneAnlage : Anlagen = {
+      id: 1,
+      name: '',
+      type: 'Lebenslauf'
+    };
+    this.anlage_array.push(oneAnlage);
+
+    let oneAnlage1 : Anlagen = {
+      id: 1,
+      name: '',
+      type: 'Anschreiben'
+    };
+    this.anlage_array.push(oneAnlage1);
+
+    let oneAnlage2 : Anlagen = {
+      id: 1,
+      name: '',
+      type: 'Arbeitszeugnis'
+    };
+    this.anlage_array.push(oneAnlage2);
+
 
   }
 
@@ -432,6 +467,7 @@ export class BewerberComponent implements OnInit {
     this.fillBewerbeControls(selectedBewerber);
 
     this.selBewerberObject = selectedBewerber;
+    this.kommunikation_array = [];
   }
 
   public selAktion(event:any) {
@@ -451,6 +487,8 @@ export class BewerberComponent implements OnInit {
   // aus der Historie
   public showAktion(komm: Kommunikation) {
     this.textHistorie = komm.anmerkungen;
+    this.selIdKommunikation = komm.id;
+
     // console.log(komm);
   }
 
@@ -458,6 +496,20 @@ export class BewerberComponent implements OnInit {
   public showAktionAnmerkung() {
     // console.log(this.aktion.bezeichnung);
   }
+
+  /*
+   * Löschen einer Aktion aus den bereits besteheneden Aktionen
+   */
+  public removeAktion() {
+
+    this.kommunikation_array.forEach( (komm, index) => {
+      if (komm.id === this.selIdKommunikation) {
+        this.kommunikation_array.splice(index,1);
+        this.textHistorie ="";
+      }
+    });
+  }
+
 
   // Button um die Aktion  in das kommunikationsarray zu übernehmen
   // sd_kommunikation_array
@@ -500,5 +552,94 @@ export class BewerberComponent implements OnInit {
     this.kommunikation_array.push (localAktion);
 
   }
+
+  /*   ===================== Verwaltung der Anlagen ============================= */
+
+  // aus der Historie
+  public showAnlage(anlage: Anlagen) {
+    this.nameAnlage = "anlage.name";
+    this.selIdAnlage = anlage.id;
+
+    // console.log(anlage);
+  }
+
+  // aus der LB mit allen Kommunikationselementen (SD_Kommunikation)
+  public showAnlageAnmerkung() {
+    // console.log(this.anlage.name);
+  }
+
+  public selAnlage(event:any) {
+    // console.log(event);
+    this.anlage = event;
+  }
+
+
+  public fetchPdf() {
+
+    // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
+    // Die downzuloadende und anzuzeigende PDF-Datei steht in "anlage.name"
+    if (this.anlage.name !== null) {
+
+      // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
+      /*
+      this.serviceStellenangebote.getPdfStellenangebot(this.selFilePdfStellenangebot).subscribe(data => {
+        console.log(data);
+      });
+      */
+      this.serviceStellenangebote.getPdfStellenangebotById(this.anlage.id);
+      // this.serviceStellenangebote.getPdfStellenangebotByName(this.anlage.name!);
+
+    } else {
+      // Hinweis ausgeben, dass kein Datei selektiert wurde
+      this.showHinweisMissingPdfDatei();
+    }
+  }
+
+  public showHinweisMissingPdfDatei() {
+    let dialogRef = this.dialog.open(MyAlertDialogComponent);
+    dialogRef.afterClosed().subscribe((result: string) => {
+      if (result == 'ok') {
+        console.log(result);
+      }
+    })
+  }
+  public onFileChangeInput(event: any) {
+    this.selFilePdfAnlage = event.target.files[0];
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Tricky FILE-Auswahldialog, da der schönere Material-Button den hässlichen Original FIE-Button nur überlagert
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  onClickFileInputButton(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+// Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
+public updateAnlagePdf() {
+
+  if (this.selFilePdfAnlage !== undefined) {
+
+    /*
+    // Updaten der Property Stellenangebot.pdf_stellenangebot und updaten der pdf-Datei in die Entität "ibm.pdf_stellenangebot"
+    this.serviceStellenangebote.postPdfStellenangebot(this.id, this.selFilePdfAnlage!).subscribe(data => {
+
+     // In data müsste jetzt vom Typ <Stellenangebot> sein
+     // console.log(data);
+
+     this.tmpSa = <Stellenangebot> data;
+      this.selFilePdfAnlage = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
+
+      // Jetzt muss man die Property this.pdf_attached noch richtig setzen
+      this.nameAnlage = this.tmpSa.pdf_stellenangebot;
+
+    });
+    */
+
+  } else {
+    // Hinweis ausgeben, dass noch keine PDF-Datei zugeordnet ist
+    this.showHinweisMissingPdfDatei();
+  }
+}
+
 
 }
