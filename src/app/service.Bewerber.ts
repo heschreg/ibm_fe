@@ -14,22 +14,8 @@ export class ServiceBewerber {
   constructor(private httpClient: HttpClient) { }
 
   /*
-   * Holen der Kommunikationshistorie zum selektierten Bewerber
-   */
-  public getListeKommunikation (idbewerber: number): Observable<Kommunikation[]> {
-    return <Observable<Kommunikation[]>>this.httpClient.get<Kommunikation[]>(`${this.baseURL}/kommunikation/${idbewerber}`);
-  }
-
-
-
-  /*
-   * Holen von Stammmdaten - Tabelle SD_Kommunikation
-   */
-  getListeSdKommunikation(): Observable<SD_Kommunikation[]>{
-    return <Observable<SD_Kommunikation[]>>this.httpClient.get<SD_Kommunikation[]>(`${this.baseURL}/sd_kommunikation`);
-  }
-
-
+   * Holen der Bewerber zu einem Stellenangebot - Tabelle "bewerber"
+  */
   public getListeBewerber (idstellenangebot: number): Observable<Bewerber[]> {
     return <Observable<Bewerber[]>>this.httpClient.get<Bewerber[]>(`${this.baseURL}/bewerber/${idstellenangebot}`);
   }
@@ -57,8 +43,21 @@ export class ServiceBewerber {
     const headers = {'content-type': 'application/json'};
 
     return this.httpClient.put<Bewerber>(url, body, {'headers':headers});
-
   }
 
+  /*
+   * Holen der Kommunikationshistorie zum selektierten Bewerber
+   */
+  public getListeKommunikation (idbewerber: number): Observable<Kommunikation[]> {
+    return <Observable<Kommunikation[]>>this.httpClient.get<Kommunikation[]>(`${this.baseURL}/kommunikation/${idbewerber}`);
+  }
+
+
+  /*
+   * Holen von Stammmdaten - Tabelle SD_Kommunikation
+   */
+  getListeSdKommunikation(): Observable<SD_Kommunikation[]>{
+    return <Observable<SD_Kommunikation[]>>this.httpClient.get<SD_Kommunikation[]>(`${this.baseURL}/sd_kommunikation`);
+  }
 
 }

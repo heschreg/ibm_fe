@@ -14,8 +14,8 @@ export interface Kommunikation {
   id: number;
   zeitpunkt: string;
   anmerkungen: string;
-  bewerber: Bewerber;
   sd_kommunikation: SD_Kommunikation;
+  bewerber?: Bewerber;
 }
 
 export interface Anlagen {
@@ -38,7 +38,7 @@ export interface Bewerber {
   hausnummer: number;
   email: string;
   notizen: string;
-  kommunikation: Kommunikation[];
+  kommunikationen: Kommunikation[];
   anlagen: Anlagen[];
   skills: string;
 }

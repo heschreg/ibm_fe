@@ -94,6 +94,7 @@ export class BewerberComponent implements OnInit {
     //   und entsprechend die beiden Listboxen aufgebaut werden
     this.initStellenangeboteBewerber();
 
+    // Zum Testen, ob das anlage_array richtig in der Listbox dargestellt wird
     let oneAnlage : Anlagen = {
       id: 1,
       name: '',
@@ -162,11 +163,14 @@ export class BewerberComponent implements OnInit {
           this.sa_array.push(d);
         });
 
-        this.selStangObject = this.sa_array[0];
+        if (this.sa_array.length > 0) {
+          this.selStangObject = this.sa_array[0];
 
-        // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
-        /// evtl. die Id des initialen Bewerbers einstellen
-        this.getListBewerber(this.selStangObject.id, INIT);
+          // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
+          /// evtl. die Id des initialen Bewerbers einstellen
+          this.getListBewerber(this.selStangObject.id, INIT);
+
+        }
       });
     });
   }
@@ -239,7 +243,7 @@ export class BewerberComponent implements OnInit {
 
     let localBew: Bewerber  = {
       id: 0, idstellenangebot: 0, nachname: '', vorname: '', anrede: '', titel: '',
-      plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikation: [],
+      plz: 0, ort: '', strasse: '', hausnummer: 0, email: '', notizen: '', kommunikationen: [],
       anlagen: [], skills: ''};
 
     // Holen der im Formular erfassten Daten inklusive der Kommunikationshistorie
@@ -307,8 +311,8 @@ export class BewerberComponent implements OnInit {
   public getListBewerber(idstellenangebot: number, mode: number ){
 
     this.serviceBewerber.getListeBewerber(idstellenangebot).subscribe(data => {
-      this.bew_array = [];
 
+      this.bew_array = [];
       data.forEach((d) => {
         this.bew_array.push(d);
       });
@@ -342,7 +346,21 @@ export class BewerberComponent implements OnInit {
           })
         }
 
+        // Liste mit Kommunikationen hierauswerten, falls das Serialisieren jetzt funktiioniert
+        this.kommunikation_array = [];
+        this.selBewerberObject.kommunikationen.forEach((k) => {
+          // Übertragen des Arrays mit den Kommunikationseinträgen
+          this.kommunikation_array.push(k);
+        });
+
+        this.formmode = READ; // Die Formulardaten können nicht verändert werden
+        this.readonly = true; // alle Formcontrols werden disabled
+        this.readonlyCancel = true;
+
+        this.bewerberShowDetails(this.selBewerberObject);
+
         // Jetzt noch die Kommunikationshistorie holen
+        /*
         this.serviceBewerber.getListeKommunikation(this.selBewerberObject.id).subscribe(data => {
 
           data.forEach((k) => {
@@ -356,6 +374,7 @@ export class BewerberComponent implements OnInit {
           this.bewerberShowDetails(this.selBewerberObject);
 
         });
+        */
 
       }  else {
 
@@ -391,7 +410,7 @@ export class BewerberComponent implements OnInit {
     localBew.notizen  = this.bewerberFormGroup.value.notizen;
     localBew.skills   = this.bewerberFormGroup.value.skills;
 
-    localBew.kommunikation = this.kommunikation_array;
+    localBew.kommunikationen = this.kommunikation_array;
 
     let tmpArrayAnlagen:Anlagen[] = [];
     localBew.anlagen = tmpArrayAnlagen;
@@ -415,6 +434,7 @@ export class BewerberComponent implements OnInit {
 
   }
 
+  // Click-Event aus der UI
   public buildListBewerber(id_stellenangebot: number) {
 
     this.getListBewerber(id_stellenangebot, INIT);
@@ -528,7 +548,7 @@ export class BewerberComponent implements OnInit {
     let localBewerber: Bewerber = {
       id: 0, idstellenangebot: 0, nachname: '', vorname: '',
       anrede: '', titel: '', plz: 0, ort: '', strasse: '',
-      hausnummer: 0, email: '', notizen: '', kommunikation: [],
+      hausnummer: 0, email: '', notizen: '', kommunikationen: [],
       anlagen: [], skills: ''
     };
 
@@ -538,14 +558,13 @@ export class BewerberComponent implements OnInit {
       id: 0,
       zeitpunkt: '',
       anmerkungen: '',
-      bewerber: localBewerber,
       sd_kommunikation: localSD_Kommunikation
     };
 
     localAktion.id = -1;
     localAktion.anmerkungen = this.aktionstext;
     localAktion.zeitpunkt = this.aktionsdatumS;
-    localAktion.bewerber = this.selBewerberObject;
+    // localAktion.bewerber = this.selBewerberObject;
     localAktion.sd_kommunikation = this.aktion;
 
     // das Array um die neue Aktionshistorie erweitern
