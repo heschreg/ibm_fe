@@ -12,13 +12,13 @@
         <div class="row">
           <div class="col-3">
             <mat-form-field>
+              <!-- Alternative zum allg. Überwachen von mat.select: (selectionChange)="stangChangeAction(selStangObject)" -->
               <mat-select
                 placeholder="Wähle Stellenangebot"
                 name="selStellenangebot"
-                (selectionChange)="stangChangeAction(selStangObject)"
                 [(ngModel)]="selStangObject">
 
-                <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang.id)">
+                <mat-option *ngFor="let stang of sa_array" [value]="stang" (click)="buildListBewerber(stang)">
                   {{ stang.bezeichnung }}
                 </mat-option>
 
@@ -28,11 +28,11 @@
 
           <div class="col-3">
             <mat-form-field>
-              <mat-select
+                <!-- könnte man in mat-select hinzfügen: (selectionChange)="bewerberChangeAction(selBewerberObject)" -->
+                <mat-select
                 [(value)]="selBewerberObject"
                 placeholder="Wähle Bewerber"
                 name="selBewerber"
-                (selectionChange)="bewerberChangeAction(selBewerberObject)"
                 [(ngModel)]="selBewerberObject">
 
                 <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="showSelectedBewerber(bew)">
@@ -204,7 +204,7 @@
             <div class="col-4">
               <mat-form-field>
                 <mat-label>Zeige Kommunikation</mat-label>
-                <mat-select  [multiple]="false">
+                <mat-select #mySelect [multiple]="false">
                   <mat-option  value="{{komm.anmerkungen}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
                     {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
                   </mat-option>
@@ -231,13 +231,13 @@
         <!-- rechte Seite -->
         <div class="col-5">
 
-          <!-- Anzeige einer Liste mit allen möglichen Aktionsarten -->
+          <!-- Anzeige einer Liste mit allen möglichen Aktionsarten in Dropdown-Listbox-->
           <div class="row">
             <div class="col-6">
               <mat-form-field>
                 <mat-label>Wähle Kommunikation</mat-label>
                 <mat-select  [multiple]="false">
-                  <mat-option  value="{{komm.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
+                  <mat-option  value="{{komm?.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
                     {{komm.bezeichnung}}
                   </mat-option>
                 </mat-select>

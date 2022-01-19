@@ -27,6 +27,8 @@ const READ:   number = 3;
 })
 export class BewerberComponent implements OnInit {
 
+  @ViewChild('mySelect') mySelect: any;
+
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfAnlage: File | null = null;
 
@@ -300,7 +302,7 @@ export class BewerberComponent implements OnInit {
 
 
   /*
-   * Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tablle "bewerber" by "idstellenangebot"
+   * Holen aller erfassten Bewerber zum gewählten Stellenangebot aus der Tabelle "bewerber" by "idstellenangebot"
    *
    * Anhand welcher ID gefetched wird, häng auch vom Modus ab, der gerade gültig ist:
    * INIT steht für den ersten Bewerber in der Liste (beim erstmaligen Initialisieren des Dialogs)
@@ -346,35 +348,13 @@ export class BewerberComponent implements OnInit {
           })
         }
 
-        // Liste mit Kommunikationen hierauswerten, falls das Serialisieren jetzt funktiioniert
-        this.kommunikation_array = [];
-        this.selBewerberObject.kommunikationen.forEach((k) => {
-          // Übertragen des Arrays mit den Kommunikationseinträgen
-          this.kommunikation_array.push(k);
-        });
+        this.initBereichKommunikation();
 
         this.formmode = READ; // Die Formulardaten können nicht verändert werden
         this.readonly = true; // alle Formcontrols werden disabled
         this.readonlyCancel = true;
 
         this.bewerberShowDetails(this.selBewerberObject);
-
-        // Jetzt noch die Kommunikationshistorie holen
-        /*
-        this.serviceBewerber.getListeKommunikation(this.selBewerberObject.id).subscribe(data => {
-
-          data.forEach((k) => {
-            this.kommunikation_array.push(k);
-          });
-
-          this.formmode = READ; // Die Formulardaten können nicht verändert werden
-          this.readonly = true; // alle Formcontrols werden disabled
-          this.readonlyCancel = true;
-
-          this.bewerberShowDetails(this.selBewerberObject);
-
-        });
-        */
 
       }  else {
 
@@ -384,11 +364,16 @@ export class BewerberComponent implements OnInit {
         // Falls noch kein Bewerber vorhanden ist, so darf man nur den "Speichern Button" aktiviert sein
         this.readonlyCancel = true;
 
-
         // leeres Formual anbieten, um den ersten eingegeangene Bewerber anlegen zu können
         this.bewerberFormGroup.reset();
+
+        this.initBereichKommunikation();
+        this.kommunikation_array = []; // nochmals leeren
+
       }
     });
+
+    this.initBereichKommunikation();
 
     // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
     return null;
@@ -416,6 +401,22 @@ export class BewerberComponent implements OnInit {
     localBew.anlagen = tmpArrayAnlagen;
   }
 
+  public initBereichKommunikation() {
+
+    // Bereich mit den möglichen Kommunikationstypen
+    this.dateAktionDefault = "";
+    this.aktionstext = "";
+
+    // Bereich mit der tatsächlichen KOmmunikationshistorie
+    this.textHistorie ="";
+
+    this.kommunikation_array = [];
+    this.selBewerberObject.kommunikationen.forEach((k) => {
+      // Übertragen des Arrays mit den Kommunikationseinträgen
+      this.kommunikation_array.push(k);
+    });
+
+  }
 
 
   /* ========================= Methoden, die aus der UI getriggered werden =================== */
@@ -424,20 +425,12 @@ export class BewerberComponent implements OnInit {
   // Listbox mit allen Stellenangeboten
   ///////////////////////////////////////////////////
 
-  public stangChangeAction(selStangObject: Stellenangebot) {
-
-    // darin steht ein Objekt vom Typ "Stellenangebot"
-    console.log(selStangObject);
-
-    // Aufbau der Listbox mit allen zugehörigen Bewerbern
-    this.getListBewerber(selStangObject.id, INIT);
-
-  }
-
   // Click-Event aus der UI
-  public buildListBewerber(id_stellenangebot: number) {
+  public buildListBewerber(selStangObject: Stellenangebot) {
 
-    this.getListBewerber(id_stellenangebot, INIT);
+    console.log(this.selStangObject);
+
+    this.getListBewerber(selStangObject.id, INIT);
   }
 
   ///////////////////////////////////////////////////
@@ -450,6 +443,11 @@ export class BewerberComponent implements OnInit {
 
     // Rücksetzen aller form-Werte
     this.bewerberFormGroup.reset();
+
+    this.initBereichKommunikation();
+    this.kommunikation_array = []; // Bei Neuanlage nochmals zurücksetzen
+
+
   }
 
   public startUpdateBewerber() {
@@ -459,9 +457,16 @@ export class BewerberComponent implements OnInit {
   }
 
   public cancelBewerber() {
+
+    this.bewerberShowDetails(this.selBewerberObject);
+
+    this.initBereichKommunikation();
+
+
     this.formmode = READ;
     this.readonly = true;  // Die FormControls können editiert werden
     this.readonlyCancel = true;
+
 
   }
 
@@ -476,18 +481,15 @@ export class BewerberComponent implements OnInit {
     // console.log(this.bewerberFormGroup.value.email);
   }
 
-  public bewerberChangeAction(bewerber: Bewerber) {
-    // momentan keine weitere Funktionalität hinterlegt
-    console.log(bewerber);
-  }
-
   public showSelectedBewerber (selectedBewerber: Bewerber) {
 
     // Füllen der Formcontrols mit dem selektierten Bewerber
     this.fillBewerbeControls(selectedBewerber);
 
     this.selBewerberObject = selectedBewerber;
-    this.kommunikation_array = [];
+
+    this.initBereichKommunikation();
+
   }
 
   public selAktion(event:any) {
@@ -528,20 +530,11 @@ export class BewerberComponent implements OnInit {
         this.textHistorie ="";
       }
     });
+
+    // Aufklappen der Listbox, damit man die Änderung gleich sieht
+    this.mySelect.open();
+
   }
-
-
-  // Button um die Aktion  in das kommunikationsarray zu übernehmen
-  // sd_kommunikation_array
-  /*
-  export interface Kommunikation {
-  id: number;
-  zeitpunkt: Date;
-  anmerkungen: string;
-  bewerber: Bewerber;
-  sd_kommunikation: SD_Kommunikation;
-  */
-
 
   public addAktion() {
 
@@ -567,8 +560,11 @@ export class BewerberComponent implements OnInit {
     // localAktion.bewerber = this.selBewerberObject;
     localAktion.sd_kommunikation = this.aktion;
 
-    // das Array um die neue Aktionshistorie erweitern
+    // das Array mit den zugewiesenen Aktionen um die neue Aktionshistorie erweitern
     this.kommunikation_array.push (localAktion);
+
+    // Aufklappen der Listbox, damit man die Änderung gleich sieht
+    this.mySelect.open();
 
   }
 
