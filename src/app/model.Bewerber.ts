@@ -3,6 +3,11 @@ export interface SD_Kommunikation {
   bezeichnung: string;
 }
 
+export interface SD_Anlage {
+  id: number;
+  bezeichnung: string;
+}
+
 /*
 long id = kommunikationen.get(0).getId();
 String anmerkungen                = kommunikationen.get(0).getAnmerkungen(); // Achtung: ist immer nur eine Anmerkung
@@ -13,13 +18,15 @@ SD_Kommunikation sd_Kommunikation = kommunikationen.get(0).getSd_kommunikation()
 export interface Kommunikation {
   id: number;
   zeitpunkt: string;
-  anmerkungen: string;
+  anmerkung: string;
   sd_kommunikation: SD_Kommunikation;
   bewerber?: Bewerber;
 }
 
-export interface Anlagen {
+export interface Anlage {
   id: number;
+  sd_anlage: SD_Anlage;
+  anmerkung: string;
   name: string;
   type: string;
   bin_data?: Blob;
@@ -39,12 +46,8 @@ export interface Bewerber {
   email: string;
   notizen: string;
   kommunikationen: Kommunikation[];
-  anlagen: Anlagen[];
+  anlagen: Anlage[];
   skills: string;
 }
-export interface Pdf_Attached {
-  id: number;
-  name?: string;
-  type?: string;
-  bin_data?: Blob;
-}
+
+

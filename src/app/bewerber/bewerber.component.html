@@ -196,16 +196,16 @@
         <!-- -------------------------------  -->
         <div><span class="hinweis1"> Pflege der Kommunikationshistorie</span></div>
 
-        <!-- mittlere Seite -->
+        <!-- mittlere Seite: alle erfassten Kommunikationstypen bzgl. des selektierten Bewerbers -->
         <div class="col-3">
 
-          <!-- Anzeige einer Liste mit der hinterlegten Aktionshistorie bzgl. des selektierten Bewerbers -->
+          <!-- Anzeige einer Liste mit der hinterlegten Aktionshistorie -->
           <div class="row">
             <div class="col-4">
               <mat-form-field>
                 <mat-label>Zeige Kommunikation</mat-label>
                 <mat-select #mySelect [multiple]="false">
-                  <mat-option  value="{{komm.anmerkungen}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
+                  <mat-option  value="{{komm.anmerkung}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
                     {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
                   </mat-option>
                 </mat-select>
@@ -215,7 +215,7 @@
 
           <div class="row">
             <div class="col-6">
-              <textarea [readonly]=readonly [value]="textHistorie" (click)="showAktionAnmerkung()"> </textarea>
+              <textarea [readonly]=readonly [value]="aktionAnmerkung" (click)="showAktionAnmerkung()"> </textarea>
             </div>
           </div>
 
@@ -227,11 +227,9 @@
 
         </div>
 
-
-        <!-- rechte Seite -->
         <div class="col-5">
 
-          <!-- Anzeige einer Liste mit allen möglichen Aktionsarten in Dropdown-Listbox-->
+          <!-- rechte Seite: Anzeige einer Liste mit allen möglichen Aktionsarten in Dropdown-Listbox-->
           <div class="row">
             <div class="col-6">
               <mat-form-field>
@@ -259,7 +257,7 @@
 
           <div class="row">
             <div class="col-8">
-              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktionAnmerkung()" [(ngModel)]="aktionstext"> </textarea>
+              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktionSdAnmerkung()" [(ngModel)]="aktionSdAnmerkung"> </textarea>
             </div>
           </div>
 
@@ -277,17 +275,16 @@
         <!-- ------------------------  -->
         <div><span class="hinweis1"> Pflege der Anlagen</span></div>
 
-        <!-- mittlere Seite -->
         <div class="col-3">
 
-          <!-- Anzeige einer Liste mit der hinterlegten Aktionshistorie bzgl. des selektierten Bewerbers -->
+          <!-- mittlere Seite : Anzeige einer Liste mit der bereis hinterlegten Anlagen des selektierten Bewerbers -->
           <div class="row">
             <div class="col-4">
               <mat-form-field>
-                <mat-label>Zeige Anlagen</mat-label>
+                <mat-label>Zeige erfasste Anlagen</mat-label>
                 <mat-select  [multiple]="false">
                   <mat-option  value="{{anlage.name}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="showAnlage(anlage)" >
-                    {{anlage.type}} {{anlage.name}}
+                    {{anlage.sd_anlage.bezeichnung}}:  {{anlage.name}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -295,18 +292,31 @@
           </div>
 
           <div class="row">
-            <div class="col-6">
-              <textarea [readonly]="readonly" [value]="nameAnlage" (click)="showAktionAnmerkung()"> </textarea>
+            <div class="col-1">
+              <!--
+              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">Anlage (Pdf) anzeigen</button>
+              -->
+              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">{{anlageName}} anzeigen</button>
             </div>
           </div>
+
+          <div class="midigap"></div>
 
           <div class="row">
-            <div class="col-1">
-              <button mat-raised-button color="primary" [disabled]="readonly" (click)="fetchPdf()">PDF anzeigen</button>
+            <div class="col-8">
+              <input [readonly]=true  placeholder="Name" (click)="showAnlageName()" [(ngModel)]="anlageName"/>
             </div>
           </div>
 
-          <div class="minigap"></div>
+          <div class="midigap"></div>
+
+          <div class="row">
+            <div class="col-6">
+              <textarea [readonly]=true [value]="anlageAnmerkung" (click)="showAnlageAnmerkung()">
+                {{anlage.anmerkung}
+              </textarea>
+            </div>
+          </div>
 
           <div class="row">
             <div class="col-1">
@@ -316,38 +326,27 @@
 
         </div>
 
-        <!-- Auswahl des Anlagentyps, zu dem eine Pdf-Datei hochgeladen werden soll-->
-        <!-- rechte Seite -->
         <div class="col-4">
 
-          <!-- Anzeige einer Liste mit allen möglichen Anlagearten wie Lebenslauf, Anschreiben, Zeugnis -->
+          <!-- rechte Seite: Auswahl der Anlagekategorie (Lebensláuf, Zeugnis,...), bzgl. der eine Pdf-Datei hochgeladen werden soll-->
           <div class="row">
             <div class="col-6">
               <mat-form-field>
-                <mat-label>Wähle Anlagentyp</mat-label>
+                <mat-label>Wähle Anlagekategorie</mat-label>
                 <mat-select  [multiple]="false">
-                  <mat-option  value="{{anlage.type}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="selAnlage(anlage)" >
-                    {{anlage.type}}
+                  <mat-option  value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
+                    {{sd_anlage.bezeichnung}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-8">
-              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAnlageAnmerkung()" [(ngModel)]="anlagetext"> </textarea>
-            </div>
-          </div>
-
           <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
           <div class="row">
             <div class="col-md-7">
-              <span class="abstand_right" *ngIf="anlage?.name" class="pdfattached">  {{anlage?.name}}</span>
-              <span class="abstand_right" *ngIf="!anlage?.name" class="auffaellig">  kein Pdf zugeordnet</span>
 
               <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
-              <span class="abstand_left">
               <input
                 type="file"
                 style="display: none"
@@ -360,21 +359,32 @@
                 color="warn"
                 class="file-select-button"
                 (click)="onClickFileInputButton()"
-                [disabled]="!readonly">
+                [disabled]="readonly">
 
-                <mat-icon>attach_file</mat-icon>Pdf-Datei zuordnen
+                <mat-icon>attach_file</mat-icon>Anlage (Pdf) auswählen
               </button>
-
-              <div class="minigap"></div>
-
-
-              <button mat-raised-button color="primary" [hidden]="selFilePdfAnlage?.name == null" (click)="updateAnlagePdf()">
-                {{selFilePdfAnlage?.name}} hochladen
-              </button>
-              </span>
             </div>
-
           </div>
+
+          <div class="midigap"></div>
+
+          <div class="row">
+            <div class="col-8">
+              <input [readonly]=readonly  placeholder="Name" (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
+            </div>
+          </div>
+
+          <div class="midigap"></div>
+
+          <div class="row">
+            <div class="col-8">
+              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showSdAnlageAnmerkung()" [(ngModel)]="sdAnlageAnmerkung"> </textarea>
+            </div>
+          </div>
+
+          <button mat-raised-button color="primary" [hidden]="selFilePdfAnlage?.name == null" (click)="saveAnlagePdf()">
+            {{selFilePdfAnlage?.name}} hochladen
+          </button>
 
         </div>
 

@@ -28,17 +28,3 @@ export interface Pdf_Attached {
   bin_data?: Blob;
 }
 
-/*
-export interface Kanal_Success {
-  id: number;
-  bezeichnung: string;
-  selected?: boolean;
-}
-
-export interface Stellenangebote {
-  id: number;
-  firstName: string;
-  lastName: string;
-  emailId: string;
-}
-*/

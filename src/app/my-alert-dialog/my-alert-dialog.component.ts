@@ -4,4 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-my-alert-dialog',
   templateUrl: './my-alert-dialog.component.html'
 })
-export class MyAlertDialogComponent { }
+export class MyAlertDialogComponent {
+
+  public message: string = "";
+
+ }
