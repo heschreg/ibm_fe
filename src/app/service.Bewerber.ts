@@ -76,29 +76,30 @@ export class ServiceBewerber {
 
   public postPdfAnlage(id: number, anlage: Anlage, pdfFile: File)  {
 
-    // let localSD_Anlage: SD_Anlage = {id: 0, bezeichnung: ''};
-    // let local_Anlage: Anlage = { id: 0, sd_anlage: localSD_Anlage, anmerkung: '', name: '', type: ''};
-
     const formData = new FormData();
     formData.append("id_sd_anlage", anlage.sd_anlage.id.toString());
     formData.append("anmerkung", anlage.anmerkung);
     formData.append('pdfFile', pdfFile, pdfFile.name);
 
-    // @PostMapping(path = "/uploadpdfanlage/{id_bewerber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    return this.httpClient.post(`${this.baseURL}/uploadpdfanlage/${id}`, formData);
+    // @PostMapping(path = "/upldpdfanlage/{id_bewerber}", produces = MediaType.APPLICATION_JSON_VALUE)
+    return this.httpClient.post(`${this.baseURL}/upldpdfanlage/${id}`, formData);
   }
 
 
-  public getPdfAnlageById( id: number) {
+  public getPdfAnlageById(id: number) {
 
     // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
     // z.B.: "http://localhost:8080/ibm/byfilename/anzeige1.pdf";
-    const fileUrl = `${this.baseURL}/dnldpdfbyid/` + id;
+    const filestreamUrl = `${this.baseURL}/file/${id}`;
 
-    // Es wird innerhalb der open-Methode ein REST-Aufruf mit der übergebenen Url gestartet
-    // Dieser muss einen Bytestream zurückliefern, damit dieser von der open()-Methode
-    // ausgewertet werden kann und das Pdf dannn downgeloaded wird
-    window.open(fileUrl);
+    /*
+     * In der open-Methode ist ein REST-Aufruf versteckt, der die übergebene Url nutzt
+     *
+     *  Der zugehörige Restendpoint muß einen Stream zurückliefern, aufgrund dessen
+     *  im Browser der Dwonload der pdf-Daten und die entsprechend Konvertierung in
+     *  eine pdf-Datei erfolgt
+     */
+    window.open(filestreamUrl);
 
   }
 

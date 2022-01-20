@@ -63,7 +63,6 @@ export class BewerberComponent implements OnInit {
   // Bereich mit den aktuell zugeordneten Anlagen
   public anlage_array: Anlage[] = [];
   public anlage!: Anlage;
-  public selIdAnlage : number = -1;
   public anlageName : string = "";
   public anlageAnmerkung : string = "";
 
@@ -598,10 +597,11 @@ export class BewerberComponent implements OnInit {
 
   // aus der Liste der aktuelle zugeordneten Anlagen
   public showAnlage(anlage: Anlage) {
-    this.anlageName  = anlage.name;
-    this.anlageAnmerkung  = anlage.anmerkung;
-    this.selIdAnlage = anlage.id;
+    this.anlage          = anlage;
+    this.anlageName      = anlage.name;
+    this.anlageAnmerkung = anlage.anmerkung;
 
+    // selFilePdfAnlage!: File;
     // console.log(anlage);
   }
 
@@ -643,23 +643,6 @@ export class BewerberComponent implements OnInit {
   // Tricky FILE-Auswahldialog, da der schönere Material-Button den hässlichen Original FIE-Button nur überlagert
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public fetchPdf() {
-
-    // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
-    // Die downzuloadende und anzuzeigende PDF-Datei steht in "anlage.name"
-    if (this.anlage) {
-
-      // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
-
-      this.serviceStellenangebote.getPdfStellenangebotById(this.anlage.id);
-      // this.serviceStellenangebote.getPdfStellenangebotByName(this.anlage.name!);
-
-    } else {
-      // Hinweis ausgeben, dass kein Datei selektiert wurde
-      this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
-    }
-  }
-
   public showHinweisMissingPdfDatei(content: string) {
     let dialogRef = this.dialog.open(MyAlertDialogComponent);
 
@@ -681,55 +664,68 @@ export class BewerberComponent implements OnInit {
     this.fileInput.nativeElement.click();
   }
 
-// Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
-public saveAnlagePdf() {
+  // Benutzer hat eine pdf-Datei ausgewählt, die dem aktuellen Stellenangebot zuzuordnen ist
+  public saveAnlagePdf() {
 
-  if (this.sd_anlage === undefined) {
-      // Hinweis ausgeben, dass noch Kategorie wie z. B. "Lebenslauf" ausgewählt wurde
-      this.showHinweisMissingPdfDatei("Bitte zunächst eine Anlagekategorie aus der Liste wählen");
-
-  } else {
-
-    if (this.selFilePdfAnlage === undefined) {
-      // Hinweis ausgeben, dass noch keine PDF-Datei zugeordnet ist
-      this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
+    if (this.sd_anlage === undefined) {
+        // Hinweis ausgeben, dass noch Kategorie wie z. B. "Lebenslauf" ausgewählt wurde
+        this.showHinweisMissingPdfDatei("Bitte zunächst eine Anlagekategorie aus der Liste wählen");
 
     } else {
-      // hierher, falls eine upzuloadende pdf-Datgei ausgewählt wurde
 
-      let localSD_Anlage: SD_Anlage = {id: 0, bezeichnung: ''};
-      let local_Anlage: Anlage = {
-        id: -1, sd_anlage: localSD_Anlage, anmerkung: '',
-        name: '', type: '',
-      };
+      if (this.selFilePdfAnlage === undefined) {
+        // Hinweis ausgeben, dass noch keine PDF-Datei zugeordnet ist
+        this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
 
-      local_Anlage.id = -1;
-      local_Anlage.sd_anlage = this.sd_anlage; // z. B.: Lebenslauf-Eintrag in SD_Anlage
-      local_Anlage.anmerkung = this.sdAnlageAnmerkung;
+      } else {
+        // hierher, falls eine upzuloadende pdf-Datgei ausgewählt wurde
 
-      // Beide Properties sind in der gewählten Datei "selFilePdfAnlage" enthalten
-      local_Anlage.name  = this.sdAnlageName;
-      local_Anlage.type  = "pdf";
+        let localSD_Anlage: SD_Anlage = {id: 0, bezeichnung: ''};
+        let local_Anlage: Anlage = {
+          id: -1, sd_anlage: localSD_Anlage, anmerkung: '',
+          name: '', type: '',
+        };
 
-      // Updaten der pdf-Datei in die Entität "ibm.anlage"
-      this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe(data => {
+        local_Anlage.id = -1;
+        local_Anlage.sd_anlage = this.sd_anlage; // z. B.: Lebenslauf-Eintrag in SD_Anlage
+        local_Anlage.anmerkung = this.sdAnlageAnmerkung;
 
-        // In data steht jetzt in Object vom Typ <Bewerber>
-        console.log(data);
+        // Beide Properties sind in der gewählten Datei "selFilePdfAnlage" enthalten
+        local_Anlage.name  = this.sdAnlageName;
+        local_Anlage.type  = "pdf";
 
-        this.anlage_array.push(local_Anlage);
+        // Updaten der pdf-Datei in die Entität "ibm.anlage"
+        this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe(data => {
 
-        // this.tmpBew = <Bewerber> data;
+          // In data steht jetzt in Object vom Typ <Bewerber>
+          console.log(data);
 
-        this.selFilePdfAnlage.name == null; // dadurch wird auch wieder der Hochladen-Button ausgeblendet
+          this.anlage_array.push(local_Anlage);
 
-      });
+          // this.tmpBew = <Bewerber> data;
 
+          this.selFilePdfAnlage.name == null; // Button zum Hochladen ausgeblenden
+
+        });
+      }
     }
   }
 
-}
+  public fetchPdf() {
 
+    // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
+    // Die downzuloadende und anzuzeigende PDF-Datei steht in "anlage.name"
+    if (this.anlage) {
+
+      // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
+      // this.serviceBewerber.getPdfAnlageById(this.anlage.id);
+      this.serviceBewerber.getPdfAnlageById(2);
+
+    } else {
+      // Hinweis ausgeben, dass kein Datei selektiert wurde
+      this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
+    }
+  }
 
 
 
