@@ -85,6 +85,25 @@ export class ServiceBewerber {
     return this.httpClient.post(`${this.baseURL}/upldpdfanlage/${id}`, formData);
   }
 
+  //  this.serviceBewerber.getPdfAnlageByQuery(this.anlage);
+
+  public getPdfAnlageByQuery(bewerber_id: number, id : number) {
+
+    /*
+    * In der open-Methode ist ein REST-Aufruf versteckt, der die übergebene Url nutzt
+    *
+    *  Der zugehörige Restendpoint muß einen Stream zurückliefern, aufgrund dessen
+    *  im Browser der Dwonload der pdf-Daten und die entsprechend Konvertierung in
+    *  eine pdf-Datei erfolgt
+    *
+    * über id, bewerber_id kann in der Entität "anlage" die selektierte Anlage angesprochen werden
+    */
+
+    const filestreamUrl = `${this.baseURL}/file/${id}/${bewerber_id}`;
+    window.open(filestreamUrl);
+  }
+
+
 
   public getPdfAnlageById(id: number) {
 

@@ -717,13 +717,18 @@ export class BewerberComponent implements OnInit {
     // Die downzuloadende und anzuzeigende PDF-Datei steht in "anlage.name"
     if (this.anlage) {
 
-      // Holen der pdf-Datei, deren Name oder Id !!! in this.selFilePdfStellenangebot steht
-      // this.serviceBewerber.getPdfAnlageById(this.anlage.id);
-      this.serviceBewerber.getPdfAnlageById(2);
+      /*
+       * Download der selektierten pdf-Datei, deren Daten in der Tabelle ibm.anlage stehen
+       * @Query konstruieren, die anhand von id (PK) und bewerber_id den zugehörigen Datensatz filtert
+       *
+       */
+      //
+      // this.serviceBewerber.getPdfAnlageById(2);
+      this.serviceBewerber.getPdfAnlageByQuery(this.selBewerberObject.id, this.anlage.id);
 
     } else {
       // Hinweis ausgeben, dass kein Datei selektiert wurde
-      this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
+      this.showHinweisMissingPdfDatei("Bitte eine der erfassten Anlagen auswählen");
     }
   }
 
