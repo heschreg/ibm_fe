@@ -26,7 +26,8 @@ const READ:   number = 3;
 })
 export class BewerberComponent implements OnInit {
 
-  @ViewChild('mySelect') mySelect: any;
+  @ViewChild('mySelectKommunikation') mySelectKommunikation: any;
+  @ViewChild('mySelectAnlage') mySelectAnlage: any;
 
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfAnlage!: File;
@@ -44,27 +45,25 @@ export class BewerberComponent implements OnInit {
 
   // Bereich mit den aktuell erfassten Kommunikationstypen (Einladung, Interview, Rückfrage)
   public kommunikation_array: Kommunikation[] = [];
-  public aktionAnmerkung : string = "";
+  public kommunikationId : number = -1;
+  public kommunikationAnmerkung : string = "";
+  public kommunikationDate!:  any;
 
   // Bereich  mit allen verfügbaren Kommunikationstypen
   public sd_kommunikation_array: SD_Kommunikation[] = [];
-  public dateAktionDefault!:  any;
   public aktionSdAnmerkung : string = "";
 
-  // ==================================================
-
   public aktion!: SD_Kommunikation;
-
-  public selIdKommunikation : number = -1;
   public aktionsdatumS : string = "";
 
   // ==================================================
 
   // Bereich mit den aktuell zugeordneten Anlagen
   public anlage_array: Anlage[] = [];
-  public anlage!: Anlage;
-  public anlageName : string = "";
+  public anlageId : number = -1;
   public anlageAnmerkung : string = "";
+  public anlageName : string = "";
+  public anlage!: Anlage;
 
   // Bereich  mit allen verfügbaren Anlagekategorien
   public sd_anlage_array: SD_Anlage[] = [];
@@ -143,6 +142,7 @@ export class BewerberComponent implements OnInit {
             this.sa_array.push(d);
           });
 
+
           if (this.sa_array.length > 0) {
             this.selStangObject = this.sa_array[0];
 
@@ -151,7 +151,8 @@ export class BewerberComponent implements OnInit {
             this.getListBewerber(this.selStangObject.id, INIT);
           }
           else {
-            // Wenn beim eingestellten Stellenagebot noch kein Bewerber registriert ist dann kommt man hierher
+            // Wenn boch kein Stellenagebot registriert ist dann kommt man hierher
+            this.showHinweisMissingPdfDatei("Es muss mindestens ein Stellenangebot angelegt sein");
           }
         });
 
@@ -343,7 +344,6 @@ export class BewerberComponent implements OnInit {
         }
 
         this.initBereichKommunikation();
-
         this.initBereichAnlagen();
 
         this.formmode = READ; // Die Formulardaten können nicht verändert werden
@@ -363,13 +363,9 @@ export class BewerberComponent implements OnInit {
         // leeres Formual anbieten, um den ersten eingegeangene Bewerber anlegen zu können
         this.bewerberFormGroup.reset();
 
-        this.initBereichKommunikation();
-        this.kommunikation_array = []; // nochmals leeren
-
       }
     });
 
-    this.initBereichKommunikation();
 
     // Falls noch kein Bewerber erfasst wurde, Freischalten des Buttons, um einen neuen Bewerber anzulegen
     return null;
@@ -400,34 +396,35 @@ export class BewerberComponent implements OnInit {
   public initBereichKommunikation() {
 
     // Bereich mit den möglichen Kommunikationstypen
-    this.dateAktionDefault = "";
+    this.kommunikationDate = "";
     this.aktionSdAnmerkung = "";
 
     // Bereich mit der tatsächlichen KOmmunikationshistorie
-    this.aktionAnmerkung = "";
+    this.kommunikationAnmerkung = "";
 
-    this.kommunikation_array = [];
-    this.selBewerberObject.kommunikationen.forEach((k) => {
-      // Übertragen des Arrays mit den Kommunikationseinträgen
-      this.kommunikation_array.push(k);
-    });
+    if  (this.selBewerberObject?.kommunikationen) {
+      this.kommunikation_array = [];
+      this.selBewerberObject.kommunikationen.forEach((k) => {
+        // Übertragen des Arrays mit den Kommunikationseinträgen
+        this.kommunikation_array.push(k);
+      });
+    }
 
   }
 
   public initBereichAnlagen() {
 
-    // Bereich mit den möglichen Anlagen
-
     // Bereich mit den tatsächlich aktuell erfassten Anlagen
     this.anlageAnmerkung = "";
+    this.anlageName = "";
 
-
-    this.anlage_array = [];
-    this.selBewerberObject.anlagen.forEach((k) => {
-      // Übertragen des Arrays mit den erfassten Anlagen
-      this.anlage_array.push(k);
-    });
-
+    if (this.selBewerberObject && this.selBewerberObject.anlagen) {
+      this.anlage_array = [];
+      this.selBewerberObject.anlagen.forEach((k) => {
+        // Übertragen des Arrays mit den erfassten Anlagen
+        this.anlage_array.push(k);
+      });
+    }
   }
 
 
@@ -471,17 +468,14 @@ export class BewerberComponent implements OnInit {
 
   public cancelBewerber() {
 
-    this.bewerberShowDetails(this.selBewerberObject);
-
     this.initBereichKommunikation();
-
     this.initBereichAnlagen();
-
 
     this.formmode = READ;
     this.readonly = true;  // Die FormControls können editiert werden
     this.readonlyCancel = true;
 
+    this.bewerberShowDetails(this.selBewerberObject);
 
   }
 
@@ -504,6 +498,7 @@ export class BewerberComponent implements OnInit {
     this.selBewerberObject = selectedBewerber;
 
     this.initBereichKommunikation();
+    this.initBereichAnlagen();
 
   }
 
@@ -523,15 +518,15 @@ export class BewerberComponent implements OnInit {
 
   // aus der Historie
   public showAktion(komm: Kommunikation) {
-    this.aktionAnmerkung = komm.anmerkung;
-    this.selIdKommunikation = komm.id;
+    this.kommunikationAnmerkung = komm.anmerkung;
+    this.kommunikationId = komm.id;
 
     // console.log(komm);
   }
 
   // aus der LB mit den hinterlegten Kommunikationselementen (SD_Kommunikation)
   public showAktionAnmerkung() {
-    console.log(this.aktionAnmerkung);
+    console.log(this.kommunikationAnmerkung);
   }
 
 
@@ -546,14 +541,14 @@ export class BewerberComponent implements OnInit {
   public removeAktion() {
 
     this.kommunikation_array.forEach( (komm, index) => {
-      if (komm.id === this.selIdKommunikation) {
+      if (komm.id === this.kommunikationId) {
         this.kommunikation_array.splice(index,1);
-        this.aktionAnmerkung = "";
+        this.kommunikationAnmerkung = "";
       }
     });
 
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
-    this.mySelect.open();
+    this.mySelectKommunikation.open();
 
   }
 
@@ -585,7 +580,7 @@ export class BewerberComponent implements OnInit {
     this.kommunikation_array.push (localAktion);
 
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
-    this.mySelect.open();
+    this.mySelectKommunikation.open();
 
   }
 
@@ -598,6 +593,7 @@ export class BewerberComponent implements OnInit {
   // aus der Liste der aktuelle zugeordneten Anlagen
   public showAnlage(anlage: Anlage) {
     this.anlage          = anlage;
+    this.anlageId        = anlage.id;
     this.anlageName      = anlage.name;
     this.anlageAnmerkung = anlage.anmerkung;
 
@@ -617,6 +613,40 @@ export class BewerberComponent implements OnInit {
     // console.log(event);
     this.anlage = event;
   }
+
+
+  /*
+   * Löschen einer Anlage aus den bereits zugeordneten Anlagen
+   */
+  public removeAnlage() {
+
+    // Löschen der zu löschenden Anlage aus dem Array
+    this.anlage_array.forEach( (anlage, index) => {
+
+      if (anlage.id === this.anlageId) {
+        this.anlage_array.splice(index,1);
+        this.anlageAnmerkung = "";
+        this.anlageName = "";
+
+        // Löschen der zu löschenden Anlage aus der Entität "ibm.anlage"
+        this.serviceBewerber.deleteAnlageByQuery(this.anlage.id, this.selBewerberObject.id).subscribe(data => {
+
+          // Zurück kommt folgende Json-Response: {deletetd:true}
+          console.log(data);
+
+          // const obj = JSON.parse(data); ==> Error, da data kein Jsonist
+
+          const json = '{"result":true, "count":42}';
+          const obj1 = JSON.parse(json);
+
+          // Aufklappen der Listbox, damit man die Änderung gleich sieht
+          this.mySelectAnlage.open();
+
+        });
+      }
+    });
+  }
+
 
   ///////////////////////////////////////////////////////////////////////////
   // Bereich mit allen zur Verfügung stehenden Anlagekategorien (SD_Anlage)
@@ -694,16 +724,15 @@ export class BewerberComponent implements OnInit {
         local_Anlage.name  = this.sdAnlageName;
         local_Anlage.type  = "pdf";
 
-        // Updaten der pdf-Datei in die Entität "ibm.anlage"
+        // Anhängen der neuen Anlagen-Pdf-Datei in der Property "anlage" d Entität "ibm.anlage"
         this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe(data => {
 
           // In data steht jetzt in Object vom Typ <Bewerber>
           console.log(data);
 
           this.anlage_array.push(local_Anlage);
-
-          // this.tmpBew = <Bewerber> data;
-
+          this.sdAnlageName = "";
+          this.sdAnlageAnmerkung  = "";
           this.selFilePdfAnlage.name == null; // Button zum Hochladen ausgeblenden
 
         });
@@ -723,15 +752,12 @@ export class BewerberComponent implements OnInit {
        *
        */
       //
-      // this.serviceBewerber.getPdfAnlageById(2);
-      this.serviceBewerber.getPdfAnlageByQuery(this.selBewerberObject.id, this.anlage.id);
+      this.serviceBewerber.getPdfAnlageByQuery(this.anlage.id, this.selBewerberObject.id);
 
     } else {
       // Hinweis ausgeben, dass kein Datei selektiert wurde
       this.showHinweisMissingPdfDatei("Bitte eine der erfassten Anlagen auswählen");
     }
   }
-
-
 
 }

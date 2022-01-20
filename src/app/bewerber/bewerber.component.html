@@ -204,7 +204,7 @@
             <div class="col-4">
               <mat-form-field>
                 <mat-label>Zeige Kommunikation</mat-label>
-                <mat-select #mySelect [multiple]="false">
+                <mat-select #mySelectKommunikation [multiple]="false">
                   <mat-option  value="{{komm.anmerkung}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
                     {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
                   </mat-option>
@@ -215,7 +215,7 @@
 
           <div class="row">
             <div class="col-6">
-              <textarea [readonly]=readonly [value]="aktionAnmerkung" (click)="showAktionAnmerkung()"> </textarea>
+              <textarea [readonly]=readonly [value]="kommunikationAnmerkung" (click)="showAktionAnmerkung()"> </textarea>
             </div>
           </div>
 
@@ -248,7 +248,7 @@
               <mat-form-field matInput="">
                   <mat-label>Aktionsdatum</mat-label>
                   <input  matInput [matDatepicker]="pickerClass"
-                          (dateInput)="aktionsdatumEvent($event)" [value]="dateAktionDefault"/>
+                          (dateInput)="aktionsdatumEvent($event)" [value]="kommunikationDate"/>
                   <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
                   <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
                 </mat-form-field>
@@ -282,7 +282,7 @@
             <div class="col-4">
               <mat-form-field>
                 <mat-label>Zeige erfasste Anlagen</mat-label>
-                <mat-select  [multiple]="false">
+                <mat-select #mySelectAnlage  [multiple]="false">
                   <mat-option  value="{{anlage.name}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="showAnlage(anlage)" >
                     {{anlage.sd_anlage.bezeichnung}}:  {{anlage.name}}
                   </mat-option>
@@ -320,7 +320,7 @@
 
           <div class="row">
             <div class="col-1">
-              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAktion()">Anlage entfernen</button>
+              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAnlage()">Anlage entfernen</button>
             </div>
           </div>
 

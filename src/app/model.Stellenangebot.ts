@@ -23,8 +23,8 @@ export interface Kanal {
 }
 export interface Pdf_Attached {
   id: number;
-  name?: string;
-  type?: string;
+  name: string;
+  type: string;
   bin_data?: Blob;
 }
 

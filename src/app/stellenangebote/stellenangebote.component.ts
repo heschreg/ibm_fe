@@ -208,16 +208,14 @@ export class StellenangeboteComponent implements OnInit {
         }
         index++;
 
-        // Nur Zwichenspeichern
-        this.tmpSa= d;
+        this.sa_array.push(d);
 
-        this.sa_array.push(this.tmpSa);
+        this.doInit(this.radioSaToSelect);
+
+        this.firstRun = false;
 
       });
 
-      this.doInit(this.radioSaToSelect);
-
-      this.firstRun = false;
 
     });
 
@@ -288,7 +286,7 @@ export class StellenangeboteComponent implements OnInit {
 
     if (mode > 0)  {
       if (mode == 1)  {
-        this.mod_button_text = "Angebot neu anlegen";
+        this.mod_button_text = "Angebot anlegen";
       } else {
         this.mod_button_text = "Änderungen abspeichern";
 
@@ -373,15 +371,31 @@ export class StellenangeboteComponent implements OnInit {
     // 2 = UPDATE
     if (this.mode == 1) {
 
-      this.tmpSa.id = -1;
+      let localStatus: Status = { id: 0, bezeichnung: ''};
+      let localKanal: Kanal = {id: 0, bezeichnung: ''};
+      let localPdfStellenangebot: Pdf_Attached = {id: 0, name: '', type: ''};
+
+      let sa: Stellenangebot = {
+        id: 0,
+        bezeichnung: '',
+        beginn: '',
+        ende: '',
+        notizen: '',
+        sd_status: localStatus,
+        sd_kanal: localKanal,
+        kanaele: [],
+        pdf_stellenangebot: localPdfStellenangebot
+      };
+
+      sa.id = -1;
 
       //////////////////////////////////////////////
       // Am Ende wird ein neuer Datensatz inserted
       //////////////////////////////////////////////
 
-      this.tmpSa.beginn = this.beginn;
-      this.tmpSa.bezeichnung = this.bezeichnung;
-      this.tmpSa.ende = this.ende;
+      sa.beginn = this.beginn;
+      sa.bezeichnung = this.aktSaBezeichnung;
+      sa.ende = this.ende;
 
       // this.sd_kanal_array = {id, bezeichnung, selected}
       let tmpArrayKanal:Kanal[] = [];
@@ -390,23 +404,23 @@ export class StellenangeboteComponent implements OnInit {
           delete k.selected; // Property wegnehmen
           tmpArrayKanal.push(k);
         }
-        this.tmpSa.kanaele = tmpArrayKanal;
+        sa.kanaele = tmpArrayKanal;
 
-        this.tmpSa.notizen = this.notizen;
+        sa.notizen = this.notizen;
 
-        this.tmpSa.sd_kanal = this.kanal_selected;
-        if (this.tmpSa.sd_kanal !== undefined) {
-          delete this.tmpSa.sd_kanal.selected;
+        sa.sd_kanal = this.kanal_selected;
+        if (sa.sd_kanal !== undefined) {
+          delete sa.sd_kanal.selected;
         }
 
-        this.tmpSa.sd_status = this.status_selected;
-        if (this.tmpSa.sd_status !== undefined) {
-          delete this.tmpSa.sd_status.checked;
+        sa.sd_status = this.status_selected;
+        if (sa.sd_status !== undefined) {
+          delete sa.sd_status.checked;
         }
       })
 
       // jetzt mit einem Post inserten
-      this.insertStellenangebot(this.tmpSa);
+      this.insertStellenangebot(sa);
 
     } else {
 
@@ -420,7 +434,7 @@ export class StellenangeboteComponent implements OnInit {
         if (sa.id === this.id) {
           // Jetzt sind wir in dem Array-Eintrag der upzudaten ist
 
-          sa.bezeichnung = this.bezeichnung;
+          sa.bezeichnung = this.aktSaBezeichnung;
 
           sa.beginn= this.beginn;
           sa.ende = this.ende;
@@ -469,7 +483,11 @@ export class StellenangeboteComponent implements OnInit {
     };
 
     this.setReadOnly(true);
+  }
 
+
+  public showBezeichnung() {
+    console.log(this.aktSaBezeichnung);
   }
 
   public resetStellenangebot() {
@@ -544,7 +562,7 @@ export class StellenangeboteComponent implements OnInit {
        // In data müsste jetzt vom Typ <Stellenangebot> sein
        // console.log(data);
 
-       this.tmpSa = <Stellenangebot> data;
+        this.tmpSa = <Stellenangebot> data;
         this.selFilePdfStellenangebot = null; //dadurch wird auch wieder der Hochladen -Button ausgeblendet
 
         // Jetzt muss man die Property this.pdf_attached noch richtig setzen
@@ -554,7 +572,7 @@ export class StellenangeboteComponent implements OnInit {
 
     } else {
       // Hinweis ausgeben, dass noch keine PDF-Datei zugeordnet ist
-      this.showHinweisMissingPdfDatei();
+      this.showHinweisMissingPdfDatei("Bitte eine pdf-Datei auswählen");
     }
   }
 
@@ -575,12 +593,15 @@ export class StellenangeboteComponent implements OnInit {
 
     } else {
       // Hinweis ausgeben, dass kein Datei selektiert wurde
-      this.showHinweisMissingPdfDatei();
+      this.showHinweisMissingPdfDatei("Bitte zunächst eine pdf-Datei selektieren");
     }
   }
 
-  public showHinweisMissingPdfDatei() {
+  public showHinweisMissingPdfDatei(content: string) {
     let dialogRef = this.dialog.open(MyAlertDialogComponent);
+
+    dialogRef.componentInstance.message = content;
+
     dialogRef.afterClosed().subscribe((result: string) => {
       if (result == 'ok') {
         console.log(result);

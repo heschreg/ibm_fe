@@ -11,7 +11,8 @@
             placeholder="Wähle Stellenangebot"
             name="selStellenangebot"
             (selectionChange)="stangChangeAction(selStangObject)"
-            [(ngModel)]="selStangObject" >
+            [(ngModel)]="selStangObject" [disabled]=!readonly  >
+
 
 
             <mat-option
@@ -47,7 +48,7 @@
         <div class="row">
           <div class="col-md-3">
             <mat-form-field class="full-width">
-              <input [disabled]=readonly matInput="" placeholder="Bezeichnung"/>
+              <input [disabled]=readonly [(ngModel)]="aktSaBezeichnung" matInput="" placeholder="Bezeichnung" (click)="showBezeichnung"/>
             </mat-form-field>
           </div>
 
@@ -188,10 +189,10 @@
 
       <div class="col-md-3">
         <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
-          neue Stellenanzeige erfassen
+          neues Stellenangebot erfassen
         </button>
         <span class="abstand_left"></span><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(2)">
-          Stellenanzeige bearbeiten
+          Stellenangebot bearbeiten
         </button>
       </div>
 

@@ -81,28 +81,35 @@ export class ServiceBewerber {
     formData.append("anmerkung", anlage.anmerkung);
     formData.append('pdfFile', pdfFile, pdfFile.name);
 
-    // @PostMapping(path = "/upldpdfanlage/{id_bewerber}", produces = MediaType.APPLICATION_JSON_VALUE)
     return this.httpClient.post(`${this.baseURL}/upldpdfanlage/${id}`, formData);
   }
 
-  //  this.serviceBewerber.getPdfAnlageByQuery(this.anlage);
 
-  public getPdfAnlageByQuery(bewerber_id: number, id : number) {
+  public getPdfAnlageByQuery (id_anlage : number, bewerber_id: number) {
 
     /*
     * In der open-Methode ist ein REST-Aufruf versteckt, der die übergebene Url nutzt
     *
-    *  Der zugehörige Restendpoint muß einen Stream zurückliefern, aufgrund dessen
+    *  Der zugehörige Rest-Endpoint muß einen Stream zurückliefern, aufgrund dessen
     *  im Browser der Dwonload der pdf-Daten und die entsprechend Konvertierung in
     *  eine pdf-Datei erfolgt
     *
     * über id, bewerber_id kann in der Entität "anlage" die selektierte Anlage angesprochen werden
     */
 
-    const filestreamUrl = `${this.baseURL}/file/${id}/${bewerber_id}`;
+    const filestreamUrl = `${this.baseURL}/file/${id_anlage}/${bewerber_id}`;
     window.open(filestreamUrl);
   }
 
+
+  /*
+    @DeleteMapping("/file/{id}/{bewerber_id}")
+    public Map<String, Boolean> deleteAnlage(@PathVariable(value = "id") Long id, @PathVariable Long bewerber_id) {
+  */
+  public deleteAnlageByQuery(id_anlage : number, bewerber_id: number) {
+    let ret_value = this.httpClient.delete(`${this.baseURL}/file/${id_anlage}/${bewerber_id}`);
+    return ret_value;
+  }
 
 
   public getPdfAnlageById(id: number) {
@@ -122,36 +129,8 @@ export class ServiceBewerber {
 
   }
 
-  public getPdfAnlageByName( filename: String) {
 
-    // Holen der pdf-Datei, deren Name in this.selFilePdfStellenangebot steht
-    const urlPdf = `${this.baseURL}/downloadpdf/` + filename;
-    /*
-    this.httpClient.get(urlPdf).subscribe( (res) => {
-
-    // Man bekommt folgenden Json vom Typ "ResponseFile": name, type, url
-        const responseFile: any = res;
-
-        // z.B.: "http://localhost:8080/ibm/byfilename/anzeige1.pdf";
-        const fileUrl =`${this.baseURL}/downloadpdf2/` + responseFile.name;
-
-        // z.B.: "http://localhost:8080/ibm/uploadpdf/1";
-        // geht nicht, da man die Id gar nicht zurückbekommt
-        // const fileUrl =`${this.baseURL}/byfileid/` + responseFile.id;
-
-        // Wenn man in der HTML den pdf-Viewer ausblendet, so kommt die PDF als Download,
-        // was man evtl auch so haben möchte
-        window.open(fileUrl);
-    });
-    */
-
-    // z.B.: "http://localhost:8080/ibm/byfilename/anzeige1.pdf";
-    const fileUrl =`${this.baseURL}/downloadpdf2/` + filename;
-    window.open(fileUrl);
-
-  }
-
-  // Hochalden und Aabspeichern einer pdf-Datei in der Tabelle #Anlage"
+  // Hochladen und Abspeichern einer pdf-Datei in der Tabelle "anlage"
   public postPdfAnlageOk( pdfFile: File) {
 
     const uploadData = new FormData();
