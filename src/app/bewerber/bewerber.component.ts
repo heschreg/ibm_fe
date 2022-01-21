@@ -26,6 +26,8 @@ const READ:   number = 3;
 })
 export class BewerberComponent implements OnInit {
 
+  @ViewChild('mySelectBewerber') mySelectBewerber: any;
+
   @ViewChild('mySelectKommunikation') mySelectKommunikation: any;
   @ViewChild('mySelectSdKommunikation') mySelectSdKommunikation: any;
 
@@ -49,6 +51,7 @@ export class BewerberComponent implements OnInit {
   // Bereich mit den aktuell erfassten Kommunikationstypen (Einladung, Interview, Rückfrage)
   public kommunikation_array: Kommunikation[] = [];
   public kommunikationSelected! : Kommunikation;
+  // public selAktion!: Kommunikation;
   public kommunikationId : number = -1;
 
   // Bereich  mit allen verfügbaren Kommunikationstypen
@@ -425,8 +428,8 @@ export class BewerberComponent implements OnInit {
     this.anlageAnmerkung = "";
     this.anlageName = "";
 
+    this.anlage_array = [];
     if (this.selBewerberObject && this.selBewerberObject.anlagen) {
-      this.anlage_array = [];
       this.selBewerberObject.anlagen.forEach((k) => {
         // Übertragen des Arrays mit den erfassten Anlagen
         this.anlage_array.push(k);
@@ -464,6 +467,12 @@ export class BewerberComponent implements OnInit {
     this.initBereichKommunikation();
     this.kommunikation_array = []; // Bei Neuanlage nochmals zurücksetzen
 
+    this.initBereichAnlagen();
+    this.anlage_array = []; // Bei Neuanlage nochmals zurücksetzen
+
+    this.mySelectBewerber.value = [];
+
+
 
   }
 
@@ -471,6 +480,12 @@ export class BewerberComponent implements OnInit {
     this.formmode = UPDATE;
     this.readonly = false;  // Die FormControls können editiert werden
     this.readonlyCancel = false;
+
+    // LB auf "nichts slektiert" setzen
+    this.mySelectKommunikation.value = [];
+    this.kommunikationSelected.zeitpunkt = '';
+    this.kommunikationSelected.anmerkung = '';
+
   }
 
   public cancelBewerber() {
@@ -482,7 +497,9 @@ export class BewerberComponent implements OnInit {
     this.readonly = true;  // Die FormControls können editiert werden
     this.readonlyCancel = true;
 
-    this.bewerberShowDetails(this.selBewerberObject);
+    this.getListBewerber(this.selStangObject.id, INIT);
+
+    // this.bewerberShowDetails(this.selBewerberObject);
 
   }
 
@@ -510,7 +527,7 @@ export class BewerberComponent implements OnInit {
   }
 
   // ========================================================
-  // Anzeige der Daten aus der individuell angelegtn Historie
+  // Anzeige der Daten einer individuell angelegten Historie
   // ========================================================
 
   public aktionsdatumEvent(event: any) {
@@ -522,37 +539,35 @@ export class BewerberComponent implements OnInit {
     this.aktionsdatumS = dd + '.' + mm + '.' + yyyy;
   }
 
-  public setAktion(komm: Kommunikation) {
-    // console.log(komm);
+  public setAktionIndividuell(komm: Kommunikation) {
     this.kommunikationSelected = komm;
-
-    // this.kommunikationAnmerkung = komm.anmerkung;
-    //this.kommunikationDate      = komm.zeitpunkt;
-  }
-
-  // ========================================================
-  // aus der LB mit den Stammdaten an Kommunikationselementen
-  // ========================================================
-
-  public selAktion(event:any) {
-    // console.log(event);
-    this.aktion = event;
   }
 
   /*
    * Löschen einer Aktion aus den bereits besteheneden Aktionen
    */
   public removeAktion() {
-
     this.kommunikation_array.forEach( (komm, index) => {
       if (komm.id === this.kommunikationSelected.id) {
         this.kommunikation_array.splice(index,1);
       }
     });
 
+    // this.kommunikationSelected.zeitpunkt = '';
+    // this.kommunikationSelected.anmerkung = '';
+
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
     this.mySelectKommunikation.open();
+  }
 
+
+  // ========================================================
+  // aus der LB mit den Stammdaten an Kommunikationselementen
+  // ========================================================
+
+  public setAktionGenerell(event:any) {
+    // console.log(event);
+    this.aktion = event;
   }
 
   public addAktion() {
@@ -575,6 +590,9 @@ export class BewerberComponent implements OnInit {
     // das Array mit den zugewiesenen Aktionen um die neue Aktionshistorie erweitern
     this.kommunikation_array.push (localAktion);
 
+    // Dadurch sollte der zugehörige Eintrag in der LB makraiert werden
+    this.kommunikationSelected = localAktion;
+
     //Die LB zur Auswahl eines Kommunikationstypes wieder auf "noselection" zurücksetzen
     // und die ganze ganz rechte Seite zurüäcksetzen
     this.mySelectSdKommunikation.value = [];
@@ -582,7 +600,7 @@ export class BewerberComponent implements OnInit {
     this.aktionSdAnmerkung = '';
 
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
-    this.mySelectKommunikation.open();
+   // this.mySelectKommunikation.open();
 
   }
 
