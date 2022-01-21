@@ -34,8 +34,12 @@ export class BewerberComponent implements OnInit {
   @ViewChild('mySelectAnlage') mySelectAnlage: any;
   @ViewChild('mySelectSdAnlage') mySelectSdAnlage: any;
 
+  @ViewChild('mySelectKategorie') mySelectKategorie: any;
+
+
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfAnlage!: File;
+  selPdfName: string = '';
 
   // in der Dropdown-LB selektiertes Stellenangebot
   public selStangObject!: Stellenangebot;
@@ -472,8 +476,6 @@ export class BewerberComponent implements OnInit {
 
     this.mySelectBewerber.value = [];
 
-
-
   }
 
   public startUpdateBewerber() {
@@ -485,7 +487,6 @@ export class BewerberComponent implements OnInit {
     this.mySelectKommunikation.value = [];
     this.kommunikationSelected.zeitpunkt = '';
     this.kommunikationSelected.anmerkung = '';
-
   }
 
   public cancelBewerber() {
@@ -616,9 +617,6 @@ export class BewerberComponent implements OnInit {
     this.anlageId        = anlage.id;
     this.anlageName      = anlage.name;
     this.anlageAnmerkung = anlage.anmerkung;
-
-    // selFilePdfAnlage!: File;
-    // console.log(anlage);
   }
 
   public showAnlageName() {
@@ -707,7 +705,17 @@ export class BewerberComponent implements OnInit {
 
   public onFileChangeInput(event: any) {
     this.selFilePdfAnlage = event.target.files[0];
+
     this.sdAnlageName = this.selFilePdfAnlage.name;
+
+    // Man kann noch eine Anmerkung dazu eingeben
+
+    // Der Hochlade-Buttonwird automatisch eingeblendet
+
+    // Löschen der Daten von einer gerade evtl. selektierten Anlage auf der linken Seite
+    this.mySelectAnlage.value = [];
+    this.anlageName = "";
+    this.anlageAnmerkung  = "";
   }
 
   public onClickFileInputButton(): void {
@@ -745,23 +753,35 @@ export class BewerberComponent implements OnInit {
         local_Anlage.type  = "pdf";
 
         // Anhängen der neuen Anlagen-Pdf-Datei in der Property "anlage" d Entität "ibm.anlage"
-        this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe(data => {
+        this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe( data => {
 
           // In data steht jetzt in Object vom Typ <Bewerber>
+
           console.log(data);
 
+          let localBew: any = data;
+          localBew.anlagen.forEach( (anlage:any) => {
+            if (anlage.name === local_Anlage.name) {
+              local_Anlage.id = anlage.id;
+            }
+          });
+
           this.anlage_array.push(local_Anlage);
+
+          this.anlageName = this.sdAnlageName;
+          this.anlageAnmerkung  = this.sdAnlageAnmerkung;
+
+          // Leeren alle Werte auf der Masterseite
+          this.mySelectKategorie.value = [];
           this.sdAnlageName = "";
           this.sdAnlageAnmerkung  = "";
-          this.selFilePdfAnlage.name == null; // Button zum Hochladen ausgeblenden
+
 
           // Aufklappen der Seite mit allen zugeordnenten Anlagen und den hinterlegten pdf-Dateien
           this.mySelectAnlage.open();
 
         });
       }
-
-
     }
   }
 

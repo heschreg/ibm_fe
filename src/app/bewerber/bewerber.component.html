@@ -228,7 +228,7 @@
 
           <div class="row">
             <div class="col-1">
-              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAktion()">Aktion entfernen</button>
+              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAktion()">Historie entfernen</button>
             </div>
           </div>
 
@@ -269,7 +269,7 @@
           </div>
 
           <div class="col-1">
-            <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Aktion übernehmen</button>
+            <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Historie übernehmen</button>
           </div>
 
         </div>
@@ -308,7 +308,8 @@
 
           <div class="row">
             <div class="col-8">
-              <input [readonly]=true  placeholder="zugeordnete Pdf" (click)="showAnlageName()" [(ngModel)]="anlageName"/>
+              <mat-label>zugeordnete Pdf</mat-label>
+              <input [readonly]=true (click)="showAnlageName()" [(ngModel)]="anlageName"/>
             </div>
           </div>
 
@@ -316,6 +317,7 @@
 
           <div class="row">
             <div class="col-6">
+              <mat-label>Anmerkung</mat-label>
               <textarea [readonly]=true [value]="anlageAnmerkung" (click)="showAnlageAnmerkung()">
                 {{anlage.anmerkung}
               </textarea>
@@ -330,15 +332,15 @@
 
         </div>
 
-        <div class="col-4" [hidden]="formmode==3">
-
           <!-- rechte Seite: Auswahl der Anlagekategorie (Lebensláuf, Zeugnis,...), bzgl. der eine Pdf-Datei hochgeladen werden soll-->
+          <div class="col-4" [hidden]="formmode==3">
+
           <div class="row" >
             <div class="col-6">
               <mat-form-field>
                 <mat-label>Wähle Anlagekategorie</mat-label>
-                <mat-select  [multiple]="false" [disabled]=readonly>
-                  <mat-option  value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
+                <mat-select #mySelectKategorie [multiple]="false" [disabled]=readonly>
+                  <mat-option value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
                     {{sd_anlage.bezeichnung}}
                   </mat-option>
                 </mat-select>
@@ -374,7 +376,8 @@
 
           <div class="row">
             <div class="col-8">
-              <input [readonly]=readonly  placeholder="zuzuordnende Pdf" (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
+              <mat-label>ausgewählte Pdf</mat-label>
+              <input [readonly]=readonly  (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
             </div>
           </div>
 
@@ -382,12 +385,13 @@
 
           <div class="row">
             <div class="col-8">
-              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showSdAnlageAnmerkung()" [(ngModel)]="sdAnlageAnmerkung"> </textarea>
+              <mat-label>Anmerkung</mat-label>
+              <textarea [readonly]=readonly (click)="showSdAnlageAnmerkung()" [(ngModel)]="sdAnlageAnmerkung"> </textarea>
             </div>
           </div>
 
           <button mat-raised-button color="primary" [hidden]="selFilePdfAnlage?.name == null" (click)="saveAnlagePdf()">
-            {{selFilePdfAnlage?.name}} hochladen
+            <span *ngIf='sdAnlageName != ""'>{{sdAnlageName}} hochladen</span>
           </button>
 
         </div>
