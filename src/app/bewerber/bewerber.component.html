@@ -189,7 +189,7 @@
 
     <!-- mittlere und rechte Seite -->
     <div class="col-6">
-      <div class="row">
+      <div class="row" [hidden]="formmode==1">
 
         <!-- -------------------------------  -->
         <!-- Beginn Kommunikationsbearbeitung -->
@@ -204,8 +204,8 @@
             <div class="col-4">
               <mat-form-field>
                 <mat-label>Zeige Kommunikation</mat-label>
-                <mat-select #mySelectKommunikation [multiple]="false">
-                  <mat-option  value="{{komm.anmerkung}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="showAktion(komm)" >
+                <mat-select #mySelectKommunikation [multiple]="false" >
+                  <mat-option  value="{{komm.anmerkung}}" *ngFor="let komm of kommunikation_array" [value]="komm" (click)="setAktion(komm)" >
                     {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
                   </mat-option>
                 </mat-select>
@@ -213,9 +213,19 @@
             </div>
           </div>
 
+          <div class="minimalgap"></div>
+
           <div class="row">
             <div class="col-6">
-              <textarea [readonly]=readonly [value]="kommunikationAnmerkung" (click)="showAktionAnmerkung()"> </textarea>
+              <input [readonly]=readonly [value]="kommunikationSelected?.zeitpunkt"/>
+            </div>
+          </div>
+
+          <div class="minigap"></div>
+
+          <div class="row">
+            <div class="col-6">
+              <textarea [readonly]=readonly [value]="kommunikationSelected?.anmerkung"> </textarea>
             </div>
           </div>
 
@@ -227,14 +237,14 @@
 
         </div>
 
-        <div class="col-5">
+        <div class="col-5" [hidden]="formmode==3">
 
           <!-- rechte Seite: Anzeige einer Liste mit allen möglichen Aktionsarten in Dropdown-Listbox-->
           <div class="row">
             <div class="col-6">
               <mat-form-field>
                 <mat-label>Wähle Kommunikation</mat-label>
-                <mat-select  [multiple]="false">
+                <mat-select #mySelectSdKommunikation [multiple]="false" [disabled]=readonly>
                   <mat-option  value="{{komm?.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" [value]="komm" (click)="selAktion(komm)" >
                     {{komm.bezeichnung}}
                   </mat-option>
@@ -247,8 +257,8 @@
             <div class="col-6">
               <mat-form-field matInput="">
                   <mat-label>Aktionsdatum</mat-label>
-                  <input  matInput [matDatepicker]="pickerClass"
-                          (dateInput)="aktionsdatumEvent($event)" [value]="kommunikationDate"/>
+                  <input  matInput [disabled]=true  [matDatepicker]="pickerClass"
+                          (dateInput)="aktionsdatumEvent($event)" [(ngModel)]="aktionSdDate"/>
                   <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
                   <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
                 </mat-form-field>
@@ -257,7 +267,7 @@
 
           <div class="row">
             <div class="col-8">
-              <textarea [readonly]=readonly  placeholder="Anmerkung" (click)="showAktionSdAnmerkung()" [(ngModel)]="aktionSdAnmerkung"> </textarea>
+              <textarea [readonly]=readonly  placeholder="Anmerkung" [(ngModel)]="aktionSdAnmerkung"> </textarea>
             </div>
           </div>
 
@@ -284,7 +294,7 @@
                 <mat-label>Zeige erfasste Anlagen</mat-label>
                 <mat-select #mySelectAnlage  [multiple]="false">
                   <mat-option  value="{{anlage.name}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="showAnlage(anlage)" >
-                    {{anlage.sd_anlage.bezeichnung}}:  {{anlage.name}}
+                    {{anlage.sd_anlage.bezeichnung}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
@@ -293,10 +303,7 @@
 
           <div class="row">
             <div class="col-1">
-              <!--
-              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">Anlage (Pdf) anzeigen</button>
-              -->
-              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">{{anlageName}} anzeigen</button>
+              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">Anlage anzeigen</button>
             </div>
           </div>
 
@@ -304,7 +311,7 @@
 
           <div class="row">
             <div class="col-8">
-              <input [readonly]=true  placeholder="Name" (click)="showAnlageName()" [(ngModel)]="anlageName"/>
+              <input [readonly]=true  placeholder="zugeordnete Pdf" (click)="showAnlageName()" [(ngModel)]="anlageName"/>
             </div>
           </div>
 
@@ -326,14 +333,14 @@
 
         </div>
 
-        <div class="col-4">
+        <div class="col-4" [hidden]="formmode==3">
 
           <!-- rechte Seite: Auswahl der Anlagekategorie (Lebensláuf, Zeugnis,...), bzgl. der eine Pdf-Datei hochgeladen werden soll-->
-          <div class="row">
+          <div class="row" >
             <div class="col-6">
               <mat-form-field>
                 <mat-label>Wähle Anlagekategorie</mat-label>
-                <mat-select  [multiple]="false">
+                <mat-select  [multiple]="false" [disabled]=readonly>
                   <mat-option  value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
                     {{sd_anlage.bezeichnung}}
                   </mat-option>
@@ -370,7 +377,7 @@
 
           <div class="row">
             <div class="col-8">
-              <input [readonly]=readonly  placeholder="Name" (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
+              <input [readonly]=readonly  placeholder="zuzuordnende Pdf" (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
             </div>
           </div>
 

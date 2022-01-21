@@ -27,7 +27,10 @@ const READ:   number = 3;
 export class BewerberComponent implements OnInit {
 
   @ViewChild('mySelectKommunikation') mySelectKommunikation: any;
+  @ViewChild('mySelectSdKommunikation') mySelectSdKommunikation: any;
+
   @ViewChild('mySelectAnlage') mySelectAnlage: any;
+  @ViewChild('mySelectSdAnlage') mySelectSdAnlage: any;
 
   @ViewChild('fileInput')  fileInput: any;
   selFilePdfAnlage!: File;
@@ -45,13 +48,13 @@ export class BewerberComponent implements OnInit {
 
   // Bereich mit den aktuell erfassten Kommunikationstypen (Einladung, Interview, Rückfrage)
   public kommunikation_array: Kommunikation[] = [];
+  public kommunikationSelected! : Kommunikation;
   public kommunikationId : number = -1;
-  public kommunikationAnmerkung : string = "";
-  public kommunikationDate!:  any;
 
   // Bereich  mit allen verfügbaren Kommunikationstypen
   public sd_kommunikation_array: SD_Kommunikation[] = [];
   public aktionSdAnmerkung : string = "";
+  public aktionSdDate : string = '';
 
   public aktion!: SD_Kommunikation;
   public aktionsdatumS : string = "";
@@ -68,7 +71,7 @@ export class BewerberComponent implements OnInit {
   // Bereich  mit allen verfügbaren Anlagekategorien
   public sd_anlage_array: SD_Anlage[] = [];
   public sd_anlage!: SD_Anlage;
-  public sdAnlageName : string = 'noch kein Pdf zugeordnet';
+  public sdAnlageName : string = '';
   public sdAnlageAnmerkung : string = '';
 
   public readonly: boolean = true;
@@ -395,12 +398,16 @@ export class BewerberComponent implements OnInit {
 
   public initBereichKommunikation() {
 
-    // Bereich mit den möglichen Kommunikationstypen
-    this.kommunikationDate = "";
+    // linker Bereich mit der tatsächlichen KOmmunikationshistorie
+    if (this.kommunikationSelected) {
+      this.kommunikationSelected.zeitpunkt = "";
+      this.kommunikationSelected.anmerkung = "";
+    }
+
+    // rechter Bereich mit den Stammdaten bzglö. der möglichen Kommunikationstypen
+    this.aktionSdDate = "";
     this.aktionSdAnmerkung = "";
 
-    // Bereich mit der tatsächlichen KOmmunikationshistorie
-    this.kommunikationAnmerkung = "";
 
     if  (this.selBewerberObject?.kommunikationen) {
       this.kommunikation_array = [];
@@ -502,10 +509,9 @@ export class BewerberComponent implements OnInit {
 
   }
 
-  public selAktion(event:any) {
-    // console.log(event);
-    this.aktion = event;
-  }
+  // ========================================================
+  // Anzeige der Daten aus der individuell angelegtn Historie
+  // ========================================================
 
   public aktionsdatumEvent(event: any) {
     var datum = new Date(event.value);
@@ -516,23 +522,21 @@ export class BewerberComponent implements OnInit {
     this.aktionsdatumS = dd + '.' + mm + '.' + yyyy;
   }
 
-  // aus der Historie
-  public showAktion(komm: Kommunikation) {
-    this.kommunikationAnmerkung = komm.anmerkung;
-    this.kommunikationId = komm.id;
-
+  public setAktion(komm: Kommunikation) {
     // console.log(komm);
+    this.kommunikationSelected = komm;
+
+    // this.kommunikationAnmerkung = komm.anmerkung;
+    //this.kommunikationDate      = komm.zeitpunkt;
   }
 
-  // aus der LB mit den hinterlegten Kommunikationselementen (SD_Kommunikation)
-  public showAktionAnmerkung() {
-    console.log(this.kommunikationAnmerkung);
-  }
+  // ========================================================
+  // aus der LB mit den Stammdaten an Kommunikationselementen
+  // ========================================================
 
-
-  // aus der LB mit allen Kommunikationselementen (SD_Kommunikation)
-  public showAktionSdAnmerkung() {
-    console.log(this.aktionSdAnmerkung);
+  public selAktion(event:any) {
+    // console.log(event);
+    this.aktion = event;
   }
 
   /*
@@ -541,9 +545,8 @@ export class BewerberComponent implements OnInit {
   public removeAktion() {
 
     this.kommunikation_array.forEach( (komm, index) => {
-      if (komm.id === this.kommunikationId) {
+      if (komm.id === this.kommunikationSelected.id) {
         this.kommunikation_array.splice(index,1);
-        this.kommunikationAnmerkung = "";
       }
     });
 
@@ -560,15 +563,8 @@ export class BewerberComponent implements OnInit {
       hausnummer: 0, email: '', notizen: '', kommunikationen:[],
       anlagen:[], skills: ''
     };
-
     let localSD_Kommunikation: SD_Kommunikation = { id: 0, bezeichnung: ''};
-
-    let localAktion: Kommunikation = {
-      id: 0,
-      zeitpunkt: '',
-      sd_kommunikation: localSD_Kommunikation,
-      anmerkung: ''
-    };
+    let localAktion: Kommunikation = {id: 0, zeitpunkt: '', sd_kommunikation: localSD_Kommunikation, anmerkung: ''};
 
     localAktion.id = -1;
     localAktion.zeitpunkt = this.aktionsdatumS;
@@ -578,6 +574,12 @@ export class BewerberComponent implements OnInit {
 
     // das Array mit den zugewiesenen Aktionen um die neue Aktionshistorie erweitern
     this.kommunikation_array.push (localAktion);
+
+    //Die LB zur Auswahl eines Kommunikationstypes wieder auf "noselection" zurücksetzen
+    // und die ganze ganz rechte Seite zurüäcksetzen
+    this.mySelectSdKommunikation.value = [];
+    this.aktionSdDate = '';
+    this.aktionSdAnmerkung = '';
 
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
     this.mySelectKommunikation.open();
@@ -735,8 +737,13 @@ export class BewerberComponent implements OnInit {
           this.sdAnlageAnmerkung  = "";
           this.selFilePdfAnlage.name == null; // Button zum Hochladen ausgeblenden
 
+          // Aufklappen der Seite mit allen zugeordnenten Anlagen und den hinterlegten pdf-Dateien
+          this.mySelectAnlage.open();
+
         });
       }
+
+
     }
   }
 

@@ -182,6 +182,8 @@ export class StellenangeboteComponent implements OnInit {
   }
 
   // Setzen von this.radioSaToSelect
+      // Markieren des zuletzt gewähltenStellenangebots this.radioSaToSelect
+
   private getStellenangebote(){
 
     // Holen aller Stellenangebote über REST aus der DB
@@ -210,12 +212,11 @@ export class StellenangeboteComponent implements OnInit {
 
         this.sa_array.push(d);
 
-        this.doInit(this.radioSaToSelect);
-
-        this.firstRun = false;
 
       });
 
+      this.doInit(this.radioSaToSelect);
+      this.firstRun = false;
 
     });
 
@@ -287,6 +288,9 @@ export class StellenangeboteComponent implements OnInit {
     if (mode > 0)  {
       if (mode == 1)  {
         this.mod_button_text = "Angebot anlegen";
+        this.pdf_attached.name = "";
+        this.firstRun = false;
+
       } else {
         this.mod_button_text = "Änderungen abspeichern";
 
@@ -490,12 +494,13 @@ export class StellenangeboteComponent implements OnInit {
     console.log(this.aktSaBezeichnung);
   }
 
-  public resetStellenangebot() {
+  public cancelStellenangebot() {
 
+    this.mode = 0;
     this.mod_button_text = "Speichern";
 
     // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
-    // Setzen von this.radioSaToSelect
+    // Markieren des zuletzt gewähltenStellenangebots this.radioSaToSelect
     this.getStellenangebote();
   }
 

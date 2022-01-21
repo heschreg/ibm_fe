@@ -34,7 +34,7 @@
 
     <div class="row">
       <div class="col-md-5" >
-        <span class="minigap">Details zum Stellenangebot "{{selStangObject?.bezeichnung}}"</span>
+        <span class="minigap">Details zum Stellenangebot "{{aktSaBezeichnung}}"</span>
         <p></p>
         <!--
         <h2 matDialogTitle>Details zur ausgewählten Stellenanzeige</h2>
@@ -144,11 +144,14 @@
         <div class="trenner"></div>
 
         <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
-        <div class="row">
+        <div class="row"  [hidden]="mode==1">
+
           <div class="col-md-10">
-            <label id="radio-group-label-status" class="group-label">zugeordnete pdf-Datei: </label>
-            <span class="abstand_left" *ngIf="pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
-            <span class="abstand_left" *ngIf="!pdf_attached?.name" class="auffaellig">  kein Pdf zugeordnet</span>
+            <label id="radio-group-label-status" class="group-label">zugehörige pdf-Datei: </label>
+            <span class="abstand_left" *ngIf = "pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
+            <span class="abstand_left" *ngIf ="!pdf_attached?.name" class="auffaellig" >  kein Pdf zugeordnet</span>
+
+            <p></p>
 
             <button mat-raised-button color="primary" [disabled]="!updateMode" class="abstand-left" (click)="fetchPdf()">PDF anzeigen</button>
 
@@ -169,7 +172,7 @@
               (click)="onClickFileInputButton()"
               [disabled]="!updateMode">
 
-              <mat-icon>attach_file</mat-icon>Auswahl Pdf-Stellenangbot
+              <mat-icon>attach_file</mat-icon>Wähle Stellenangbot(pdf)
             </button>
 
             <button mat-raised-button color="primary" [hidden]="selFilePdfStellenangebot?.name == null" (click)="updateStellenangebotPdf()">
@@ -189,7 +192,7 @@
 
       <div class="col-md-3">
         <button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(1)" class="abstand_left">
-          neues Stellenangebot erfassen
+          Stellenangebot erfassen
         </button>
         <span class="abstand_left"></span><button mat-raised-button color="primary" [disabled]="!updateMode" (click)="setMode(2)">
           Stellenangebot bearbeiten
@@ -199,7 +202,7 @@
       <div class="col-md-4">
         <button mat-raised-button [disabled]="updateMode" color="primary" (click)="saveStellenangebot()">{{mod_button_text}}</button>
         <span class="abstand_left">
-          <button mat-raised-button [disabled]="updateMode" color="warn" (click)="resetStellenangebot()">Abbrechen</button>
+          <button mat-raised-button [disabled]="updateMode" color="warn" (click)="cancelStellenangebot()">Abbrechen</button>
         </span>
       </div>
 
