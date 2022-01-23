@@ -55,12 +55,13 @@ export class BewerberComponent implements OnInit {
   // Bereich mit den aktuell erfassten Kommunikationstypen (Einladung, Interview, Rückfrage)
   public kommunikation_array: Kommunikation[] = [];
   public kommunikationSelected! : Kommunikation;
-  public kommunikationId : number = -1;
+  public kommunikationSelectedZeitpunkt : string = '';
+  public kommunikationSelectedAnmerkung : string = '';
 
   // Bereich  mit allen verfügbaren Kommunikationstypen
   public sd_kommunikation_array: SD_Kommunikation[] = [];
-  public aktionSdAnmerkung : string = "";
   public aktionSdDate : string = '';
+  public aktionSdAnmerkung : string = "";
 
   public aktion!: SD_Kommunikation;
   public aktionsdatumS : string = "";
@@ -70,8 +71,8 @@ export class BewerberComponent implements OnInit {
   // linker Bereich mit den aktuell zugeordneten Anlagen
   public anlage_array: Anlage[] = [];
   public anlageSelected! : Anlage;
-  public anlageSelectedAnmerkung : string = '';
   public anlageSelectedName : string = '';
+  public anlageSelectedAnmerkung : string = '';
 
   // rechter Bereich mit allen verfügbaren Anlagekategorien
   public sd_anlage_array: SD_Anlage[] = [];
@@ -174,18 +175,19 @@ export class BewerberComponent implements OnInit {
 
     // linker Bereich mit der tatsächlichen KOmmunikationshistorie
     if (this.kommunikationSelected) {
-      this.kommunikationSelected.zeitpunkt = "";
-      this.kommunikationSelected.anmerkung = "";
+      this.kommunikationSelectedZeitpunkt = "";
+      this.kommunikationSelectedAnmerkung = "";
     } else {
       let tmpSdKommunikation : SD_Kommunikation = {id: 0, bezeichnung : ''};
       this.kommunikationSelected = {id: 0, anmerkung: '', zeitpunkt: '', sd_kommunikation: tmpSdKommunikation};
+      this.kommunikationSelectedZeitpunkt = this.kommunikationSelected.zeitpunkt;
+      this.kommunikationSelectedAnmerkung = this.kommunikationSelected.anmerkung;
 
     }
 
-    // rechter Bereich mit den Stammdaten bzglö. der möglichen Kommunikationstypen
+    // rechter Bereich mit den Stammdaten bzgl. der möglichen Kommunikationstypen
     this.aktionSdDate = "";
     this.aktionSdAnmerkung = "";
-
 
     if  (this.selBewerberObject?.kommunikationen) {
       this.kommunikation_array = [];
@@ -395,6 +397,7 @@ export class BewerberComponent implements OnInit {
         this.initBereichKommunikation();
         this.initBereichAnlagen();
 
+
         this.formmode = READ; // Die Formulardaten können nicht verändert werden
         this.readonly = true; // alle Formcontrols werden disabled
         this.readonlyCancel = true;
@@ -478,21 +481,19 @@ export class BewerberComponent implements OnInit {
   }
 
   public startUpdateBewerber() {
-    this.formmode = UPDATE;
-    this.readonly = false;  // Die FormControls können editiert werden
-    this.readonlyCancel = false;
 
     // LB auf "nichts slektiert" setzen
     this.mySelectKommunikation.value = [];
-    this.kommunikationSelected.zeitpunkt = '';
-    this.kommunikationSelected.anmerkung = '';
+    this.kommunikationSelectedZeitpunkt = '';
+    this.kommunikationSelectedAnmerkung = '';
 
     this.mySelectAnlage.value = [];
-    if (this.anlageSelected) {
-      this.anlageSelectedName = '';
-      this.anlageSelectedAnmerkung = '';
-    }
+    this.anlageSelectedName = '';
+    this.anlageSelectedAnmerkung = '';
 
+    this.formmode = UPDATE;
+    this.readonly = false;  // Die FormControls können editiert werden
+    this.readonlyCancel = false;
   }
 
   public cancelBewerber() {
@@ -500,12 +501,11 @@ export class BewerberComponent implements OnInit {
     this.initBereichKommunikation();
     this.initBereichAnlagen();
 
+    this.getListBewerber(this.selStangObject.id, INIT);
+
     this.formmode = READ;
     this.readonly = true;  // Die FormControls können editiert werden
     this.readonlyCancel = true;
-
-    this.getListBewerber(this.selStangObject.id, INIT);
-
   }
 
   public submit() {
@@ -549,16 +549,30 @@ export class BewerberComponent implements OnInit {
 
   /*
    * Löschen einer Aktion aus den bereits besteheneden Aktionen
+  xxx
    */
   public removeAktion() {
+
     this.kommunikation_array.forEach( (komm, index) => {
       if (komm.id === this.kommunikationSelected.id) {
-        this.kommunikation_array.splice(index,1);
+        this.kommunikationSelectedZeitpunkt = "";
+        this.kommunikationSelectedAnmerkung = "";
+           this.kommunikation_array.splice(index,1);
       }
     });
 
+    // Rückübertrag des Arrays mit den aktuelen Anlagen in das Gesamtobjekt "Bewerber"
+    this.selBewerberObject.kommunikationen = this.kommunikation_array;
+
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
-    this.mySelectKommunikation.open();
+    // this.mySelectKommunikation.open();
+
+    /*
+    // const objData = JSON.parse(data); funkioniert nicht, da data schon ein Objekt und kein Json ist
+    const json = '{"result":true, "count":42}';
+    const obj1 = JSON.parse(json);
+    */
+
   }
 
 
@@ -567,9 +581,16 @@ export class BewerberComponent implements OnInit {
   // ========================================================
 
   public setAktionGenerell(event:any) {
+
     // console.log(event);
     this.aktion = event;
+
+    // gleichlzeitig leeren auf der linken Seite
+    this.mySelectKommunikation.value = [];
+    this.kommunikationSelectedZeitpunkt = "";
+    this.kommunikationSelectedAnmerkung = "";
   }
+
 
   public addAktion() {
 
@@ -593,6 +614,8 @@ export class BewerberComponent implements OnInit {
 
     // Dadurch sollte der zugehörige Eintrag in der LB makraiert werden
     this.kommunikationSelected = localAktion;
+    this.kommunikationSelectedZeitpunkt = localAktion.zeitpunkt;
+    this.kommunikationSelectedAnmerkung = localAktion.anmerkung;
 
     //Die LB zur Auswahl eines Kommunikationstypes wieder auf "noselection" zurücksetzen
     // und die ganze ganz rechte Seite zurüäcksetzen
@@ -603,6 +626,11 @@ export class BewerberComponent implements OnInit {
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
    // this.mySelectKommunikation.open();
 
+  }
+
+  public setKommunikation() {
+    this.kommunikationSelectedZeitpunkt = this.kommunikationSelected.zeitpunkt;
+    this.kommunikationSelectedAnmerkung = this.kommunikationSelected.anmerkung;
   }
 
   /*   ===================== Verwaltung der Anlagen ============================= */
@@ -619,11 +647,11 @@ export class BewerberComponent implements OnInit {
   }
 
   /*
-   * Löschen einer Anlage aus den bereits zugeordneten Anlagen
+   * yyy Löschen einer Anlage aus den bereits zugeordneten Anlage
    */
   public removeAnlage() {
 
-    // Löschen der zu löschenden Anlage aus dem Array
+    // Löschen der zu selektierten Anlage aus dem Array
     this.anlage_array.forEach( (anlage, index) => {
 
       if (anlage.id === this.anlageSelected.id) {
@@ -637,12 +665,6 @@ export class BewerberComponent implements OnInit {
 
           // Zurück kommt das folgende Json-Response-Objekt: {deletetd:true}
           console.log(data);
-          // const objData = JSON.parse(data); funkioniert nicht, da data schon ein Objekt und kein Json ist
-
-          /*
-          const json = '{"result":true, "count":42}';
-          const obj1 = JSON.parse(json);
-          */
 
           // Rückübertrag des Arrays mit den aktuelen Anlagen in das Gesamtobjekt "Bewerber"
           this.selBewerberObject.anlagen = this.anlage_array;

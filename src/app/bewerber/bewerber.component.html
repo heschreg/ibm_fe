@@ -209,8 +209,8 @@
                   [multiple]="false"
                   [(ngModel)]="kommunikationSelected">
 
-                    <mat-option *ngFor="let komm of kommunikation_array" [value]="komm" value="{{komm.anmerkung}}" >
-                      {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
+                    <mat-option *ngFor="let komm of kommunikation_array" [value]="komm" value="{{komm.anmerkung}}" (click) ="setKommunikation()" >
+                      {{kommunikationSelectedZeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
                     </mat-option>
 
                   </mat-select>
@@ -220,13 +220,13 @@
             <div class="minimalgap"></div>
             <div class="row">
               <div class="col-6">
-                <input [readonly]=readonly [value]="kommunikationSelected?.zeitpunkt"/>
+                <input [readonly]=readonly [value]="kommunikationSelectedZeitpunkt"/>
               </div>
             </div>
             <div class="minigap"></div>
             <div class="row">
               <div class="col-6">
-                <textarea [readonly]=readonly [value]="kommunikationSelected?.anmerkung"> </textarea>
+                <textarea [readonly]=readonly [value]="kommunikationSelectedAnmerkung"> </textarea>
               </div>
             </div>
 
