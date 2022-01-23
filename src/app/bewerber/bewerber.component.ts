@@ -70,6 +70,8 @@ export class BewerberComponent implements OnInit {
   // linker Bereich mit den aktuell zugeordneten Anlagen
   public anlage_array: Anlage[] = [];
   public anlageSelected! : Anlage;
+  public anlageSelectedAnmerkung : string = '';
+  public anlageSelectedName : string = '';
 
   // rechter Bereich mit allen verfügbaren Anlagekategorien
   public sd_anlage_array: SD_Anlage[] = [];
@@ -168,6 +170,53 @@ export class BewerberComponent implements OnInit {
   }
 
 
+  public initBereichKommunikation() {
+
+    // linker Bereich mit der tatsächlichen KOmmunikationshistorie
+    if (this.kommunikationSelected) {
+      this.kommunikationSelected.zeitpunkt = "";
+      this.kommunikationSelected.anmerkung = "";
+    } else {
+      let tmpSdKommunikation : SD_Kommunikation = {id: 0, bezeichnung : ''};
+      this.kommunikationSelected = {id: 0, anmerkung: '', zeitpunkt: '', sd_kommunikation: tmpSdKommunikation};
+
+    }
+
+    // rechter Bereich mit den Stammdaten bzglö. der möglichen Kommunikationstypen
+    this.aktionSdDate = "";
+    this.aktionSdAnmerkung = "";
+
+
+    if  (this.selBewerberObject?.kommunikationen) {
+      this.kommunikation_array = [];
+      this.selBewerberObject.kommunikationen.forEach((k) => {
+        // Übertragen des Arrays mit den Kommunikationseinträgen
+        this.kommunikation_array.push(k);
+      });
+    }
+
+  }
+
+  public initBereichAnlagen() {
+
+    // Bereich mit den tatsächlich aktuell erfassten Anlagen
+    if (this.anlageSelected) {
+    } else {
+      let tmpSdAnlage : SD_Anlage = {id: 0, bezeichnung : ''};
+      this.anlageSelected = {id: 0, anmerkung: '', name: '', type: '', sd_anlage: tmpSdAnlage};
+    }
+    this.anlageSelectedName = this.anlageSelected.name;
+    this.anlageSelectedAnmerkung = this.anlageSelected.anmerkung;
+
+
+    this.anlage_array = [];
+    if (this.selBewerberObject && this.selBewerberObject.anlagen) {
+      this.selBewerberObject.anlagen.forEach((k) => {
+        // Übertragen des Arrays mit den erfassten Anlagen
+        this.anlage_array.push(k);
+      });
+    }
+  }
 
   private addFormGroup() {
     this.bewerberFormGroup = new FormGroup({
@@ -201,22 +250,6 @@ export class BewerberComponent implements OnInit {
   public get email()    {  return this.bewerberFormGroup.get('email') };
   public get notizen()  {  return this.bewerberFormGroup.get('notizen') };
   public get skills()   {  return this.bewerberFormGroup.get('skills') };
-
-  public bewerberShowDetails(bewerber: Bewerber) {
-
-    if (bewerber.id == 0) {
-
-      // alle Eingabefelder leer machen, um eine neuen Datensatz in die geleerten Felder eingeben zukönnen
-      this.bewerberFormGroup.reset();
-
-    } else {
-
-      this.fillBewerbeControls(bewerber);
-
-      // Setzen des aktuellen Bewerberobjekts
-      this.selBewerberObject = bewerber;
-    }
-  }
 
   public fillBewerbeControls(bew : Bewerber) {
     // Anzeige des selektierten und in der Tabelle "bewerber" gefundenen Datensatzes
@@ -349,6 +382,16 @@ export class BewerberComponent implements OnInit {
           })
         }
 
+        if (this.selBewerberObject.id == 0) {
+
+          // alle Eingabefelder leer machen, um eine neuen Datensatz in die geleerten Felder eingeben zu können
+          this.bewerberFormGroup.reset();
+
+        } else {
+
+          this.fillBewerbeControls(this.selBewerberObject);
+        }
+
         this.initBereichKommunikation();
         this.initBereichAnlagen();
 
@@ -356,7 +399,7 @@ export class BewerberComponent implements OnInit {
         this.readonly = true; // alle Formcontrols werden disabled
         this.readonlyCancel = true;
 
-        this.bewerberShowDetails(this.selBewerberObject);
+
 
       }  else {
 
@@ -398,56 +441,6 @@ export class BewerberComponent implements OnInit {
     let tmpArrayAnlage : Anlage[] = [];
     localBew.anlagen = tmpArrayAnlage;
   }
-
-  public initBereichKommunikation() {
-
-    // linker Bereich mit der tatsächlichen KOmmunikationshistorie
-    if (this.kommunikationSelected) {
-      this.kommunikationSelected.zeitpunkt = "";
-      this.kommunikationSelected.anmerkung = "";
-    } else {
-      let tmpSdKommunikation : SD_Kommunikation = {id: 0, bezeichnung : ''};
-      this.kommunikationSelected = {id: 0, anmerkung: '', zeitpunkt: '', sd_kommunikation: tmpSdKommunikation};
-
-    }
-
-    // rechter Bereich mit den Stammdaten bzglö. der möglichen Kommunikationstypen
-    this.aktionSdDate = "";
-    this.aktionSdAnmerkung = "";
-
-
-    if  (this.selBewerberObject?.kommunikationen) {
-      this.kommunikation_array = [];
-      this.selBewerberObject.kommunikationen.forEach((k) => {
-        // Übertragen des Arrays mit den Kommunikationseinträgen
-        this.kommunikation_array.push(k);
-      });
-    }
-
-  }
-
-  public initBereichAnlagen() {
-
-    // Bereich mit den tatsächlich aktuell erfassten Anlagen
-    if (this.anlageSelected) {
-      this.anlageSelected.name = "";
-      this.anlageSelected.anmerkung = "";
-    } else {
-      let tmpSdAnlage : SD_Anlage = {id: 0, bezeichnung : ''};
-      this.anlageSelected = {id: 0, anmerkung: '', name: '', type: '', sd_anlage: tmpSdAnlage};
-    }
-
-
-    this.anlage_array = [];
-    if (this.selBewerberObject && this.selBewerberObject.anlagen) {
-      this.selBewerberObject.anlagen.forEach((k) => {
-        // Übertragen des Arrays mit den erfassten Anlagen
-        this.anlage_array.push(k);
-      });
-    }
-  }
-
-
 
   /* ========================= Methoden, die aus der UI getriggered werden =================== */
 
@@ -496,8 +489,8 @@ export class BewerberComponent implements OnInit {
 
     this.mySelectAnlage.value = [];
     if (this.anlageSelected) {
-      this.anlageSelected.name = '';
-      this.anlageSelected.anmerkung = '';
+      this.anlageSelectedName = '';
+      this.anlageSelectedAnmerkung = '';
     }
 
   }
@@ -513,8 +506,6 @@ export class BewerberComponent implements OnInit {
 
     this.getListBewerber(this.selStangObject.id, INIT);
 
-    // this.bewerberShowDetails(this.selBewerberObject);
-
   }
 
   public submit() {
@@ -528,11 +519,13 @@ export class BewerberComponent implements OnInit {
     // console.log(this.bewerberFormGroup.value.email);
   }
 
-  public showSelectedBewerber (selectedBewerber: Bewerber) {
+  // Click-Event auf einen der Bewerber in der LB mit allen Bewerbern zum Stellenangebot
+  public setSelectedBewerber (selectedBewerber: Bewerber) {
 
     // Füllen der Formcontrols mit dem selektierten Bewerber
     this.fillBewerbeControls(selectedBewerber);
 
+    // Setzen als aktuelles Bewerberobjekts
     this.selBewerberObject = selectedBewerber;
 
     this.initBereichKommunikation();
@@ -553,9 +546,6 @@ export class BewerberComponent implements OnInit {
     this.aktionsdatumS = dd + '.' + mm + '.' + yyyy;
   }
 
-  public setAktionIndividuell(komm: Kommunikation) {
-    this.kommunikationSelected = komm;
-  }
 
   /*
    * Löschen einer Aktion aus den bereits besteheneden Aktionen
@@ -623,7 +613,9 @@ export class BewerberComponent implements OnInit {
 
   // aus der Liste der aktuelle zugeordneten Anlagen
   public setAnlage(anlage: Anlage) {
-    this.anlageSelected  = anlage;
+    // console.log(this.anlageSelected);
+    this.anlageSelectedAnmerkung = this.anlageSelected.anmerkung;
+    this.anlageSelectedName = this.anlageSelected.name;
   }
 
   /*
@@ -635,20 +627,25 @@ export class BewerberComponent implements OnInit {
     this.anlage_array.forEach( (anlage, index) => {
 
       if (anlage.id === this.anlageSelected.id) {
-        this.anlageSelected.name = "";
-        this.anlageSelected.anmerkung = "";
+        this.anlageSelectedName = "";
+        this.anlageSelectedAnmerkung = "";
 
         this.anlage_array.splice(index,1);
 
         // Löschen der zu löschenden Anlage aus der Entität "ibm.anlage"
         this.serviceBewerber.deleteAnlageByQuery(this.anlageSelected.id, this.selBewerberObject.id).subscribe(data => {
 
-          // Zurück kommt folgende Json-Response: {deletetd:true}
+          // Zurück kommt das folgende Json-Response-Objekt: {deletetd:true}
           console.log(data);
           // const objData = JSON.parse(data); funkioniert nicht, da data schon ein Objekt und kein Json ist
 
+          /*
           const json = '{"result":true, "count":42}';
           const obj1 = JSON.parse(json);
+          */
+
+          // Rückübertrag des Arrays mit den aktuelen Anlagen in das Gesamtobjekt "Bewerber"
+          this.selBewerberObject.anlagen = this.anlage_array;
 
           // Aufklappen der Listbox, damit man die Änderung gleich sieht ist überflüssig
           /// this.mySelectAnlage.open();
@@ -709,8 +706,8 @@ export class BewerberComponent implements OnInit {
     this.mySelectAnlage.value = [];
 
     if (this.anlageSelected) {
-      this.anlageSelected.name = "";
-      this.anlageSelected.anmerkung  = "";
+      this.anlageSelectedName = "";
+      this.anlageSelectedAnmerkung  = "";
     }
 
   }
@@ -735,19 +732,19 @@ export class BewerberComponent implements OnInit {
       } else {
         // hierher, falls eine upzuloadende pdf-Datgei ausgewählt wurde
 
-        let localSD_Anlage: SD_Anlage = {id: 0, bezeichnung: ''};
+        let local_SdAnlage: SD_Anlage = {id: 0, bezeichnung: ''};
         let local_Anlage: Anlage = {
-          id: -1, sd_anlage: localSD_Anlage, anmerkung: '',
+          id: -1, sd_anlage: local_SdAnlage, anmerkung: '',
           name: '', type: '',
         };
 
         local_Anlage.id = -1;
-        local_Anlage.sd_anlage = this.sd_anlage; // z. B.: Lebenslauf-Eintrag in SD_Anlage
-        local_Anlage.anmerkung = this.sdAnlageAnmerkung;
-
-        // Beide Properties sind in der gewählten Datei "selFilePdfAnlage" enthalten
         local_Anlage.name  = this.sdAnlageName;
+        local_Anlage.anmerkung = this.sdAnlageAnmerkung;
+        local_Anlage.sd_anlage = this.sd_anlage; // z. B.: Eintrag "Lebenslauf" in SD_Anlage
         local_Anlage.type  = "pdf";
+
+        // "type" unbd "name" sind auch im Objekt "selFilePdfAnlage" (= gewählte Datei) enthalten
 
         // Anhängen der neuen Anlagen-Pdf-Datei in der Property "anlage" d Entität "ibm.anlage"
         this.serviceBewerber.postPdfAnlage(this.selBewerberObject.id, local_Anlage, this.selFilePdfAnlage).subscribe( data => {
@@ -761,10 +758,13 @@ export class BewerberComponent implements OnInit {
             }
           });
           this.anlage_array.push(local_Anlage);
+          this.selBewerberObject.anlagen = this.anlage_array;
 
           // Markieren des zugehörien LB-Eintrags in den erfassten Anlagen und
           // Übertragen der eben ergänzen Anlage-Pdf-Daten auf die linkee Detailseite
-          this.anlageSelected =local_Anlage;
+          this.anlageSelected = local_Anlage;
+          this.anlageSelectedName  = this.anlageSelected.name;
+          this.anlageSelectedAnmerkung  = this.anlageSelected.anmerkung;
 
           // Leeren alle Werte auf der rechten Masterseite
           this.mySelectKategorie.value = [];
@@ -783,7 +783,7 @@ export class BewerberComponent implements OnInit {
 
     // Die Daten sind in der Property this.sa.pdf_stellenangebot_id
     // Die downzuloadende und anzuzeigende PDF-Datei steht in "anlage.name"
-    if (this.anlageSelected) {
+    if (this.anlageSelected && this.anlageSelected.name) {
 
       /*
        * Download der selektierten pdf-Datei, deren Daten in der Tabelle ibm.anlage stehen

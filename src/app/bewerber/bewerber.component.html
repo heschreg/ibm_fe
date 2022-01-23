@@ -1,14 +1,13 @@
 
 <mat-card class="margin-left">
-
   <mat-card-header class="gapheader">
     <mat-card-title class="mytitle">Verwaltung der Bewerbungen</mat-card-title>
   </mat-card-header>
 
   <!-- oben -->
-  <div class="row">
-    <div class="col-6">
-        <!-- oben stehen die Listbox mit allen Stellenanzeigen und daneben den Bewerbern zum selektierten Stellenangebot -->
+    <div class="row">
+      <div class="col-6">
+        <!-- oben stehen die Listbox mit allen Stellenangeboten und daneben den Bewerbern zum selektierten Stellenangebot -->
         <div class="row">
           <div class="col-3">
             <mat-form-field>
@@ -32,20 +31,22 @@
                 [(ngModel)]="selBewerberObject"
                 [disabled]=!readonly>
 
-                <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="showSelectedBewerber(bew)">{{ bew.nachname }}, {{ bew.vorname }}</mat-option>
+                <mat-option *ngFor="let bew of bew_array" [value]="bew" (click)="setSelectedBewerber(bew)">{{ bew.nachname }}, {{ bew.vorname }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
         </div>
         <hr/>
+      </div>
     </div>
-  </div>
+  </mat-card>
 
   <!-- unten stehen die Details eines Bewerbers zum gewählten Stellenangebot -->
   <div class="row">
-
     <!-- linke Seite -->
     <div class="col-5" >
+
+      <mat-card class="margin-left, coloring1">
 
         <div class="row">
           <div class="col-8">
@@ -57,7 +58,6 @@
             </span>
           </div>
         </div>
-
 
         <div class="form-container" class="gapheader">
           <form [formGroup]="bewerberFormGroup" (submit)="submit()">
@@ -151,7 +151,7 @@
                   <mat-label> Notizen </mat-label>
                   <textarea [readonly]=readonly  matInput formControlName="notizen"></textarea>
                 </mat-form-field>
-               </div>
+              </div>
             </div>
 
             <div class="row">
@@ -180,241 +180,245 @@
 
           </form>
         </div>
-
+      </mat-card>
     </div>
 
     <!-- ========================= -->
     <!-- mittlere und rechte Seite -->
     <!-- ========================= -->
-    <div class="col-6">
-      <div class="row" [hidden]="formmode==1">
+      <div class="col-6">
+        <mat-card class="margin-left, coloring2">
+          <div class="row" [hidden]="formmode==1">
 
         <!-- -------------------------------  -->
         <!-- Beginn Kommunikationsbearbeitung -->
         <!-- -------------------------------  -->
-        <div><span class="hinweis1"> Pflege der Kommunikationshistorie</span></div>
 
-        <!-- mittlere Seite: alle erfassten Kommunikationstypen bzgl. des selektierten Bewerbers -->
-        <div class="col-3">
+          <div><span class="hinweis1"> Pflege der Kommunikationshistorie</span></div>
 
-          <!-- Anzeige einer Liste mit der hinterlegten Aktionshistorie -->
-          <div class="row">
-            <div class="col-4">
-              <mat-form-field>
-                <mat-label>Zeige Kommunikation</mat-label>
-                <mat-select
-                 #mySelectKommunikation
-                 [multiple]="false"
-                 [(ngModel)]="kommunikationSelected">
+          <!-- mittlere Seite: alle erfassten Kommunikationstypen bzgl. des selektierten Bewerbers -->
+          <div class="col-3">
 
-                  <mat-option *ngFor="let komm of kommunikation_array" [value]="komm" value="{{komm.anmerkung}}" (click)="setAktionIndividuell(komm)" >
-                    {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
-                  </mat-option>
+            <!-- Anzeige einer Liste mit der hinterlegten Aktionshistorie -->
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field>
+                  <mat-label>Zeige Kommunikation</mat-label>
+                  <mat-select
+                  #mySelectKommunikation
+                  [multiple]="false"
+                  [(ngModel)]="kommunikationSelected">
 
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-          <div class="minimalgap"></div>
-          <div class="row">
-            <div class="col-6">
-              <input [readonly]=readonly [value]="kommunikationSelected?.zeitpunkt"/>
-            </div>
-          </div>
-          <div class="minigap"></div>
-          <div class="row">
-            <div class="col-6">
-              <textarea [readonly]=readonly [value]="kommunikationSelected?.anmerkung"> </textarea>
-            </div>
-          </div>
+                    <mat-option *ngFor="let komm of kommunikation_array" [value]="komm" value="{{komm.anmerkung}}" >
+                      {{komm.zeitpunkt}} {{komm.sd_kommunikation.bezeichnung}}
+                    </mat-option>
 
-          <div class="row">
-            <div class="col-1">
-              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAktion()">Historie entfernen</button>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="col-5" [hidden]="formmode==3">
-
-          <!-- rechte Seite: Anzeige einer Liste mit allen möglichen Aktionsarten in Dropdown-Listbox-->
-          <div class="row">
-            <div class="col-6">
-              <mat-form-field>
-                <mat-label>Wähle Kommunikation</mat-label>
-                <mat-select #mySelectSdKommunikation [multiple]="false" [disabled]=readonly>
-                  <mat-option  value="{{komm?.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" (click)="setAktionGenerell(komm)" >
-                    {{komm.bezeichnung}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-6">
-              <mat-form-field matInput="">
-                  <mat-label>Datum</mat-label>
-                  <input  matInput [disabled]=true  [matDatepicker]="pickerClass"
-                          (dateInput)="aktionsdatumEvent($event)" [(ngModel)]="aktionSdDate"/>
-                  <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
-                  <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
+                  </mat-select>
                 </mat-form-field>
+              </div>
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-8">
-              <textarea [readonly]=readonly  placeholder="Hinweis" [(ngModel)]="aktionSdAnmerkung"> </textarea>
+            <div class="minimalgap"></div>
+            <div class="row">
+              <div class="col-6">
+                <input [readonly]=readonly [value]="kommunikationSelected?.zeitpunkt"/>
+              </div>
             </div>
+            <div class="minigap"></div>
+            <div class="row">
+              <div class="col-6">
+                <textarea [readonly]=readonly [value]="kommunikationSelected?.anmerkung"> </textarea>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-1">
+                <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAktion()">Historie entfernen</button>
+              </div>
+            </div>
+
           </div>
 
-          <div class="col-1">
-            <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Historie übernehmen</button>
+          <div class="col-5" [hidden]="formmode==3">
+
+            <!-- rechte Seite: Anzeige einer Liste mit allen möglichen Kommunikationsarten in Dropdown-Listbox-->
+            <div class="row">
+              <div class="col-6">
+                <mat-form-field>
+                  <mat-label>Wähle Kommunikation</mat-label>
+                  <mat-select #mySelectSdKommunikation [multiple]="false" [disabled]=readonly>
+                    <mat-option  value="{{komm?.bezeichnung}}" *ngFor="let komm of sd_kommunikation_array" (click)="setAktionGenerell(komm)" >
+                      {{komm.bezeichnung}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-6">
+                <mat-form-field matInput="">
+                    <mat-label>Datum</mat-label>
+                    <input  matInput [disabled]=true  [matDatepicker]="pickerClass"
+                            (dateInput)="aktionsdatumEvent($event)" [(ngModel)]="aktionSdDate"/>
+                    <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
+                    <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
+                  </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-8">
+                <textarea [readonly]=readonly  placeholder="Hinweis" [(ngModel)]="aktionSdAnmerkung"> </textarea>
+              </div>
+            </div>
+
+            <div class="col-1">
+              <button [disabled]=readonly  mat-raised-button color="primary" (click)="addAktion()">Historie übernehmen</button>
+            </div>
+
           </div>
 
-        </div>
+
         <!-- Ende Kommunikation -->
 
         <div class="midigap"></div>
 
-        <!-- ------------------------  -->
-        <!-- Beginn Anlagenbearbeitung -->
-        <!-- ------------------------  -->
-        <div><span class="hinweis1"> Pflege der Anlagen</span></div>
+          <!-- ------------------------  -->
+          <!-- Beginn Anlagenbearbeitung -->
+          <!-- ------------------------  -->
+          <div><span class="hinweis1"> Pflege der Anlagen</span></div>
 
-        <div class="col-3">
+          <div class="col-3">
 
-          <!-- ================================================================================================ -->
-          <!-- mittlere Seite: Anzeige der Liste mit der bereis hinterlegten Anlagen des selektierten Bewerbers -->
-          <!-- ================================================================================================ -->
-          <div class="row">
-            <div class="col-4">
-              <mat-form-field>
-                <mat-label>Zeige erfasste Anlagen</mat-label>
-                <mat-select
-                  #mySelectAnlage
-                  [multiple]="false"
-                  [(ngModel)]="anlageSelected">
-                  <mat-option  value="{{anlage.name}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="setAnlage(anlage)" >
-                    {{anlage.sd_anlage.bezeichnung}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+            <!-- ================================================================================================ -->
+            <!-- mittlere Seite: Anzeige der Liste mit der bereis hinterlegten Anlagen des selektierten Bewerbers -->
+            <!-- ================================================================================================ -->
+            <div class="row">
+              <div class="col-4">
+                <mat-form-field>
+                  <mat-label>Zeige erfasste Anlagen</mat-label>
+                  <mat-select
+                    #mySelectAnlage
+                    [multiple]="false"
+                    [(ngModel)]="anlageSelected">
+                    <mat-option  value="{{anlage.name}}" *ngFor="let anlage of anlage_array" [value]="anlage" (click)="setAnlage(anlage)" >
+                      {{anlage.sd_anlage.bezeichnung}}, {{anlage.name}},{{anlage.anmerkung}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
             </div>
+
+            <div class="row">
+              <div class="col-1">
+                <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">Anlage anzeigen</button>
+              </div>
+            </div>
+
+            <div class="midigap"></div>
+
+            <div class="row">
+              <div class="col-8">
+                <mat-label>zugeordnete Pdf</mat-label>
+                <input [readonly]=true [value]="anlageSelectedName" />
+              </div>
+            </div>
+
+            <div class="midigap"></div>
+
+            <div class="row">
+              <div class="col-6">
+                <mat-label>Anmerkung</mat-label>
+                <textarea [readonly]=true [value]="anlageSelectedAnmerkung">
+                  {{anlageSelectedAnmerkung}}
+                </textarea>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-1">
+                <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAnlage()">Anlage entfernen</button>
+              </div>
+            </div>
+
           </div>
 
-          <div class="row">
-            <div class="col-1">
-              <button mat-raised-button color="primary" [disabled]=false (click)="fetchPdf()">Anlage anzeigen</button>
+            <!-- ==================================================================================================================== -->
+            <!-- rechte Seite: Auswahl der Anlagekategorie (Lebensláuf, Zeugnis,...), bzgl. der eine Pdf-Datei hochgeladen werden soll-->
+            <!-- ==================================================================================================================== -->
+            <div class="col-4" [hidden]="formmode==3">
+
+            <div class="row" >
+              <div class="col-6">
+                <mat-form-field>
+                  <mat-label>Wähle Anlagekategorie</mat-label>
+                  <mat-select #mySelectKategorie [multiple]="false" [disabled]=readonly>
+                    <mat-option value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
+                      {{sd_anlage.bezeichnung}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
             </div>
-          </div>
 
-          <div class="midigap"></div>
+            <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
+            <div class="row">
+              <div class="col-md-7">
 
-          <div class="row">
-            <div class="col-8">
-              <mat-label>zugeordnete Pdf</mat-label>
-              <input [readonly]=true [value]="anlageSelected?.name" />
+                <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
+                <input
+                  type="file"
+                  style="display: none"
+                  #fileInput
+                  accept="application/pdf"
+                  (change)="onFileChangeInput($event)">
+
+                <button
+                  mat-raised-button
+                  color="warn"
+                  class="file-select-button"
+                  (click)="onClickFileInputButton()"
+                  [disabled]="readonly">
+
+                  <mat-icon>attach_file</mat-icon>Anlage (Pdf) auswählen
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div class="midigap"></div>
+            <div class="midigap"></div>
 
-          <div class="row">
-            <div class="col-6">
-              <mat-label>Anmerkung</mat-label>
-              <textarea [readonly]=true [value]="anlageSelected?.anmerkung">
-                {{anlage.anmerkung}
-              </textarea>
+            <div class="row">
+              <div class="col-8">
+                <mat-label>ausgewählte Pdf</mat-label>
+                <input [readonly]=true  (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
+              </div>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="col-1">
-              <button [disabled]=readonly  mat-raised-button color="primary" (click)="removeAnlage()">Anlage entfernen</button>
+            <div class="midigap"></div>
+
+            <div class="row">
+              <div class="col-8">
+                <mat-label>Anmerkung</mat-label>
+                <textarea [readonly]=readonly (click)="showSdAnlageAnmerkung()" [(ngModel)]="sdAnlageAnmerkung"> </textarea>
+              </div>
             </div>
+
+            <button mat-raised-button color="primary" [disabled]="sdAnlageName == ''" (click)="saveAnlagePdf()">
+              <span *ngIf='sdAnlageName != ""'>{{sdAnlageName}} hochladen</span>
+              <span *ngIf='sdAnlageName == ""'>kein Pdf zum Hochladen ausgewählt</span>
+            </button>
+            <!--
+            <button mat-raised-button color="primary" [disabled]="selFilePdfAnlage?.name == null" (click)="saveAnlagePdf()">
+              <span *ngIf='sdAnlageName != ""'>{{sdAnlageName}} hochladen</span>
+              <span *ngIf='sdAnlageName == ""'>kein Pdf zum Hochladen ausgewählt</span>
+            </button>
+          -->
+
           </div>
-
-        </div>
-
-          <!-- ==================================================================================================================== -->
-          <!-- rechte Seite: Auswahl der Anlagekategorie (Lebensláuf, Zeugnis,...), bzgl. der eine Pdf-Datei hochgeladen werden soll-->
-          <!-- ==================================================================================================================== -->
-          <div class="col-4" [hidden]="formmode==3">
-
-          <div class="row" >
-            <div class="col-6">
-              <mat-form-field>
-                <mat-label>Wähle Anlagekategorie</mat-label>
-                <mat-select #mySelectKategorie [multiple]="false" [disabled]=readonly>
-                  <mat-option value="{{sd_anlage.bezeichnung}}" *ngFor="let sd_anlage of sd_anlage_array" [value]="sd_anlage" (click)="selSdAnlage(sd_anlage)" >
-                    {{sd_anlage.bezeichnung}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
-          <div class="row">
-            <div class="col-md-7">
-
-              <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
-              <input
-                type="file"
-                style="display: none"
-                #fileInput
-                accept="application/pdf"
-                (change)="onFileChangeInput($event)">
-
-              <button
-                mat-raised-button
-                color="warn"
-                class="file-select-button"
-                (click)="onClickFileInputButton()"
-                [disabled]="readonly">
-
-                <mat-icon>attach_file</mat-icon>Anlage (Pdf) auswählen
-              </button>
-            </div>
-          </div>
-
-          <div class="midigap"></div>
-
-          <div class="row">
-            <div class="col-8">
-              <mat-label>ausgewählte Pdf</mat-label>
-              <input [readonly]=true  (click)="showSdAnlageName()" [(ngModel)]="sdAnlageName"/>
-            </div>
-          </div>
-
-          <div class="midigap"></div>
-
-          <div class="row">
-            <div class="col-8">
-              <mat-label>Anmerkung</mat-label>
-              <textarea [readonly]=readonly (click)="showSdAnlageAnmerkung()" [(ngModel)]="sdAnlageAnmerkung"> </textarea>
-            </div>
-          </div>
-
-          <button mat-raised-button color="primary" [disabled]="sdAnlageName == ''" (click)="saveAnlagePdf()">
-            <span *ngIf='sdAnlageName != ""'>{{sdAnlageName}} hochladen</span>
-            <span *ngIf='sdAnlageName == ""'>kein Pdf zum Hochladen ausgewählt</span>
-          </button>
-          <!--
-          <button mat-raised-button color="primary" [disabled]="selFilePdfAnlage?.name == null" (click)="saveAnlagePdf()">
-            <span *ngIf='sdAnlageName != ""'>{{sdAnlageName}} hochladen</span>
-            <span *ngIf='sdAnlageName == ""'>kein Pdf zum Hochladen ausgewählt</span>
-          </button>
-        -->
-
-        </div>
 
       </div>
-    </div>
+    </mat-card>
+  </div>
 
   </div>
 
-</mat-card>
