@@ -258,8 +258,8 @@
               <div class="col-6">
                 <mat-form-field matInput="">
                     <mat-label>Datum</mat-label>
-                    <input  matInput [disabled]=true  [matDatepicker]="pickerClass"
-                            (dateInput)="aktionsdatumEvent($event)" [(ngModel)]="aktionSdDate"/>
+                    <input matInput [disabled]=true  [matDatepicker]="pickerClass"
+                           (dateInput)="aktionsdatumEvent($event)" [(ngModel)]="kommunikationDate"/>
                     <mat-datepicker-toggle matSuffix [for]="pickerClass"></mat-datepicker-toggle>
                     <mat-datepicker [disabled]=readonly [dateClass]="dateClass" #pickerClass startView="month"></mat-datepicker>
                   </mat-form-field>
@@ -268,7 +268,7 @@
 
             <div class="row">
               <div class="col-8">
-                <textarea [readonly]=readonly  placeholder="Hinweis" [(ngModel)]="aktionSdAnmerkung"> </textarea>
+                <textarea [readonly]=readonly  placeholder="Hinweis" [(ngModel)]="kommunikationAnmerkung"> </textarea>
               </div>
             </div>
 

@@ -60,8 +60,8 @@ export class BewerberComponent implements OnInit {
 
   // Bereich  mit allen verfügbaren Kommunikationstypen
   public sd_kommunikation_array: SD_Kommunikation[] = [];
-  public aktionSdDate : string = '';
-  public aktionSdAnmerkung : string = "";
+  public kommunikationDate : string = '';
+  public kommunikationAnmerkung : string = "";
 
   public aktion!: SD_Kommunikation;
   public aktionsdatumS : string = "";
@@ -186,8 +186,8 @@ export class BewerberComponent implements OnInit {
     }
 
     // rechter Bereich mit den Stammdaten bzgl. der möglichen Kommunikationstypen
-    this.aktionSdDate = "";
-    this.aktionSdAnmerkung = "";
+    this.kommunikationDate = "";
+    this.kommunikationAnmerkung = "";
 
     if  (this.selBewerberObject?.kommunikationen) {
       this.kommunikation_array = [];
@@ -606,7 +606,7 @@ export class BewerberComponent implements OnInit {
     localAktion.id = -1;
     localAktion.zeitpunkt = this.aktionsdatumS;
     localAktion.sd_kommunikation = this.aktion;
-    localAktion.anmerkung= this.aktionSdAnmerkung;
+    localAktion.anmerkung= this.kommunikationAnmerkung;
     // localAktion.bewerber = this.selBewerberObject;
 
     // das Array mit den zugewiesenen Aktionen um die neue Aktionshistorie erweitern
@@ -620,8 +620,8 @@ export class BewerberComponent implements OnInit {
     //Die LB zur Auswahl eines Kommunikationstypes wieder auf "noselection" zurücksetzen
     // und die ganze ganz rechte Seite zurüäcksetzen
     this.mySelectSdKommunikation.value = [];
-    this.aktionSdDate = '';
-    this.aktionSdAnmerkung = '';
+    this.kommunikationDate = '';
+    this.kommunikationAnmerkung = '';
 
     // Aufklappen der Listbox, damit man die Änderung gleich sieht
    // this.mySelectKommunikation.open();
