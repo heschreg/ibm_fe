@@ -53,7 +53,7 @@ export class StellenangeboteComponent implements OnInit {
   status_selected!: Status; // ???
   kanal_selected!: Kanal;
   kanaele: Kanal[] = [];
-  pdf_attached!: Pdf_Attached;
+  pdf_attached : Pdf_Attached = {id: 0, name : '', type: ''};
 
   // 1 = INSERT
   // 2 = UPDATE
@@ -100,23 +100,51 @@ export class StellenangeboteComponent implements OnInit {
 
   public ngOnInit(): void {
 
-    // Holen aller Daten über REST aus der Entität "SD_Status"
-    this.getSdStatus();
-
-    // Holen aller Daten über REST aus der Entität "SD_Kanal"
-    this.getSdKanaele();
-
-    // nochmaliges Holen aller Stellenangebote über REST aus der Entität "SD_Kanal" in annderes Array
-    this.getKanaeleSuccess();
-
-    // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
-    // Setzen von this.radioSaToSelect
-    console.log("Aufruf getStellenangebote");
-    this.getStellenangebote();
-
+    this.initDialogStellenlangebote();
   }
 
-  private doInit( radioToSelect: number) {
+  private initDialogStellenlangebote() {
+
+    // Holen aller Status aus der Tabelle "sd_status"
+    this.sd_status_array = [];
+    this.serviceStellenangebote.getListeStatus().subscribe(data => {
+
+      data.forEach((d) => {
+        this.sd_status_array.push(d);
+      });
+
+      // Holen aller Kanäle aus der Tabelle "sd_kanal"
+      this.sd_kanal_array = [];
+      this.serviceStellenangebote.getListeKanaele().subscribe(data => {
+        data.forEach((d) => {
+          // Dieses Array wird zur Erfassung aller geschalteten Kanäle verwendet
+          if (d.bezeichnung !== "unklar") {
+            this.sd_kanal_array.push(d);
+          }
+        });
+
+        // Holen aller Kanäle aus der Tabelle "sd_kanal"
+        this.sd_kanal_success_array = [];
+        this.serviceStellenangebote.getListeKanaele().subscribe(data => {
+
+          data.forEach((d) => {
+
+            // Dieses Array wird zur Auswahl des verantwortlichen Kanals im Erfolgsfall verwendet
+            // Das sind radio-Buttons, da im Gegensatz zu oben nur ein Single-Selct möglich sit
+            d.selected=false;
+            this.sd_kanal_success_array.push(d);
+          });
+
+          // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
+          // Setzen von this.radioSaToSelect
+          this.getStellenangebote();
+
+        });
+      });
+    });
+  }
+
+  private setDialogValuesSelected( radioToSelect: number) {
 
     this.stangShowDetails(this.sa_array[radioToSelect]);
 
@@ -139,52 +167,12 @@ export class StellenangeboteComponent implements OnInit {
     console.log(selStangObject);
   }
 
-  private getSdStatus() {
-
-    // Holen aller Status aus der Tabelle "sd_status"
-    this.sd_status_array = [];
-    this.serviceStellenangebote.getListeStatus().subscribe(data => {
-      data.forEach((d) => {
-        this.sd_status_array.push(d);
-      });
-    });
-  }
-
-  private getSdKanaele() {
-
-    // Holen aller Kanäle aus der Tabelle "sd_kanal"
-    this.sd_kanal_array = [];
-
-    this.serviceStellenangebote.getListeKanaele().subscribe(data => {
-      data.forEach((d) => {
-        // Dieses Array wird zur Erfassung aller geschalteten Kanäle verwendet
-        if (d.bezeichnung !== "unklar") {
-          this.sd_kanal_array.push(d);
-        }
-      });
-    });
-  }
-
-  private getKanaeleSuccess() {
-
-    // Holen aller Kanäle aus der Tabelle "sd_kanal"
-    this.sd_kanal_success_array = [];
-
-    this.serviceStellenangebote.getListeKanaele().subscribe(data => {
-      data.forEach((d) => {
-
-        // Dieses Array wird zur Auswahl des verantwortlichen Kanals im Erfolgsfall verwendet
-        // Das sind radio-Buttons, da im Gegensatz zu oben nur ein Single-Selct möglich sit
-        d.selected=false;
-        this.sd_kanal_success_array.push(d);
-      });
-    });
-  }
-
   // Setzen von this.radioSaToSelect
       // Markieren des zuletzt gewähltenStellenangebots this.radioSaToSelect
 
   private getStellenangebote(){
+
+    // console.log("Aufruf getStellenangebote");
 
     // Holen aller Stellenangebote über REST aus der DB
     this.serviceStellenangebote.getListeStellenangebote().subscribe(data => {
@@ -215,8 +203,15 @@ export class StellenangeboteComponent implements OnInit {
 
       });
 
-      this.doInit(this.radioSaToSelect);
       this.firstRun = false;
+
+      if (this.sa_array.length > 0) {
+        // Setzen der Daten des selkierten Stellenangebotes im Dialog
+        this.setDialogValuesSelected(this.radioSaToSelect);
+      } else {
+        this.showHinweisMissingPdfDatei("Das erste Stellenagebot kann jetzt angelegt werden");
+        this.setMode(1); // ==> INSERT-Modus
+      }
 
     });
 
@@ -314,7 +309,7 @@ export class StellenangeboteComponent implements OnInit {
   /*
    * wird aufgerufen
      1. aus Template:  (click)-funktion, falls konkretes Stellenagebot aus der Liste ausgewählt wird
-     2. intern: ^      doInit()
+     2. intern: ^      setDialogValuesSelected()
   */
   public stangShowDetails(stang: Stellenangebot) {
 

@@ -83,6 +83,8 @@ export class BewerberComponent implements OnInit {
   public readonly: boolean = true;
   public readonlyCancel: boolean = true;
 
+  public angeboteVorhanden: boolean = false;
+
   public bewerberFormGroup!: FormGroup;
   emailRegx = /^(([^<>+()\[\]\\.,;:\s@"-#$%&=]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,3}))$/;
 
@@ -155,12 +157,19 @@ export class BewerberComponent implements OnInit {
           if (this.sa_array.length > 0) {
             this.selStangObject = this.sa_array[0];
 
+            this.angeboteVorhanden = true;
+
             // Rest-Aufruf zum Holen aller erfassten Bewerber zum gewählten Stellenangebot bzw. die Id desselbigen
             /// evtl. die Id des initialen Bewerbers einstellen
             this.getListBewerber(this.selStangObject.id, INIT);
           }
           else {
             // Wenn boch kein Stellenagebot registriert ist dann kommt man hierher
+            this.formmode = READ; // Die Formulardaten können nicht verändert werden
+            this.readonly = true; // alle Formcontrols werden disabled
+            this.readonlyCancel = true;
+            this.angeboteVorhanden = false; // Man kann nix mit den Bewerbern machen, da nochkein Stellenangebot vorhanden ist
+
             this.showHinweisMissingPdfDatei("Es muss mindestens ein Stellenangebot angelegt sein");
           }
         });
@@ -401,8 +410,6 @@ export class BewerberComponent implements OnInit {
         this.formmode = READ; // Die Formulardaten können nicht verändert werden
         this.readonly = true; // alle Formcontrols werden disabled
         this.readonlyCancel = true;
-
-
 
       }  else {
 

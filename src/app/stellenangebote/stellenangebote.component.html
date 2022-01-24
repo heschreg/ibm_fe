@@ -146,15 +146,20 @@
         <!-- Feld um eine pdf-Datei mit dem Stellenangebot in die Tabelle ibm.pdf_stellenangebot hochzuladen-->
         <div class="row"  [hidden]="mode==1">
 
-          <div class="col-md-10">
+          <div class="col-md-8">
             <label id="radio-group-label-status" class="group-label">zugehörige pdf-Datei: </label>
             <span class="abstand_left" *ngIf = "pdf_attached?.name" class="pdfattached">  {{pdf_attached?.name}}</span>
             <span class="abstand_left" *ngIf ="!pdf_attached?.name" class="auffaellig" >  kein Pdf zugeordnet</span>
 
-            <p></p>
-
             <button mat-raised-button color="primary" [disabled]="!updateMode" class="abstand-left" (click)="fetchPdf()">PDF anzeigen</button>
 
+          </div>
+        </div>
+
+        <div class="trenner"></div>
+
+        <div class="row"  [hidden]="mode==1">
+          <div class="col-md-4">
 
             <!-- Registrieren der vom Benutzer ausgewählten pdf-Datei in this.this.selectedFilePdf -->
             <span class="abstand_left">

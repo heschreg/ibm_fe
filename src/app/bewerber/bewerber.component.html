@@ -165,10 +165,10 @@
 
             <div class="row">
               <div class="col-3">
-                <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startNewBewerber()">Bewerber erfassen</button>
+                <button [disabled]="!readonly || !angeboteVorhanden"  mat-raised-button color="primary" (click)="startNewBewerber()">Bewerber erfassen</button>
               </div>
               <div class="col-3">
-                <button [disabled]=!readonly  mat-raised-button color="primary" (click)="startUpdateBewerber()">Bewerberdaten ändern</button>
+                <button [disabled]="!readonly  || !angeboteVorhanden"  mat-raised-button color="primary" (click)="startUpdateBewerber()">Bewerberdaten ändern</button>
               </div>
               <div class="col-2">
                 <button [disabled]=readonlyCancel  mat-raised-button color="primary" (click)="cancelBewerber()">Abbrechen</button>
