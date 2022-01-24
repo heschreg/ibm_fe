@@ -422,6 +422,8 @@ export class BewerberComponent implements OnInit {
         // leeres Formual anbieten, um den ersten eingegeangene Bewerber anlegen zu können
         this.bewerberFormGroup.reset();
 
+        this.showHinweisMissingPdfDatei("Es kann der erste Bewerber auf das selektierte Stellenangebot angelegt werden");
+
       }
     });
 
