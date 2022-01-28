@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http'
 import { Observable } from 'rxjs';
 import { Kanal, Status, Stellenangebot } from './model.Stellenangebot';
 import { Anlage, Bewerber, Kommunikation, SD_Anlage, SD_Kommunikation } from './model.Bewerber';
+import {environment} from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServiceBewerber {
 
-  private baseURL = "http://localhost:8080/ibm";
+  // private baseURL = "http://localhost:8080/ibm";
+  private baseURL = environment.apiUrl;
 
   constructor(private httpClient: HttpClient) { }
 

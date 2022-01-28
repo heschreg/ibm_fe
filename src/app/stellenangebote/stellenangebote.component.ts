@@ -100,12 +100,14 @@ export class StellenangeboteComponent implements OnInit {
 
   public ngOnInit(): void {
 
-    this.initDialogStellenlangebote();
+    this.initDialogStellenangebote();
   }
 
-  private initDialogStellenlangebote() {
+  private initDialogStellenangebote() {
 
+    console.log ("initDialogStellenangebote()");
     // Holen aller Status aus der Tabelle "sd_status"
+    console.log ("getListeStatus()");
     this.sd_status_array = [];
     this.serviceStellenangebote.getListeStatus().subscribe(data => {
 
@@ -114,6 +116,7 @@ export class StellenangeboteComponent implements OnInit {
       });
 
       // Holen aller Kanäle aus der Tabelle "sd_kanal"
+      console.log ("getListeKanaele()");
       this.sd_kanal_array = [];
       this.serviceStellenangebote.getListeKanaele().subscribe(data => {
         data.forEach((d) => {
@@ -124,6 +127,7 @@ export class StellenangeboteComponent implements OnInit {
         });
 
         // Holen aller Kanäle aus der Tabelle "sd_kanal"
+        console.log ("nochmal getListeKanaele()");
         this.sd_kanal_success_array = [];
         this.serviceStellenangebote.getListeKanaele().subscribe(data => {
 
@@ -137,6 +141,7 @@ export class StellenangeboteComponent implements OnInit {
 
           // Holen aller Stellenangebote über REST aus der Entität "stellenangebot" nach this.sa_array[]
           // Setzen von this.radioSaToSelect
+          console.log ("getStellenangebote()");
           this.getStellenangebote();
 
         });
@@ -182,6 +187,7 @@ export class StellenangeboteComponent implements OnInit {
       // Durch die Zuweisung von "this.tmpSa= d" bekommt man Typsicherheit.
       // Wenn man weiss, welches Format über Json rein kommt, kann man die
       // entsprechenden model-Dateien zusammenbasteln.
+      console.log ("nach getListeStellenangebote().subscribe");
 
       this.sa_array = [];
 
